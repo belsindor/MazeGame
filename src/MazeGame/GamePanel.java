@@ -13,7 +13,6 @@ public class GamePanel extends JPanel {
     public GamePanel(Player player) {
         this.player = player;
         HUDMessageManager.init(this);
-        HUDMessageManager.show("HUD работает");
 
     }
 
@@ -103,26 +102,36 @@ public class GamePanel extends JPanel {
 
     // ===== ЦЕНТРАЛЬНЫЕ СООБЩЕНИЯ =====
     private void drawCenterMessages(Graphics g) {
-        List<String> messages = HUDMessageManager.getActiveMessages();
+        List<HUDMessage> messages = HUDMessageManager.getActiveMessages();
         if (messages.isEmpty()) return;
 
-        g.setFont(new Font("Arial", Font.BOLD, 22));
-
         int centerX = getWidth() / 2;
-        int startY = getHeight() / 2 - messages.size() * 15;
+        int startY = getHeight() / 2 - messages.size() * 20;
 
-        for (String msg : messages) {
-            int textWidth = g.getFontMetrics().stringWidth(msg);
+        for (HUDMessage msg : messages) {
+
+            g.setFont(new Font("Arial", Font.BOLD, msg.fontSize));
+            FontMetrics fm = g.getFontMetrics();
+
+            int textWidth = fm.stringWidth(msg.text);
+            int textHeight = fm.getHeight();
 
             g.setColor(new Color(0, 0, 0, 180));
-            g.fillRoundRect(centerX - textWidth / 2 - 10,
-                    startY - 25, textWidth + 20, 30, 10, 10);
+            g.fillRoundRect(
+                    centerX - textWidth / 2 - 20,
+                    startY - textHeight + 10,
+                    textWidth + 40,
+                    textHeight + 10,
+                    15,
+                    15
+            );
 
-            g.setColor(Color.WHITE);
-            g.drawString(msg, centerX - textWidth / 2, startY);
+            g.setColor(msg.color);
+            g.drawString(msg.text, centerX - textWidth / 2, startY);
 
-            startY += 35;
+            startY += textHeight + 15;
         }
     }
+
 
 }

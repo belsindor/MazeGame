@@ -79,8 +79,9 @@ import java.awt.event.WindowEvent;
 
     // ===== ЛОГ =====
     public static void log(String message) {
-        HUDMessageManager.show(message);
+        HUDMessageManager.showInfo(message);
     }
+
 
     // ===== БОЙ =====
     public static void setBattleActive(boolean value) {

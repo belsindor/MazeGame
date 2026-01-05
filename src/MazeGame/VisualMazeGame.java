@@ -130,11 +130,11 @@ public class VisualMazeGame {
         if (playerX == exitX && playerY == exitY) {
 
             if (!secondMazeLoaded) {
-                HUDMessageManager.show("🚪 Второй лабиринт");
+                HUDMessageManager.showInfo("🚪 Второй лабиринт");
                 loadMaze(MAZE_2, 1, 1, 28, 6);
                 secondMazeLoaded = true;
             } else {
-                HUDMessageManager.show("🏁 Вы нашли выход");
+                HUDMessageManager.showInfo("🏁 Вы нашли выход");
             }
 
             return;
@@ -173,7 +173,8 @@ public class VisualMazeGame {
             Monster monster =
                     MonsterFactory.createMonsterForPlayer(player.getLevel());
 
-            HUDMessageManager.show("⚔️ На вас напал " + monster.getName());
+            HUDMessageManager.showAttack("⚔️ На вас напал " + monster.getName());
+
 
             // ⏱️ Пауза перед боем
             new javax.swing.Timer(1000, e -> {
@@ -236,8 +237,9 @@ public class VisualMazeGame {
     private void checkHeal() {
         if (player.getHealth() < player.getMaxHealth()) {
             player.healStep();
-            HUDMessageManager.show("✨ +1 HP");
+            HUDMessageManager.showHeal("✨ +1 HP");
         }
+
     }
 
 

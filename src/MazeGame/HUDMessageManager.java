@@ -1,57 +1,71 @@
 package MazeGame;
 
 import javax.swing.*;
-import java.util.*;
-import javax.swing.Timer;
+import java.awt.*;
+import java.util.ArrayList;
+import java.util.List;
 
 public class HUDMessageManager {
 
-    private static final List<Message> messages = new ArrayList<>();
-    private static GamePanel panel;
+    private static final List<HUDMessage> messages = new ArrayList<>();
+    private static JPanel panel;
 
-    private static final int MESSAGE_LIFETIME_MS = 500;
-
-    public static void init(GamePanel gamePanel) {
+    public static void init(JPanel gamePanel) {
         panel = gamePanel;
     }
 
-    public static void show(String text) {
-        if (panel == null) return;
+    public static List<HUDMessage> getActiveMessages() {
+        return messages;
+    }
 
-        Message msg = new Message(text, System.currentTimeMillis());
+    // ===== Обычное сообщение (например +1 HP) =====
+    public static void showHeal(String text) {
+        HUDMessage msg = new HUDMessage(text, Color.GREEN, 22);
+        showOnce(msg, 2000);
+    }
+
+    // ===== АТАКА: крупное, красное, мигает =====
+    public static void showAttack(String text) {
+
+        Timer timer = new Timer(500, null);
+        final int[] count = {0};
+
+        timer.addActionListener(e -> {
+            if (count[0] % 2 == 0) {
+                messages.add(new HUDMessage(text, Color.RED, 33)); // x3 размер
+            } else {
+                messages.clear();
+            }
+
+            panel.repaint();
+            count[0]++;
+
+            if (count[0] >= 6) { // 3 появления
+                messages.clear();
+                panel.repaint();
+                timer.stop();
+            }
+        });
+
+        timer.start();
+    }
+
+    private static void showOnce(HUDMessage msg, int lifetimeMs) {
         messages.add(msg);
-
         panel.repaint();
 
-        // таймер на удаление
-        Timer timer = new Timer(MESSAGE_LIFETIME_MS, e -> {
+        new Timer(lifetimeMs, e -> {
             messages.remove(msg);
             panel.repaint();
-        });
-        timer.setRepeats(false);
-        timer.start();
-
+        }) {{
+            setRepeats(false);
+            start();
+        }};
+    }
+    // ===== ИНФО-СООБЩЕНИЯ (лабиринт, выход и т.п.) =====
+    public static void showInfo(String text) {
+        HUDMessage msg = new HUDMessage(text, Color.WHITE, 28);
+        showOnce(msg, 2000);
     }
 
-    public static List<String> getActiveMessages() {
-        List<String> result = new ArrayList<>();
-        long now = System.currentTimeMillis();
-
-        for (Message m : messages) {
-            if (now - m.time < MESSAGE_LIFETIME_MS) {
-                result.add(m.text);
-            }
-        }
-        return result;
-    }
-
-    private static class Message {
-        String text;
-        long time;
-
-        Message(String text, long time) {
-            this.text = text;
-            this.time = time;
-        }
-    }
 }
