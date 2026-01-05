@@ -11,7 +11,7 @@ import java.awt.event.WindowEvent;
 
         private static GamePanel panel;
         private static VisualMazeGame game;
-        private static JTextArea logArea;
+
 
         private static boolean battleActive = false;
 
@@ -36,11 +36,8 @@ import java.awt.event.WindowEvent;
             });
 
 
-            logArea = new JTextArea();
-            logArea.setEditable(false);
-            logArea.setBackground(new Color(20, 20, 20));
-            logArea.setForeground(Color.WHITE);
-            add(new JScrollPane(logArea), BorderLayout.SOUTH);
+
+
 
             // ❗ ОДИН слушатель клавиатуры
             addKeyListener(new GameKeyListener(game, panel, this));
@@ -82,10 +79,7 @@ import java.awt.event.WindowEvent;
 
     // ===== ЛОГ =====
     public static void log(String message) {
-        if (logArea == null) return;
-
-        logArea.append(message + "\n");
-        logArea.setCaretPosition(logArea.getDocument().getLength());
+        HUDMessageManager.show(message);
     }
 
     // ===== БОЙ =====

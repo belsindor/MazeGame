@@ -130,12 +130,13 @@ public class VisualMazeGame {
         if (playerX == exitX && playerY == exitY) {
 
             if (!secondMazeLoaded) {
-                GameWindow.log("🚪 Вы вошли во второй лабиринт!");
+                HUDMessageManager.show("🚪 Второй лабиринт");
                 loadMaze(MAZE_2, 1, 1, 28, 6);
                 secondMazeLoaded = true;
             } else {
-                GameWindow.log("🏁 Вы нашли выход из лабиринта!");
+                HUDMessageManager.show("🏁 Вы нашли выход");
             }
+
             return;
         }
 
@@ -172,15 +173,27 @@ public class VisualMazeGame {
             Monster monster =
                     MonsterFactory.createMonsterForPlayer(player.getLevel());
 
-            GameWindow.setBattleActive(true);
-            GameWindow.showBattleScreen();
+            HUDMessageManager.show("⚔️ На вас напал " + monster.getName());
 
-            new BattleWindow(player, monster);
+            // ⏱️ Пауза перед боем
+            new javax.swing.Timer(1000, e -> {
 
-            GameWindow.hideBattleScreen();
-            GameWindow.setBattleActive(false);
+                GameWindow.setBattleActive(true);
+                GameWindow.showBattleScreen();
+
+                new BattleWindow(player, monster);
+
+                GameWindow.hideBattleScreen();
+                GameWindow.setBattleActive(false);
+
+            }) {{
+                setRepeats(false);
+                start();
+            }};
         }
     }
+
+
 
 
     // ================= ИНВЕНТАРЬ =================
@@ -223,9 +236,10 @@ public class VisualMazeGame {
     private void checkHeal() {
         if (player.getHealth() < player.getMaxHealth()) {
             player.healStep();
-
+            HUDMessageManager.show("✨ +1 HP");
         }
     }
+
 
 
     // ================= ЛАБИРИНТЫ =================

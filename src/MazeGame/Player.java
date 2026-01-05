@@ -69,48 +69,6 @@ public class Player {
 
         experienceToNextLevel = (experienceToNextLevel * 2) + 100;
 
-        System.out.println("\n══════════════════════════════════════════════");
-        System.out.println("   ПОЗДРАВЛЯЕМ! Вы достигли " + level + " уровня!");
-        System.out.println("   Здоровье увеличено до " + maxHealth);
-        System.out.println("   Атака увеличена до " + baseAttack);
-        System.out.println("   Защита увеличена до " + baseDefense);
-        System.out.println("══════════════════════════════════════════════");
-    }
-
-    public String getStatus() {
-        return String.format("Игрок: %s\nУровень: %d\nЗдоровье: %d/%d\nОпыт: %d/%d\nАтака: %d\nЗащита: %d",
-                name, level, health, maxHealth, experience, experienceToNextLevel,
-                getTotalAttack(), getTotalDefense());
-    }
-
-    public String getEquipmentStatus() {
-        StringBuilder sb = new StringBuilder("=== ЭКИПИРОВКА ===\n");
-
-        Weapon equippedWeapon = inventory.getEquippedWeapon();
-        if (equippedWeapon != null) {
-            sb.append("Оружие: ").append(equippedWeapon.getName())
-                    .append(" (+").append(equippedWeapon.getAttack()).append(" атаки)\n");
-        } else {
-            sb.append("Оружие: Нет\n");
-        }
-
-        Armor equippedTop = inventory.getEquippedTop();
-        if (equippedTop != null) {
-            sb.append("Верх: ").append(equippedTop.getName())
-                    .append(" (+").append(equippedTop.getProtection()).append(" защиты)\n");
-        } else {
-            sb.append("Верх: Нет\n");
-        }
-
-        Armor equippedBottom = inventory.getEquippedBottom();
-        if (equippedBottom != null) {
-            sb.append("Низ: ").append(equippedBottom.getName())
-                    .append(" (+").append(equippedBottom.getProtection()).append(" защиты)\n");
-        } else {
-            sb.append("Низ: Нет\n");
-        }
-
-        return sb.toString();
     }
 
     public void loadFromSave(GameSaveData data) {
@@ -122,51 +80,6 @@ public class Player {
         inventory.getItems().clear();
         inventory.getItems().addAll(data.inventoryItems);
         inventory.setEquippedItems(data.equippedItems);
-    }
-
-    public void openInventory(BufferedReader reader) {
-        System.out.println("\n=== ИНВЕНТАРЬ ===");
-
-        System.out.println("Надетые предметы:");
-        java.util.List<String> equippedInfo = inventory.getEquippedItemsInfo();
-        if (equippedInfo.isEmpty()) {
-            System.out.println("  (нет надетых предметов)");
-        } else {
-            for (String info : equippedInfo) {
-                System.out.println("  " + info);
-            }
-        }
-
-        System.out.println("\nПредметы в инвентаре:");
-        java.util.List<String> inventoryDisplay = inventory.getInventoryDisplay();
-        if (inventoryDisplay.isEmpty()) {
-            System.out.println("  (пусто)");
-        } else {
-            for (String item : inventoryDisplay) {
-                System.out.println("  " + item);
-            }
-
-            System.out.println("\nКоманды: номер - надеть предмет, Q - выход");
-            System.out.print("Выберите предмет для экипировки: ");
-
-            try {
-                String input = reader.readLine();
-                if (!input.equalsIgnoreCase("q")) {
-                    try {
-                        int index = Integer.parseInt(input) - 1;
-                        if (inventory.equipItem(index)) {
-                            System.out.println("✅ Предмет надет!");
-                        } else {
-                            System.out.println("❌ Не удалось надеть предмет!");
-                        }
-                    } catch (NumberFormatException e) {
-                        System.out.println("❌ Некорректный ввод!");
-                    }
-                }
-            } catch (IOException e) {
-                System.out.println("❌ Ошибка ввода: " + e.getMessage());
-            }
-        }
     }
 
     // Геттеры и сеттеры
