@@ -270,7 +270,7 @@ public class VisualMazeGame {
         // ВАЖНО: восстановление тумана ПОСЛЕ loadMaze
         this.visited = data.visited;
     }
-
+//Тут добавлен комментарий
 
     // ================= MAIN =================
 
