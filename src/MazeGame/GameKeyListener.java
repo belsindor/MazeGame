@@ -41,7 +41,7 @@ public class GameKeyListener extends KeyAdapter {
                 new InventoryWindow(game.getPlayer());
             }
         }
-
-        panel.setImage(game.getCurrentImageName()); // ← ЭТОГО ДОСТАТОЧНО
+// надо добавить кнопку колоды например C
+        panel.setImage(game.getCurrentImageName());
     }
 }

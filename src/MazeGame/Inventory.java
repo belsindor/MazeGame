@@ -1,5 +1,10 @@
 package MazeGame;
 
+import MazeGame.item.Armor;
+import MazeGame.item.EquippedItemsData;
+import MazeGame.item.Item;
+import MazeGame.item.Weapon;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -124,7 +129,7 @@ public class Inventory implements Serializable{
                 item.reduceStrength();
 
                 if (item.isBroken()) {
-                    System.out.println("Ваш " + item.getName() + " сломался!");
+                    HUDMessageManager.showInfo("Ваш " + item.getName() + " сломался!");
                     equippedItems.put(entry.getKey(), null);
                 }
             }

@@ -1,4 +1,4 @@
-package MazeGame;
+package MazeGame.item;
 
 public class ItemFactory {
     // Создание оружия

@@ -7,6 +7,8 @@ import java.util.List;
 
 public class HUDMessageManager {
 
+    private static final int MESSAGE_LIFETIME_MS = 2000;
+
     private static final List<HUDMessage> messages = new ArrayList<>();
     private static JPanel panel;
 
@@ -15,57 +17,65 @@ public class HUDMessageManager {
     }
 
     public static List<HUDMessage> getActiveMessages() {
-        return messages;
+        return List.copyOf(messages);
     }
 
-    // ===== Обычное сообщение (например +1 HP) =====
+    // ===== БАЗОВОЕ СООБЩЕНИЕ =====
+    public static void show(String text) {
+        show(text, Color.WHITE, 22);
+    }
+
+    public static void show(String text, Color color, int fontSize) {
+        HUDMessage msg = new HUDMessage(text, color, fontSize);
+        messages.add(msg);
+        panel.repaint();
+
+        Timer timer = new Timer(MESSAGE_LIFETIME_MS, e -> {
+            messages.remove(msg);
+            panel.repaint();
+        });
+        timer.setRepeats(false);
+        timer.start();
+    }
+
+    // ===== ЛЕЧЕНИЕ (+1 HP) =====
     public static void showHeal(String text) {
-        HUDMessage msg = new HUDMessage(text, Color.GREEN, 22);
-        showOnce(msg, 2000);
+        show(text, Color.GREEN, 22);
     }
 
-    // ===== АТАКА: крупное, красное, мигает =====
+    // ===== ИНФО (лабиринт, выход) =====
+    public static void showInfo(String text) {
+        show(text, Color.WHITE, 28);
+    }
+
+    // ===== АТАКА: крупно, красно, мигает =====
     public static void showAttack(String text) {
 
-        Timer timer = new Timer(500, null);
+        HUDMessage attackMsg =
+                new HUDMessage(text, Color.RED, 66); // x3 размер
+
+        Timer timer = new Timer(300, null);
         final int[] count = {0};
 
         timer.addActionListener(e -> {
+
             if (count[0] % 2 == 0) {
-                messages.add(new HUDMessage(text, Color.RED, 33)); // x3 размер
+                messages.add(attackMsg);
             } else {
-                messages.clear();
+                messages.remove(attackMsg);
             }
 
             panel.repaint();
             count[0]++;
 
-            if (count[0] >= 6) { // 3 появления
-                messages.clear();
+            if (count[0] >= 6) { // 3 мигания
+                messages.remove(attackMsg);
                 panel.repaint();
                 timer.stop();
             }
         });
 
         timer.start();
-    }
-
-    private static void showOnce(HUDMessage msg, int lifetimeMs) {
-        messages.add(msg);
-        panel.repaint();
-
-        new Timer(lifetimeMs, e -> {
-            messages.remove(msg);
-            panel.repaint();
-        }) {{
-            setRepeats(false);
-            start();
-        }};
-    }
-    // ===== ИНФО-СООБЩЕНИЯ (лабиринт, выход и т.п.) =====
-    public static void showInfo(String text) {
-        HUDMessage msg = new HUDMessage(text, Color.WHITE, 28);
-        showOnce(msg, 2000);
     }
 
 }

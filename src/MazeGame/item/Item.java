@@ -1,4 +1,4 @@
-package MazeGame;
+package MazeGame.item;
 
 import java.io.Serializable;
 

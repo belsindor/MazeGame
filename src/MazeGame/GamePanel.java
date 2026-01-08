@@ -52,8 +52,7 @@ public class GamePanel extends JPanel {
 
         g.drawString(player.getName(), 35, 45);
         g.drawString("Уровень: " + player.getLevel(), 35, 65);
-        g.drawString("⚔ ATK " + player.getTotalAttack() +
-                "   🛡 DEF " + player.getTotalDefense(), 35, 85);
+        g.drawString("⚔ ATK " + player.getTotalAttack() + "   🛡 DEF " + player.getTotalDefense(), 35, 85);
 
         // EXP BAR
         int barX = 35;

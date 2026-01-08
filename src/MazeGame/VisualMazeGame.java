@@ -1,5 +1,9 @@
 package MazeGame;
 
+import MazeGame.battle.BattleLauncher;
+import MazeGame.battle.BattleOutcome;
+import MazeGame.battle.BattleWindow;
+
 import javax.swing.*;
 import java.util.Random;
 
@@ -8,6 +12,7 @@ public class VisualMazeGame {
     private VisualLocation[][] map;
     private int[][] currentMaze;
     private boolean[][] visited;
+    private BattleLauncher battleLauncher;
 
 
     private int playerX;
@@ -18,6 +23,9 @@ public class VisualMazeGame {
 
     private final Player player;
     private final Random random = new Random();
+    private static final int MONSTER_ATTACK_CHANCE = 10;
+    private static final int HEAL_PER_STEP = 1;
+
 
 
     private boolean secondMazeLoaded = false;
@@ -168,36 +176,34 @@ public class VisualMazeGame {
     // ================= МОНСТРЫ =================
 
     private void checkMonsterAttack() {
-        if (random.nextInt(100) < 10) {
 
-            Monster monster =
-                    MonsterFactory.createMonsterForPlayer(player.getLevel());
+        if (random.nextInt(100) >= MONSTER_ATTACK_CHANCE) return;
 
-            HUDMessageManager.showAttack("⚔️ На вас напал " + monster.getName());
+        Monster monster =
+                MonsterFactory.createMonsterForPlayer(player.getLevel());
 
+        HUDMessageManager.showAttack("⚔ На вас напал " + monster.getName());
 
-            // ⏱️ Пауза перед боем
-            new javax.swing.Timer(1000, e -> {
+        GameWindow.setBattleActive(true);
+        GameWindow.showBattleScreen();
 
-                GameWindow.setBattleActive(true);
-                GameWindow.showBattleScreen();
+        BattleWindow bw =
+                new BattleWindow(GameWindow.getInstance(), player, monster);
 
-                new BattleWindow(player, monster);
+        bw.setVisible(true); // ⏳ ждём
 
-                GameWindow.hideBattleScreen();
-                GameWindow.setBattleActive(false);
+        GameWindow.hideBattleScreen();
+        GameWindow.setBattleActive(false);
 
-            }) {{
-                setRepeats(false);
-                start();
-            }};
+        if (!bw.isPlayerWon()) {
+            JOptionPane.showMessageDialog(null, "Вы погибли");
+            System.exit(0);
         }
     }
 
 
 
-
-    // ================= ИНВЕНТАРЬ =================
+     // ================= ИНВЕНТАРЬ =================
     public void showInventory() {
         if (!GameWindow.isBattleActive()) {
             new InventoryWindow(player);
@@ -278,13 +284,14 @@ public class VisualMazeGame {
 
         loadMaze(
                 secondMazeLoaded ? MAZE_2 : MAZE_1,
-                playerX, playerY,
+                data.playerX,
+                data.playerY,
                 secondMazeLoaded ? 28 : 27,
                 secondMazeLoaded ? 6 : 9
         );
 
-        // ВАЖНО: восстановление тумана ПОСЛЕ loadMaze
         this.visited = data.visited;
+
     }
 
     // ================= MAIN =================

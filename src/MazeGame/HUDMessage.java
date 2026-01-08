@@ -2,6 +2,7 @@ package MazeGame;
 
 import java.awt.*;
 
+
 public class HUDMessage {
 
     public final String text;
@@ -13,4 +14,6 @@ public class HUDMessage {
         this.color = color;
         this.fontSize = fontSize;
     }
+
+
 }

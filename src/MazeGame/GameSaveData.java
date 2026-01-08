@@ -1,5 +1,8 @@
 package MazeGame;
 
+import MazeGame.item.EquippedItemsData;
+import MazeGame.item.Item;
+
 import java.io.Serializable;
 import java.util.List;
 
@@ -23,4 +26,5 @@ public class GameSaveData implements Serializable {
     public boolean[][] visited;
     public boolean[][] fogOfWar;
     public int currentMazeId;
+    // добавить сохранение колоды
 }

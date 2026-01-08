@@ -1,5 +1,9 @@
 package MazeGame;
 
+import MazeGame.item.Armor;
+import MazeGame.item.Item;
+import MazeGame.item.Weapon;
+
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;

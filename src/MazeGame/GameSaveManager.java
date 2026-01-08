@@ -1,15 +1,21 @@
 package MazeGame;
 
+import MazeGame.item.EquippedItemsData;
+
 import java.io.*;
 
 public class GameSaveManager {
 
     public EquippedItemsData equippedItems;
     private static final String SAVE_FILE = "save.dat";
+    // ===== КАРТЫ =====
+    public List<CardSaveData> allCards;
+    public List<CardSaveData> combatDeck;
+    public CardSaveData selectedSummon;
+
 
     public static void save(VisualMazeGame game) {
-        try (ObjectOutputStream out =
-                     new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
+        try (ObjectOutputStream out = new ObjectOutputStream(new FileOutputStream(SAVE_FILE))) {
 
             GameSaveData data = new GameSaveData();
 
