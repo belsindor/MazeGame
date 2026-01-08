@@ -13,7 +13,7 @@ public class BattleWindow extends JDialog {
     private boolean playerWon = false;
 
     public BattleWindow(JFrame owner, Player player, Monster monster) {
-        super(owner, "Бой", true); // modal
+        super((JFrame) null, "Бой", true);
         this.battle = new BattleEngine(player, monster);
         initUI();
     }

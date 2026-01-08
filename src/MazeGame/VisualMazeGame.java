@@ -1,7 +1,5 @@
 package MazeGame;
 
-import MazeGame.battle.BattleLauncher;
-import MazeGame.battle.BattleOutcome;
 import MazeGame.battle.BattleWindow;
 
 import javax.swing.*;
@@ -12,7 +10,7 @@ public class VisualMazeGame {
     private VisualLocation[][] map;
     private int[][] currentMaze;
     private boolean[][] visited;
-    private BattleLauncher battleLauncher;
+
 
 
     private int playerX;
@@ -187,8 +185,8 @@ public class VisualMazeGame {
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
-        BattleWindow bw =
-                new BattleWindow(GameWindow.getInstance(), player, monster);
+        BattleWindow bw = new BattleWindow(null, player, monster);
+
 
         bw.setVisible(true); // ⏳ ждём
 

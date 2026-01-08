@@ -8,6 +8,10 @@ public class BattleEngine {
     private final BattleSide player;
     private final BattleSide monster;
 
+    public boolean isPlayerAlive() {
+        return false;
+    }
+
     public BattleEngine(Player player, Monster monster) {
         this.player = new BattleSide(player);
         this.monster = new BattleSide(monster);
@@ -43,6 +47,7 @@ public class BattleEngine {
         if (!player.isAlive() || !monster.isAlive()) {
             result.setBattleOver();
         }
+
 
         return result;
     }

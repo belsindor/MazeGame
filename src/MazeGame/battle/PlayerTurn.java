@@ -13,4 +13,9 @@ public class PlayerTurn implements BattleTurn {
     public Card getCard() {
         return card;
     }
+
+    @Override
+    public void apply(BattleContext context, BattleResult result) {
+
+    }
 }
