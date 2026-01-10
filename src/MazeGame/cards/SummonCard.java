@@ -1,41 +1,21 @@
 package MazeGame.cards;
 
-
 import MazeGame.Monster;
-import MazeGame.UnitType;
+import MazeGame.MonsterTemplate;
 
-public class SummonCard extends Card {
+public class SummonCard extends UnitCard {
 
-    private final Monster template;
-    private final String imagePath;
-
-    public SummonCard(Monster template) {
-        super(CardRarity.fromLevel(template.getLevel()));
-        this.template = template;
-        this.imagePath =
-                "/images/monsters/" +
-                        template.getName().replace(" ", "_") +
-                        ".jpg";
+    public SummonCard(MonsterTemplate template) {
+        super(template);
     }
 
     @Override
     public CardType getType() {
-        return CardType.MONSTER; // или SUMMON (лучше отдельный тип)
+        return CardType.SUMMON;
     }
 
+    @Override
     public Monster summon() {
-        return template.createWeakened(0.5);
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public String getName() {
-        return template.getName();
-    }
-
-    public UnitType getUnitType() {
-        return template.getUnitType();
+        return new Monster(template).createSummon();
     }
 }

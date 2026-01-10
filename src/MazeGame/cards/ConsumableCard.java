@@ -1,14 +1,18 @@
 package MazeGame.cards;
 
 import MazeGame.battle.BattleContext;
+import MazeGame.battle.BattleResult;
+
+
+import java.util.function.Consumer;
 
 public class ConsumableCard extends Card {
 
-    private final ConsumableEffect effect;
+    private final Consumer<BattleContext> action;
 
-    public ConsumableCard(ConsumableEffect effect, CardRarity rarity) {
+    public ConsumableCard(Consumer<BattleContext> action, CardRarity rarity) {
         super(rarity);
-        this.effect = effect;
+        this.action = action;
     }
 
     @Override
@@ -16,12 +20,12 @@ public class ConsumableCard extends Card {
         return CardType.CONSUMABLE;
     }
 
-    public void use(BattleContext ctx) {
-        effect.apply(ctx);
-        copies--;
-    }
-
-    public boolean isEmpty() {
-        return copies <= 0;
+    @Override
+    public void play(BattleContext context, BattleResult result) {
+        action.accept(context);
+        result.addMessage("🧪 Предмет использован");
     }
 }
+
+
+

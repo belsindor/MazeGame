@@ -1,6 +1,11 @@
 package MazeGame;
 
+import MazeGame.battle.BattleOutcome;
+import MazeGame.battle.BattleResult;
+import MazeGame.battle.BattleReward;
 import MazeGame.battle.BattleWindow;
+import MazeGame.cards.SummonCard;
+import MazeGame.item.Item;
 
 import javax.swing.*;
 import java.util.Random;
@@ -185,6 +190,13 @@ public class VisualMazeGame {
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
+        SummonCard chosen = player.chooseSummonCard(); // UI выбора
+
+        Monster summon = chosen != null ? chosen.summon() : null;
+
+        BattleWindow bw = new BattleWindow(null, player, monster, summon);
+
+
         BattleWindow bw = new BattleWindow(null, player, monster);
 
 
@@ -192,11 +204,32 @@ public class VisualMazeGame {
 
         GameWindow.hideBattleScreen();
         GameWindow.setBattleActive(false);
+        BattleOutcome outcome = bw.getOutcome();
 
-        if (!bw.isPlayerWon()) {
+        if (outcome == BattleOutcome.PLAYER_LOSE) {
             JOptionPane.showMessageDialog(null, "Вы погибли");
             System.exit(0);
         }
+        BattleResult result = bw.getResult();
+
+        if (result.getReward() != null) {
+
+            BattleReward reward = result.getReward();
+
+            if (reward != null) {
+
+                player.gainExperience(reward.getExperience());
+
+                HUDMessageManager.showInfo("✨ Опыт: +" + reward.getExperience());
+
+                for (Item item : reward.getItems()) {
+                    player.getInventory().addItem(item);
+                    HUDMessageManager.showInfo("🎁 Найден предмет: " + item.getName());
+                }
+            }
+
+        }
+
     }
 
 
@@ -291,6 +324,8 @@ public class VisualMazeGame {
         this.visited = data.visited;
 
     }
+
+
 
     // ================= MAIN =================
 

@@ -2,6 +2,8 @@ package MazeGame;
 
 import MazeGame.battle.BattleUnit;
 
+import MazeGame.cards.*;
+
 public class Player implements BattleUnit {
 
     private String name;
@@ -13,6 +15,13 @@ public class Player implements BattleUnit {
     private int level;
     private int experienceToNextLevel;
     private Inventory inventory;
+    private int tempAttack = 0;
+    private int temporaryAttack = 0;
+    private int temporaryDefense = 0;
+
+    // 🃏 КОЛОДЫ
+    private final CombatDeck combatDeck;
+    private final SummonDeck summonDeck;
 
     private final UnitType unitType = UnitType.INFANTRY;
 
@@ -26,9 +35,32 @@ public class Player implements BattleUnit {
         this.experience = 0;
         this.experienceToNextLevel = calculateExpToNextLevel(level);
         this.inventory = new Inventory();
+        // ⚔ стартовые колоды
+        this.combatDeck = CombatDeck.createStarterDeck();
+        this.summonDeck = SummonDeck.createStarterDeck();
     }
 
     // ===== BattleUnit =====
+
+    @Override
+    public void addTemporaryAttack(int value) {
+        temporaryAttack += value;
+    }
+
+    @Override
+    public void addTemporaryDefense(int value) {
+        temporaryDefense += value;
+    }
+
+    @Override
+    public int getTotalAttack() {
+        return baseAttack + temporaryAttack + inventory.getTotalAttackBonus();
+    }
+
+    @Override
+    public int getTotalDefense() {
+        return baseDefense + temporaryDefense + inventory.getTotalDefenseBonus();
+    }
 
     @Override
     public int getAttack() {
@@ -41,21 +73,12 @@ public class Player implements BattleUnit {
     }
 
     @Override
-    public int getTotalAttack() {
-        return baseAttack + inventory.getTotalAttackBonus();
-    }
-
-    @Override
-    public int getTotalDefense() {
-        return baseDefense + inventory.getTotalDefenseBonus();
-    }
-
-    @Override
     public void takeDamage(int damage) {
         int actualDamage = Math.max(1, damage - getTotalDefense());
         health -= actualDamage;
         if (health < 0) health = 0;
     }
+
 
     @Override
     public boolean isAlive() {
@@ -72,7 +95,11 @@ public class Player implements BattleUnit {
         return unitType;
     }
 
-    // ===== Game logic =====
+    @Override
+    public void setUnitType(UnitType type) {
+        // Игрок всегда пехотинец, можно игнорировать
+    }
+    // ===== GAME LOGIC =====
 
     public void heal(int amount) {
         health = Math.min(maxHealth, health + amount);
@@ -92,11 +119,11 @@ public class Player implements BattleUnit {
 
     private void levelUp() {
         level++;
-        maxHealth *= 2;
+        maxHealth += 5;
         health = maxHealth;
         baseAttack++;
         baseDefense++;
-        experienceToNextLevel = (experienceToNextLevel * 2) + 100;
+        experienceToNextLevel = calculateExpToNextLevel(level);
     }
 
     private int calculateExpToNextLevel(int level) {
@@ -107,26 +134,20 @@ public class Player implements BattleUnit {
         return exp;
     }
 
-    public void loadFromSave(GameSaveData data) {
-        this.level = data.level;
-        this.experience = data.experience;
-        this.health = data.health;
-        this.maxHealth = data.maxHealth;
+    // ===== КОЛОДЫ =====
 
-        this.experienceToNextLevel = calculateExpToNextLevel(level);
-
-        this.inventory = new Inventory();
-        this.inventory.getItems().addAll(data.inventoryItems);
-        this.inventory.setEquippedItems(data.equippedItems);
+    public CombatDeck getCombatDeck() {
+        return combatDeck;
     }
 
+    public SummonDeck getSummonDeck() {
+        return summonDeck;
+    }
 
-    // ===== Getters (НЕ из BattleUnit) =====
+    // ===== GETTERS =====
 
     public int getHealth() { return health; }
     public int getMaxHealth() { return maxHealth; }
     public int getLevel() { return level; }
-    public int getExperience() { return experience; }
-    public int getExperienceToNextLevel() { return experienceToNextLevel; }
     public Inventory getInventory() { return inventory; }
 }

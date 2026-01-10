@@ -101,6 +101,8 @@ public class InventoryPanel extends JPanel {
         panel.add(createEquipmentSlot("Верх", inventory.getEquippedTop(), "верх"));
         panel.add(Box.createVerticalStrut(10));
         panel.add(createEquipmentSlot("Низ", inventory.getEquippedBottom(), "низ"));
+        panel.add(Box.createVerticalStrut(10));
+        panel.add(createEquipmentSlot("Щит", inventory.getEquippedShield(), "shield"));
 
         return panel;
     }
@@ -144,6 +146,7 @@ public class InventoryPanel extends JPanel {
     private boolean isEquipped(Item item) {
         return item == inventory.getEquippedWeapon()
                 || item == inventory.getEquippedTop()
+                || item == inventory.getEquippedShield()
                 || item == inventory.getEquippedBottom();
     }
 

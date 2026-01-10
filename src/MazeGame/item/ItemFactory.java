@@ -1,8 +1,13 @@
 package MazeGame.item;
 
+import java.util.Random;
+
 public class ItemFactory {
+
+    private static final Random random = new Random();
+
     // Создание оружия
-    public static Weapon createStick() {
+     public static Weapon createStick() {
         return new Weapon("Палка", 1, 0.2, 5);
     }
 
@@ -31,32 +36,56 @@ public class ItemFactory {
         return new Armor("Меховая жилетка рудокопа", "верх", 2, 0.08, 15);
     }
 
+    // Создание шитов
+    public static Armor createShieldSkin() { return new Armor("Кожаный щит", "shield", 1, 0.2, 10); }
+
+    public static Armor createShieldWood() {
+        return new Armor("Деревянный щит", "shield", 2, 0.15, 15);
+    }
+
+    public static Armor createShieldIron() {
+        return new Armor("Дранянная рубаха рудокопа", "shield", 3, 0.1, 10);
+    }
+
+
+
+
+
     // Генерация предмета в зависимости от уровня монстра
     public static Item generateLoot(int monsterLevel) {
-        double random = Math.random();
+        double roll = random.nextDouble();
 
         switch (monsterLevel) {
-            case 1:
-                if (random < 0.2) return createStick();
-                break;
-            case 2:
-                if (random < 0.15) return createOldDagger();
-                else if (random < 0.25) return createPatchedShorts();
-                else if (random < 0.35) return createWornShirt();
-                break;
-            case 3:
-                if (random < 0.1) return createRustySword();
-                else if (random < 0.18) return createMinerPants();
-                else if (random < 0.26) return createFurVest();
-                break;
-            case 4:
-            case 5:
-                if (random < 0.15) return createRustySword();
-                else if (random < 0.25) return createMinerPants();
-                else if (random < 0.35) return createFurVest();
-                break;
+
+            case 1 -> {
+                if (roll < 0.20) return createStick();
+            }
+
+            case 2 -> {
+                if (roll < 0.15) return createOldDagger();
+                if (roll < 0.25) return createPatchedShorts();
+                if (roll < 0.35) return createWornShirt();
+                if (roll < 0.45) return createShieldSkin();
+            }
+
+            case 3 -> {
+                if (roll < 0.10) return createRustySword();
+                if (roll < 0.20) return createMinerPants();
+                if (roll < 0.30) return createFurVest();
+                if (roll < 0.40) return createShieldWood();
+            }
+
+            case 4 -> {
+                if (roll < 0.50) return createShieldIron();
+            }
+
+            case 5 -> {
+                if (roll < 0.15) return createRustySword();
+                if (roll < 0.25) return createMinerPants();
+                if (roll < 0.35) return createFurVest();
+            }
         }
 
-        return null;
+        return null; // ничего не выпало
     }
 }

@@ -4,11 +4,12 @@ import java.awt.*;
 
 public enum CardRarity {
 
-    GRAY(Color.GRAY),
+    GRAY(new Color(255, 255, 255)),
     GREEN(new Color(0, 180, 0)),
     BLUE(new Color(0, 120, 255)),
-    YELLOW(new Color(220, 200, 0)),
-    RED(Color.RED);
+    VIOLETTE(new Color(148, 0, 211)),
+    RED(new Color(148, 0, 0)),
+    GOLD(new Color(255, 215, 0));
 
     private final Color frameColor;
 
@@ -24,9 +25,10 @@ public enum CardRarity {
         return switch (this) {
             case GRAY -> GREEN;
             case GREEN -> BLUE;
-            case BLUE -> YELLOW;
-            case YELLOW -> RED;
-            case RED -> RED;
+            case BLUE -> VIOLETTE;
+            case VIOLETTE -> RED;
+            case RED -> GOLD;
+            case GOLD -> null;
         };
     }
 
@@ -35,8 +37,9 @@ public enum CardRarity {
             case 1 -> GRAY;
             case 2 -> GREEN;
             case 3 -> BLUE;
-            case 4 -> YELLOW;
-            default -> RED;
+            case 4 -> VIOLETTE;
+            case 5 -> RED;
+            default -> GOLD;
         };
     }
 

@@ -6,5 +6,6 @@ public record MonsterTemplate(
         int maxHealth,
         int attack,
         int defense,
-        UnitType unitType
+        UnitType unitType,
+        String imagePath
 ) {}

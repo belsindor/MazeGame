@@ -1,4 +1,4 @@
-package MazeGame.cards;
+package MazeGame.battle.effects;
 
 
 import MazeGame.battle.BattleContext;

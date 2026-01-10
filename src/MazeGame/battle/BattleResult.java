@@ -5,28 +5,38 @@ import java.util.List;
 
 public class BattleResult {
 
-    // текстовые сообщения для HUD
     public final List<String> messages = new ArrayList<>();
 
-    // урон за ход
-    public int playerDamage = 0;
-    public int monsterDamage = 0;
-
-    // состояние боя
     private boolean battleOver = false;
-
-    // ===== API =====
+    private BattleOutcome outcome;
+    private BattleReward reward;
 
     public void addMessage(String msg) {
         messages.add(msg);
     }
 
-    public void setBattleOver() {
+    public void setPlayerWin() {
         this.battleOver = true;
+        this.outcome = BattleOutcome.PLAYER_WIN;
+    }
+
+    public void setPlayerLose() {
+        this.battleOver = true;
+        this.outcome = BattleOutcome.PLAYER_LOSE;
     }
 
     public boolean isBattleOver() {
         return battleOver;
     }
 
+    public BattleOutcome getOutcome() {
+        return outcome;
+    }
+    public void setReward(BattleReward reward) {
+        this.reward = reward;
+    }
+
+    public BattleReward getReward() {
+        return reward;
+    }
 }

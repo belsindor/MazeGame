@@ -1,14 +1,20 @@
 package MazeGame.cards;
 
 import MazeGame.Monster;
+import MazeGame.battle.BattleContext;
+import MazeGame.battle.BattleResult;
+import MazeGame.battle.effects.BattleEffect;
+
+import java.util.function.Function;
+
 
 public class CurseCard extends Card {
 
-    private final CurseEffect effect;
+    private final Function<Monster, BattleEffect> effectFactory;
 
-    public CurseCard(CurseEffect effect, CardRarity rarity) {
+    public CurseCard(Function<Monster, BattleEffect> effectFactory, CardRarity rarity) {
         super(rarity);
-        this.effect = effect;
+        this.effectFactory = effectFactory;
     }
 
     @Override
@@ -16,7 +22,12 @@ public class CurseCard extends Card {
         return CardType.CURSE;
     }
 
-    public void apply(Monster target) {
-        effect.apply(target);
+    @Override
+    public void play(BattleContext context, BattleResult result) {
+        BattleEffect effect = effectFactory.apply(context.getEnemy());
+        context.getEnemySide().addEffect(effect, context);
+        result.addMessage("☠ Проклятие наложено");
     }
 }
+
+

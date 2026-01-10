@@ -22,6 +22,7 @@ public class Inventory implements Serializable{
         equippedItems.put("weapon", null);
         equippedItems.put("верх", null);
         equippedItems.put("низ", null);
+        equippedItems.put("shield", null);
     }
 
     public EquippedItemsData getEquippedItemsData() {
@@ -29,6 +30,7 @@ public class Inventory implements Serializable{
         data.weapon = equippedItems.get("weapon");
         data.top = equippedItems.get("верх");
         data.bottom = equippedItems.get("низ");
+        data.shield = equippedItems.get("shield");
         return data;
     }
 
@@ -38,6 +40,7 @@ public class Inventory implements Serializable{
         equippedItems.put("weapon", data.weapon);
         equippedItems.put("верх", data.top);
         equippedItems.put("низ", data.bottom);
+        equippedItems.put("shield", data.shield);
     }
 
 
@@ -74,7 +77,9 @@ public class Inventory implements Serializable{
             equippedItems.put("weapon", item);
             removeItem(item);
             return true;
-        } else if (item instanceof Armor) {
+        }
+
+         else if (item instanceof Armor) {
             Armor armor = (Armor) item;
             String armorType = armor.getArmorType();
             Item currentArmor = equippedItems.get(armorType);
@@ -111,6 +116,7 @@ public class Inventory implements Serializable{
 
         Item top = equippedItems.get("верх");
         Item bottom = equippedItems.get("низ");
+        Item shield = equippedItems.get("shield");
 
         if (top != null) {
             defense += top.getProtection();
@@ -118,7 +124,9 @@ public class Inventory implements Serializable{
         if (bottom != null) {
             defense += bottom.getProtection();
         }
-
+        if (shield != null) {
+            defense += shield.getProtection();
+        }
         return defense;
     }
 
@@ -168,6 +176,7 @@ public class Inventory implements Serializable{
         Item weapon = equippedItems.get("weapon");
         Item top = equippedItems.get("верх");
         Item bottom = equippedItems.get("низ");
+        Item shield = equippedItems.get("shield");
 
         if (weapon != null) {
             info.add("Оружие: " + weapon.getName() + " (+" + ((Weapon) weapon).getAttack() + " атаки)");
@@ -177,6 +186,9 @@ public class Inventory implements Serializable{
         }
         if (bottom != null) {
             info.add("Низ: " + bottom.getName() + " (+" + bottom.getProtection() + " защиты)");
+        }
+        if (shield != null) {
+            info.add("Щит: " + shield.getName() + " (+" + shield.getProtection() + " защиты)");
         }
 
         return info;
@@ -200,5 +212,9 @@ public class Inventory implements Serializable{
     public Armor getEquippedBottom() {
         Item bottom = equippedItems.get("низ");
         return (bottom instanceof Armor) ? (Armor) bottom : null;
+    }
+    public Armor getEquippedShield() {
+        Item shield = equippedItems.get("sheld");
+        return (shield instanceof Armor) ? (Armor) shield : null;
     }
 }

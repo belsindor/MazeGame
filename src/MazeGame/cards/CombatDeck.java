@@ -1,25 +1,24 @@
 package MazeGame.cards;
 
-import java.util.ArrayList;
 import java.util.List;
 
 public class CombatDeck {
 
-    private final List<Card> cards = new ArrayList<>();
+    private final List<Card> cards;
+
+    public CombatDeck(List<Card> cards) {
+        this.cards = cards;
+    }
 
     public List<Card> getCards() {
         return cards;
     }
 
-    public void add(Card card) {
-        cards.add(card);
-    }
-
-    public void remove(Card card) {
-        cards.remove(card);
-    }
-
-    public void clear() {
-        cards.clear();
+    public static CombatDeck createStarterDeck() {
+        return new CombatDeck(List.of(
+                new AttackCard(),
+                new AttackCard(),
+                new DefendCard()
+        ));
     }
 }

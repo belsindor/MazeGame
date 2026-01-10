@@ -1,14 +1,20 @@
 package MazeGame.cards;
 
-import MazeGame.battle.BattleUnit;
+import MazeGame.Player;
+import MazeGame.battle.BattleContext;
+import MazeGame.battle.BattleResult;
+import MazeGame.battle.effects.BattleEffect;
+
+import java.util.function.Function;
+
 
 public class BuffCard extends Card {
 
-    private final BuffEffect effect;
+    private final Function<Player, BattleEffect> effectFactory;
 
-    public BuffCard(BuffEffect effect, CardRarity rarity) {
+    public BuffCard(Function<Player, BattleEffect> effectFactory, CardRarity rarity) {
         super(rarity);
-        this.effect = effect;
+        this.effectFactory = effectFactory;
     }
 
     @Override
@@ -16,7 +22,12 @@ public class BuffCard extends Card {
         return CardType.BUFF;
     }
 
-    public void apply(BattleUnit target) {
-        effect.apply(target);
+    @Override
+    public void play(BattleContext context, BattleResult result) {
+        BattleEffect effect = effectFactory.apply(context.getPlayer());
+        context.getPlayerSide().addEffect(effect, context);
+        result.addMessage("✨ Бафф применён");
     }
 }
+
+

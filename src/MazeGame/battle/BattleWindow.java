@@ -3,6 +3,8 @@ package MazeGame.battle;
 import MazeGame.HUDMessageManager;
 import MazeGame.Monster;
 import MazeGame.Player;
+import MazeGame.cards.Card;
+import MazeGame.cards.CombatDeckPanel;
 
 import javax.swing.*;
 import java.awt.*;
@@ -10,43 +12,69 @@ import java.awt.*;
 public class BattleWindow extends JDialog {
 
     private final BattleEngine battle;
-    private boolean playerWon = false;
+    private final Player player;
 
-    public BattleWindow(JFrame owner, Player player, Monster monster) {
-        super((JFrame) null, "Бой", true);
-        this.battle = new BattleEngine(player, monster);
+    private Card selectedCard;
+
+    private BattleResult lastResult;
+    private BattleOutcome outcome;
+
+    public BattleWindow(JFrame owner,
+                        Player player,
+                        Monster monster,
+                        Monster summon) {
+
+        super(owner, "Бой", true);
+
+        this.player = player;
+
+        this.battle = new BattleEngine(player, monster, summon);
+
         initUI();
     }
 
-    public boolean isPlayerWon() {
-        return playerWon;
+    public BattleResult getResult() {
+        return lastResult;
+    }
+
+    public BattleOutcome getOutcome() {
+        return outcome;
     }
 
     private void initUI() {
-        setSize(420, 220);
+        setSize(600, 300);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        JButton attack = new JButton("⚔ Атака");
-        add(attack, BorderLayout.CENTER);
+        JLabel info = new JLabel("Выберите карту (или атакуйте без неё)", SwingConstants.CENTER);
+        add(info, BorderLayout.NORTH);
 
-        attack.addActionListener(e -> performTurn());
+        CombatDeckPanel deckPanel =
+                new CombatDeckPanel(player.getCombatDeck(), card -> {
+                    selectedCard = card;
+                    performTurn();
+                });
+
+        add(deckPanel, BorderLayout.SOUTH);
 
         HUDMessageManager.show("⚔ БОЙ НАЧАЛСЯ", Color.RED, 40);
     }
 
     private void performTurn() {
-        BattleResult result = battle.resolveTurn(new PlayerTurn(null));
 
-        for (String msg : result.messages) {
+        PlayerTurn turn = new PlayerTurn(selectedCard);
+        lastResult = battle.resolveTurn(turn);
+
+        for (String msg : lastResult.messages) {
             HUDMessageManager.show(msg);
         }
 
-        if (result.isBattleOver()) {
-            playerWon = battle.isPlayerAlive();
-            HUDMessageManager.show("🏁 БОЙ ОКОНЧЕН", Color.YELLOW, 36);
+        if (lastResult.isBattleOver()) {
+            outcome = lastResult.getOutcome();
             dispose();
         }
+
+        selectedCard = null;
     }
 }

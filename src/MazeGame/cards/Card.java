@@ -1,15 +1,28 @@
 package MazeGame.cards;
 
+import MazeGame.battle.BattleContext;
+import MazeGame.battle.BattleResult;
+
+import javax.swing.*;
+
 public abstract class Card {
 
-    protected CardRarity rarity;
+    protected final CardType type;
+    protected final CardRarity rarity;
+    protected final String imagePath;
     protected int copies = 1;
 
-    protected Card(CardRarity rarity) {
+    protected Card(CardType type, CardRarity rarity, String imagePath) {
+        this.type = type;
         this.rarity = rarity;
+        this.imagePath = imagePath;
     }
 
-    public abstract CardType getType();
+    protected Card(CardRarity rarity) {
+        this.type = null; // или нужен дефолтный тип
+        this.rarity = rarity;
+        this.imagePath = "";
+    }
 
     public CardRarity getRarity() {
         return rarity;
@@ -17,5 +30,17 @@ public abstract class Card {
 
     public int getCopies() {
         return copies;
+    }
+    public CardType getType() {
+        return type;
+    }
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public abstract void play(BattleContext context, BattleResult result);
+
+    public ImageIcon getImageIcon() {
+        return new ImageIcon(getClass().getResource(imagePath));
     }
 }

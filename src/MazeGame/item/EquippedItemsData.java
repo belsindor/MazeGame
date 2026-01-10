@@ -8,11 +8,13 @@ public class EquippedItemsData implements Serializable {
     public Item weapon;
     public Item top;
     public Item bottom;
+    public Item shield;
 
-    public EquippedItemsData(Item weapon, Item top, Item bottom) {
+    public EquippedItemsData(Item weapon, Item top, Item bottom, Item sheld) {
         this.weapon = weapon;
         this.top = top;
         this.bottom = bottom;
+        this.shield = sheld;
     }
 
     public EquippedItemsData() {
