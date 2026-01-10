@@ -23,6 +23,7 @@ public class BattleEngine {
         this.context.setSummon(summon);
     }
 
+
     public BattleResult resolveTurn(PlayerTurn turn) {
 
         BattleResult result = new BattleResult();

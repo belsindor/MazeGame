@@ -15,93 +15,93 @@ public final class CardLibrary {
 
     public static BuffCard ATTACK_BUFF_1_2() {
         return new BuffCard(
-                () -> new AttackBuffEffect(1, 2), CardRarity.GRAY,"/cards/buff/attack_1_2.jpg"
+                p -> new AttackBuffEffect(1, 2), CardRarity.GRAY,"/cards/buff/attack_1_2.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_2_3() {
         return new BuffCard(
-                () -> new AttackBuffEffect(2, 3), CardRarity.GREEN,"/cards/buff/attack_2_3.jpg"
+                p -> new AttackBuffEffect(2, 3), CardRarity.GREEN,"/cards/buff/attack_2_3.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_3_4() {
         return new BuffCard(
-                () -> new AttackBuffEffect(3, 4), CardRarity.BLUE,"/cards/buff/attack_3_4.jpg"
+                p -> new AttackBuffEffect(3, 4), CardRarity.BLUE,"/cards/buff/attack_3_4.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_4_4() {
         return new BuffCard(
-                () -> new AttackBuffEffect(4, 4), CardRarity.VIOLETTE,"/cards/buff/attack_4_4.jpg"
+                p -> new AttackBuffEffect(4, 4), CardRarity.VIOLETTE,"/cards/buff/attack_4_4.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_5_5() {
         return new BuffCard(
-                () -> new AttackBuffEffect(5, 5), CardRarity.RED,"/cards/buff/attack_5_5.jpg"
+                p -> new AttackBuffEffect(5, 5), CardRarity.RED,"/cards/buff/attack_5_5.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_6_6() {
         return new BuffCard(
-                () -> new AttackBuffEffect(6, 6), CardRarity.GOLD,"/cards/buff/attack_6_6.jpg"
+                p -> new AttackBuffEffect(6, 6), CardRarity.GOLD,"/cards/buff/attack_6_6.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_1_2() {
         return new BuffCard(
-                () -> new DefenseBuffEffect(1, 2), CardRarity.GRAY,"/cards/buff/defense_1_2.jpg"
+                p -> new DefenseBuffEffect(1, 2), CardRarity.GRAY,"/cards/buff/defense_1_2.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_2_2() {
         return new BuffCard(
-                () -> new DefenseBuffEffect(2, 2), CardRarity.GREEN,"/cards/buff/defense_2_2.jpg"
+                p -> new DefenseBuffEffect(2, 2), CardRarity.GREEN,"/cards/buff/defense_2_2.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_3_3() {
         return new BuffCard(
-                () -> new DefenseBuffEffect(3, 3), CardRarity.BLUE,"/cards/buff/defense_3_3.jpg"
+                p -> new DefenseBuffEffect(3, 3), CardRarity.BLUE,"/cards/buff/defense_3_3.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_4_4() {
         return new BuffCard(
-                () -> new DefenseBuffEffect(4, 4), CardRarity.VIOLETTE,"/cards/buff/defense_4_4.jpg"
+                p -> new DefenseBuffEffect(4, 4), CardRarity.VIOLETTE,"/cards/buff/defense_4_4.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_5_5() {
         return new BuffCard(
-                () -> new DefenseBuffEffect(5, 5), CardRarity.RED,"/cards/buff/defense_5_5.jpg"
+                p -> new DefenseBuffEffect(5, 5), CardRarity.RED,"/cards/buff/defense_5_5.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_6_6() {
         return new BuffCard(
-                () -> new DefenseBuffEffect(6, 6), CardRarity.GOLD,"/cards/buff/defense_6_6.jpg"
+                p -> new DefenseBuffEffect(6, 6), CardRarity.GOLD,"/cards/buff/defense_6_6.jpg"
         );
     }
     // ===== CURSE CARDS =====
     public static CurseCard CURSE_1_2() {
         return new CurseCard(
-                () -> new AttackDebuffEffect(1, 2), CardRarity.GRAY,"/cards/curses/curse_1_2.jpg"
+                monster -> new AttackDebuffEffect(1, 2), CardRarity.GRAY,"/cards/curses/curse_1_2.jpg"
         );
     }
     public static CurseCard CURSE_2_3() {
         return new CurseCard(
-                () -> new AttackDebuffEffect(2, 3), CardRarity.GREEN,"/cards/curses/curse_2_3.jpg"
+                monster -> new AttackDebuffEffect(2, 3), CardRarity.GREEN,"/cards/curses/curse_2_3.jpg"
         );
     }
     public static CurseCard CURSE_3_3() {
         return new CurseCard(
-                () -> new AttackDebuffEffect(3, 3), CardRarity.BLUE,"/cards/curses/curse_3_3.jpg"
+                monster -> new AttackDebuffEffect(3, 3), CardRarity.BLUE,"/cards/curses/curse_3_3.jpg"
         );
     }
     public static CurseCard CURSE_4_4() {
         return new CurseCard(
-                () -> new AttackDebuffEffect(4, 4), CardRarity.VIOLETTE,"/cards/curses/curse_4_4.jpg"
+                monster -> new AttackDebuffEffect(4, 4), CardRarity.VIOLETTE,"/cards/curses/curse_4_4.jpg"
         );
     }
     public static CurseCard CURSE_5_5() {
         return new CurseCard(
-                () -> new AttackDebuffEffect(5, 5), CardRarity.RED,"/cards/curses/curse_5_5.jpg"
+                monster -> new AttackDebuffEffect(5, 5), CardRarity.RED,"/cards/curses/curse_5_5.jpg"
         );
     }
     public static CurseCard CURSE_6_6() {
         return new CurseCard(
-                () -> new AttackDebuffEffect(6, 6), CardRarity.GOLD,"/cards/curses/curse_6_6.jpg"
+                monster -> new AttackDebuffEffect(6, 6), CardRarity.GOLD,"/cards/curses/curse_6_6.jpg"
         );
     }
     // ===== POISON CARDS =====
@@ -140,12 +140,12 @@ public final class CardLibrary {
     // ===== REGENERATION CARDS =====
     public static RegenerationCard REGENERATION_1_2() {
         return new RegenerationCard(
-                () -> new RegenerationEffect(1, 2), CardRarity.GRAY,"/cards/buff/regeneration_1_2.jpg"
+                p -> new RegenerationEffect(1, 2), CardRarity.GRAY,"/cards/buff/regeneration_1_2.jpg"
         );
     }
     public static RegenerationCard REGENERATION_2_3() {
         return new RegenerationCard(
-                () -> new RegenerationEffect(2, 3), CardRarity.GREEN,"/cards/buff/regeneration_2_3.jpg"
+                p -> new RegenerationEffect(2, 3), CardRarity.GREEN,"/cards/buff/regeneration_2_3.jpg"
         );
     }
 

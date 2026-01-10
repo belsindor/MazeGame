@@ -6,8 +6,9 @@ public abstract class TimedEffect extends AbstractBattleEffect {
 
     protected int turnsLeft;
 
+
     protected TimedEffect(int duration) {
-        this.turnsLeft = duration;
+        super(duration);
     }
 
     @Override

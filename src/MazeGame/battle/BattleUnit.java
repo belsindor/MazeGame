@@ -7,6 +7,7 @@ public interface BattleUnit {
     // ===== БАЗОВЫЕ СТАТЫ =====
     int getAttack();
     int getDefense();
+    int getLevel();
 
     // ===== С УЧЁТОМ ЭФФЕКТОВ =====
     int getTotalAttack();
@@ -25,4 +26,5 @@ public interface BattleUnit {
     String getName();
     UnitType getUnitType();
     void setUnitType(UnitType type);
+
 }

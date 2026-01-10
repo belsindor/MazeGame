@@ -16,9 +16,9 @@ public class CombatDeck {
 
     public static CombatDeck createStarterDeck() {
         return new CombatDeck(List.of(
-                new AttackCard(),
-                new AttackCard(),
-                new DefendCard()
+//                new AttackCard(),
+//                new AttackCard(),
+//                new DefendCard()
         ));
     }
 }

@@ -17,6 +17,10 @@ public class AttackPoisonEffect extends TimedEffect {
     }
 
     @Override
+    public void onExpire(BattleContext context) {
+            }
+
+    @Override
     public String getName() {
         return "Отравление " + damagePerTurn;
     }

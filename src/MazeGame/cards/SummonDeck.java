@@ -1,7 +1,7 @@
 package MazeGame.cards;
 
 import java.util.List;
-import MazeGame.MonsterFactory;
+
 
 public class SummonDeck {
 
@@ -17,8 +17,7 @@ public class SummonDeck {
 
     public static SummonDeck createStarterDeck() {
         return new SummonDeck(List.of(
-                new SummonCard(MonsterFactory.createWolf()),
-                new SummonCard(MonsterFactory.createSkeleton())
+
         ));
     }
 }

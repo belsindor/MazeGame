@@ -64,4 +64,8 @@ public class BattleSide {
     public String getName() {
         return unit.getName();
     }
+
+    public int getLevel() {
+        return this.level;
+    }
 }

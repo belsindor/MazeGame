@@ -12,8 +12,8 @@ public class BuffCard extends Card {
 
     private final Function<Player, BattleEffect> effectFactory;
 
-    public BuffCard(Function<Player, BattleEffect> effectFactory, CardRarity rarity) {
-        super(rarity);
+    public BuffCard(Function effectFactory, CardRarity rarity, String imagePath) {
+        super(CardType.BUFF, rarity, imagePath);
         this.effectFactory = effectFactory;
     }
 

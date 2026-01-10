@@ -50,6 +50,9 @@ public class Monster implements BattleUnit {
     ) {
         this(name, level, health, attack, defense, unitType, false);
     }
+    public Monster(MonsterTemplate template) {
+        this(template.name(), template.level(), template.maxHealth(), template.attack(), template.defense(), template.unitType(), false);
+    }
 
     // ===== ФАБРИКИ =====
 

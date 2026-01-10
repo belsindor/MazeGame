@@ -24,6 +24,7 @@ public abstract class AbstractBattleEffect implements BattleEffect {
     @Override
     public void onTurnStart(BattleContext context) {}
 
+
     @Override
     public void onTurnEnd(BattleContext context) {
         turnsLeft--;
@@ -40,6 +41,11 @@ public abstract class AbstractBattleEffect implements BattleEffect {
     }
 
     public abstract String getName();
+
+    @Override
+    public int getRemainingTurns() {
+        return turnsLeft;
+    }
 
     @Override
     public int modifyDefense(BattleUnit unit, int baseDefense) {

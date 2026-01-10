@@ -19,23 +19,23 @@ public class BattleContext {
         this.enemy = enemy;
         this.playerSide = new BattleSide(player);
         this.enemySide = new BattleSide(enemy);
+        this.result = new BattleResult();
     }
+
     public void addMessage(String msg) {
         result.addMessage(msg);
     }
-
-
 
     public Player getPlayer() { return player; }
     public Monster getEnemy() { return enemy; }
     public Monster getSummon() { return summon; }
 
     public BattleSide getPlayerSide() {
-        return null;
+        return playerSide;
     }
 
     public BattleSide getEnemySide() {
-        return null;
+        return enemySide;
     }
 
     public void setSummon(Monster summon) {

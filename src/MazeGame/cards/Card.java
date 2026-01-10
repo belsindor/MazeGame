@@ -43,4 +43,10 @@ public abstract class Card {
     public ImageIcon getImageIcon() {
         return new ImageIcon(getClass().getResource(imagePath));
     }
+
+    protected Card(CardType type, CardRarity rarity) {
+        this(type, rarity, "");
+    }
+
+
 }
