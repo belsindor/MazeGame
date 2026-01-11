@@ -107,32 +107,32 @@ public final class CardLibrary {
     // ===== POISON CARDS =====
     public static PoisonCard POISON_1_2() {
         return new PoisonCard(
-                () -> new AttackPoisonEffect(1, 2), CardRarity.GRAY,"/cards/poison/poison_1_2.jpg"
+                monster -> new AttackPoisonEffect(1, 2), CardRarity.GRAY,"/cards/poison/poison_1_2.jpg"
         );
     }
     public static PoisonCard POISON_2_3() {
         return new PoisonCard(
-                () -> new AttackPoisonEffect(2, 3), CardRarity.GREEN,"/cards/poison/poison_2_3.jpg"
+                monster -> new AttackPoisonEffect(2, 3), CardRarity.GREEN,"/cards/poison/poison_2_3.jpg"
         );
     }
     public static PoisonCard POISON_3_3() {
         return new PoisonCard(
-                () -> new AttackPoisonEffect(3, 3), CardRarity.BLUE,"/cards/poison/poison_3_3.jpg"
+                monster -> new AttackPoisonEffect(3, 3), CardRarity.BLUE,"/cards/poison/poison_3_3.jpg"
         );
     }
     public static PoisonCard POISON_4_4() {
         return new PoisonCard(
-                () -> new AttackPoisonEffect(4, 4), CardRarity.VIOLETTE,"/cards/poison/poison_4_4.jpg"
+                monster -> new AttackPoisonEffect(4, 4), CardRarity.VIOLETTE,"/cards/poison/poison_4_4.jpg"
         );
     }
     public static PoisonCard POISON_5_5() {
         return new PoisonCard(
-                () -> new AttackPoisonEffect(5, 5), CardRarity.RED,"/cards/poison/poison_5_5.jpg"
+                monster -> new AttackPoisonEffect(5, 5), CardRarity.RED,"/cards/poison/poison_5_5.jpg"
         );
     }
     public static PoisonCard POISON_6_6() {
         return new PoisonCard(
-                () -> new AttackPoisonEffect(6, 6), CardRarity.GOLD,"/cards/poison/poison_6_6.jpg"
+                monster -> new AttackPoisonEffect(6, 6), CardRarity.GOLD,"/cards/poison/poison_6_6.jpg"
         );
     }
 
@@ -187,9 +187,8 @@ public final class CardLibrary {
 
     public static List<Card> starterCombatDeck() {
         return List.of(
-                ATTACK_BUFF_1_2(),
-                DEFENSE_BUFF_1_2(),
-                CURSE_1_2()
+                ATTACK_BUFF_1_2()
+
         );
     }
 

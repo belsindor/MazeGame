@@ -214,7 +214,18 @@ public class Inventory implements Serializable{
         return (bottom instanceof Armor) ? (Armor) bottom : null;
     }
     public Armor getEquippedShield() {
-        Item shield = equippedItems.get("sheld");
+        Item shield = equippedItems.get("shield");
         return (shield instanceof Armor) ? (Armor) shield : null;
     }
+    // SAVE INVENTORY
+
+    public void loadFromData(EquippedItemsData equipped,
+                             List<Item> items) {
+        this.items.clear();
+        this.items.addAll(items);
+
+        setEquippedItems(equipped);
+    }
+
+
 }

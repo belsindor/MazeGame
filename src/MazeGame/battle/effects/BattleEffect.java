@@ -5,6 +5,13 @@ import MazeGame.battle.BattleUnit;
 
 public interface BattleEffect {
 
+    void setTarget(BattleUnit target);
+    void onApply(BattleContext context);
+    void onTurnStart(BattleContext context);
+    void onTurnEnd(BattleContext context);
+
+    default void onExpire(BattleContext context) {}
+
     default int modifyAttack(int base, BattleContext ctx) {
         return base;
     }
@@ -13,11 +20,7 @@ public interface BattleEffect {
         return base;
     }
 
-    default void onApply(BattleContext ctx) {}
 
-    default void onTurnStart(BattleContext ctx) {}
-
-    default void onTurnEnd(BattleContext ctx) {}
 
     boolean isExpired();
     int getRemainingTurns();

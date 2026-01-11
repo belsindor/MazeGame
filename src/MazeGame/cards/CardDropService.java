@@ -1,6 +1,6 @@
 package MazeGame.cards;
 
-
+import MazeGame.Monster;
 import MazeGame.MonsterFactory;
 
 import java.util.ArrayList;
@@ -15,24 +15,46 @@ public final class CardDropService {
 
     /* ================= ОСНОВНОЙ МЕТОД ================= */
 
-    public static List<Card> generateDrop(int playerLevel) {
+    public static List<Card> generateDrop(Monster enemy) {
+
         List<Card> drop = new ArrayList<>();
 
-        // ===== 1️⃣ СУММОН (100%) =====
-        drop.add(MonsterFactory.createSummonCard(playerLevel));
+        CardRarity monsterRarity =
+                CardRarity.fromLevel(enemy.getLevel());
 
-        // ===== 2️⃣ ДОПОЛНИТЕЛЬНАЯ КАРТА (ШАНСЫ) =====
-        CardRarity rarity = rollRarity();
-        if (rarity != null) {
-            drop.add(randomCardByRarity(rarity));
+        // ===== 1️⃣ СУММОН (100%, ТОЛЬКО СООТВЕТСТВУЮЩЕЙ РЕДКОСТИ) =====
+        drop.add(
+                MonsterFactory.createSummonCardByRarity(monsterRarity)
+        );
+
+        // ===== 2️⃣ ДОПОЛНИТЕЛЬНАЯ КАРТА =====
+        CardRarity rolled = rollRarity();
+
+        if (rolled != null) {
+            CardRarity finalRarity =
+                    limitRarity(rolled, monsterRarity);
+
+            drop.add(randomCardByRarity(finalRarity));
         }
 
         return drop;
     }
 
-    /* ================= РЕДКОСТЬ ================= */
+    /* ================= ОГРАНИЧЕНИЕ РЕДКОСТИ ================= */
+
+    private static CardRarity limitRarity(
+            CardRarity rolled,
+            CardRarity monster
+    ) {
+        return rolled.ordinal() <= monster.ordinal()
+                ? rolled
+                : monster;
+    }
+
+    /* ================= РЕДКОСТЬ (ШАНСЫ) ================= */
 
     private static CardRarity rollRarity() {
+
         double roll = RANDOM.nextDouble() * 100;
 
         if (roll < 0.25) return CardRarity.GOLD;
@@ -48,7 +70,15 @@ public final class CardDropService {
     /* ================= КАРТА ПО РЕДКОСТИ ================= */
 
     private static Card randomCardByRarity(CardRarity rarity) {
+
         List<Card> pool = CardLibrary.getCardsByRarity(rarity);
+
+        if (pool.isEmpty()) {
+            throw new IllegalStateException(
+                    "Нет карт редкости: " + rarity
+            );
+        }
+
         return pool.get(RANDOM.nextInt(pool.size()));
     }
 }

@@ -50,9 +50,7 @@ public class Monster implements BattleUnit {
     ) {
         this(name, level, health, attack, defense, unitType, false);
     }
-    public Monster(MonsterTemplate template) {
-        this(template.name(), template.level(), template.maxHealth(), template.attack(), template.defense(), template.unitType(), false);
-    }
+
 
     // ===== ФАБРИКИ =====
 
@@ -65,6 +63,16 @@ public class Monster implements BattleUnit {
                 (int) Math.max(0, defense * factor),
                 unitType,
                 immortal
+        );
+    }
+    public Monster(MonsterTemplate t) {
+        this(
+                t.name(),
+                t.level(),
+                t.maxHealth(),
+                t.attack(),
+                t.defense(),
+                t.unitType()
         );
     }
 
@@ -152,7 +160,7 @@ public class Monster implements BattleUnit {
 
 
     // ===== ДОП =====
-
+    @Override
     public int getLevel() {
         return level;
     }

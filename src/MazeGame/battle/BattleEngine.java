@@ -34,7 +34,6 @@ public class BattleEngine {
         // === ХОД ИГРОКА (карта) ===
         if (player.isAlive()) {
             turn.apply(context, result);
-            turn.apply(context, result);
         }
 
         // === АТАКА ИГРОКА ===
@@ -75,9 +74,8 @@ public class BattleEngine {
             result.setPlayerLose();
         }
         result.setDroppedCards(
-                CardDropService.generateDrop(player.getLevel())
+                CardDropService.generateDrop(context.getEnemy())
         );
-
 
         return result;
     }

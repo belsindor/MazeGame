@@ -183,7 +183,7 @@ public class VisualMazeGame {
         if (random.nextInt(100) >= MONSTER_ATTACK_CHANCE) return;
 
         Monster monster =
-                MonsterFactory.createMonsterForPlayer(player.getLevel());
+                MonsterFactory.createEnemyForPlayer(player.getLevel());
 
         HUDMessageManager.showAttack("⚔ На вас напал " + monster.getName());
 
@@ -195,10 +195,6 @@ public class VisualMazeGame {
         Monster summon = chosen != null ? chosen.summon() : null;
 
         BattleWindow bw = new BattleWindow(null, player, monster, summon);
-
-
-        BattleWindow bw = new BattleWindow(null, player, monster);
-
 
         bw.setVisible(true); // ⏳ ждём
 

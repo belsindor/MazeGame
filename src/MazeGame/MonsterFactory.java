@@ -1,5 +1,7 @@
 package MazeGame;
 
+import MazeGame.cards.CardRarity;
+import MazeGame.cards.CardType;
 import MazeGame.cards.MonsterCard;
 import MazeGame.cards.SummonCard;
 
@@ -14,6 +16,8 @@ public final class MonsterFactory {
     /* ================= ВСЕ ШАБЛОНЫ МОНСТРОВ ================= */
 
     private static final List<MonsterTemplate> ALL_MONSTERS = new ArrayList<>();
+
+
 
     static {
         // ===== УРОВЕНЬ 1 =====
@@ -129,6 +133,16 @@ public final class MonsterFactory {
     public static MonsterCard createMonsterCard(int playerLevel) {
         return new MonsterCard(pickTemplate(playerLevel));
     }
+    public static SummonCard createSummonCardByRarity(CardRarity rarity) {
+        List<MonsterTemplate> pool = ALL_MONSTERS.stream()
+                .filter(t -> CardRarity.fromLevel(t.level()) == rarity)
+                .toList();
+
+        MonsterTemplate t =
+                pool.get(RANDOM.nextInt(pool.size()));
+
+        return new SummonCard(t);
+    }
 
     public static SummonCard createSummonCard(int playerLevel) {
         return new SummonCard(pickTemplate(playerLevel));
@@ -155,4 +169,20 @@ public final class MonsterFactory {
     public static List<MonsterTemplate> getAllTemplates() {
         return new ArrayList<>(ALL_MONSTERS);
     }
+
+    public static SummonCard createStarterSummonCard() {
+        MonsterTemplate template = new MonsterTemplate(
+                "Дух предка",
+                1,
+                6,
+                1,
+                0,
+                UnitType.FLYING,
+                "/cards/summon/ancestor_spirit.jpg"
+        );
+
+        return new SummonCard(template);
+    }
+
+
 }

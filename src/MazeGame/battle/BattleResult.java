@@ -1,5 +1,6 @@
 package MazeGame.battle;
 
+import MazeGame.cards.Card;
 import MazeGame.item.Item;
 
 import java.util.ArrayList;
@@ -13,6 +14,10 @@ public class BattleResult {
     private BattleOutcome outcome;
     private BattleReward reward;
     private List droppedCards = new ArrayList<>();
+
+    private List<Item> items = new ArrayList<>();
+    private List<Card> cards = new ArrayList<>();
+
 
     public void addMessage(String msg) {
         messages.add(msg);
@@ -43,11 +48,21 @@ public class BattleResult {
         return reward;
     }
 
-    public void setDroppedCards(List<Item> drops) {
-        this.droppedCards = drops;
+    public void setDroppedItems(List<Item> items) {
+        this.items = items;
     }
 
-    public List<Item> getDroppedCards() {
-        return droppedCards;
+    public void setDroppedCards(List<Card> cards) {
+        this.cards = cards;
     }
+
+    public List<Item> getDroppedItems() {
+        return items;
+    }
+
+    public List<Card> getDroppedCards() {
+        return cards;
+    }
+
+
 }

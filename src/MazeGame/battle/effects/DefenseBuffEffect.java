@@ -1,5 +1,6 @@
 package MazeGame.battle.effects;
 
+import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleUnit;
 
 public class DefenseBuffEffect extends AbstractBattleEffect {
@@ -18,5 +19,10 @@ public class DefenseBuffEffect extends AbstractBattleEffect {
     @Override
     public int modifyDefense(BattleUnit unit, int baseDefense) {
         return baseDefense + bonus;
+    }
+
+    @Override
+    public void onExpire(BattleContext context) {
+        // Ничего не делаем — бафф просто исчезает
     }
 }

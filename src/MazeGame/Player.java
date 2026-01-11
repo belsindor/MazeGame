@@ -15,7 +15,6 @@ public class Player implements BattleUnit {
     private int level;
     private int experienceToNextLevel;
     private Inventory inventory;
-    private int tempAttack = 0;
     private int temporaryAttack = 0;
     private int temporaryDefense = 0;
 
@@ -101,6 +100,19 @@ public class Player implements BattleUnit {
     }
     // ===== GAME LOGIC =====
 
+    public void loadFromSave(GameSaveData data) {
+        this.health = data.health;
+        this.maxHealth = data.maxHealth;
+        this.level = data.level;
+        this.experience = data.experience;
+        this.experienceToNextLevel =
+                calculateExpToNextLevel(level);
+
+        this.inventory.loadFromData(data.equippedItems,
+                data.inventoryItems);
+    }
+
+
     public void heal(int amount) {
         health = Math.min(maxHealth, health + amount);
     }
@@ -144,10 +156,23 @@ public class Player implements BattleUnit {
         return summonDeck;
     }
 
+    public SummonCard chooseSummonCard() {
+        return summonDeck.draw(); // или getRandom(), если так называется
+    }
+
     // ===== GETTERS =====
 
     public int getHealth() { return health; }
     public int getMaxHealth() { return maxHealth; }
+
+    @Override
     public int getLevel() { return level; }
     public Inventory getInventory() { return inventory; }
+    public int getExperience() {
+        return experience;
+    }
+
+    public int getExperienceToNextLevel() {
+        return experienceToNextLevel;
+    }
 }

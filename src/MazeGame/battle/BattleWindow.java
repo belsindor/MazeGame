@@ -47,6 +47,7 @@ public class BattleWindow extends JDialog {
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
+
         JLabel info = new JLabel("Выберите карту (или атакуйте без неё)", SwingConstants.CENTER);
         add(info, BorderLayout.NORTH);
 

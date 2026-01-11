@@ -1,5 +1,6 @@
 package MazeGame.battle;
 
+import MazeGame.Monster;
 import MazeGame.battle.effects.BattleEffect;
 
 import java.util.ArrayList;
@@ -15,8 +16,11 @@ public class BattleSide {
         this.unit = unit;
     }
 
+    // ===== ЭФФЕКТЫ =====
+
     public void addEffect(BattleEffect effect, BattleContext context) {
         effects.add(effect);
+        effect.setTarget(unit);
         effect.onApply(context);
     }
 
@@ -29,9 +33,14 @@ public class BattleSide {
         while (it.hasNext()) {
             BattleEffect e = it.next();
             e.onTurnEnd(context);
-            if (e.isExpired()) it.remove();
+            if (e.isExpired()) {
+                e.onExpire(context);
+                it.remove();
+            }
         }
     }
+
+    // ===== БОЕВЫЕ СТАТЫ =====
 
     public int getAttack() {
         int value = unit.getTotalAttack();
@@ -48,6 +57,8 @@ public class BattleSide {
         }
         return value;
     }
+
+    // ===== ПРОКСИ =====
 
     public BattleUnit getUnit() {
         return unit;
@@ -66,6 +77,7 @@ public class BattleSide {
     }
 
     public int getLevel() {
-        return this.level;
+        return unit.getLevel();
     }
+
 }

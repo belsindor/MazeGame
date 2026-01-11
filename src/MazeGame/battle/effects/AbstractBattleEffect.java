@@ -7,10 +7,12 @@ public abstract class AbstractBattleEffect implements BattleEffect {
 
     protected BattleUnit target;
     protected int turnsLeft;
+    protected int duration;
 
     protected AbstractBattleEffect(int duration) {
-        this.turnsLeft = duration;
+        this.duration = duration;
     }
+
 
     public void setTarget(BattleUnit target) {
         this.target = target;
@@ -27,12 +29,12 @@ public abstract class AbstractBattleEffect implements BattleEffect {
 
     @Override
     public void onTurnEnd(BattleContext context) {
-        turnsLeft--;
+        duration--;
     }
 
     @Override
     public boolean isExpired() {
-        return turnsLeft <= 0;
+        return duration <= 0;
     }
 
     @Override
