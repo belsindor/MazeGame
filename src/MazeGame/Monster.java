@@ -57,7 +57,7 @@ public class Monster implements BattleUnit {
         this(name, level, health, attack, defense, unitType, false, imagePath);
     }
 
-    // ===== ФАБРИКИ =====
+    // ===== ФАБРИКИ ======
 
     public Monster createWeakened(double factor) {
         return new Monster(
