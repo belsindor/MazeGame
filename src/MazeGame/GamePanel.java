@@ -31,8 +31,6 @@ public class GamePanel extends JPanel {
         deckIcon = loadIcon("/images/deckCollection.png");
 
         int iconSize = 64;
-        inventoryIconBounds.setSize(iconSize, iconSize);
-        deckIconBounds.setSize(iconSize, iconSize);
 
         // Обработчик кликов по иконкам в правом нижнем углу
         addMouseListener(new MouseAdapter() {
@@ -45,20 +43,30 @@ public class GamePanel extends JPanel {
                     return;
                 }
 
-                // Клик по инвентарю
-                if (inventoryIconBounds.contains(p)) {
+                int iconSize = 64;
+                int margin = 24;
+                int spacing = 16;
+
+                int baseX = getWidth() - margin - iconSize;
+                int baseY = getHeight() - margin - iconSize;
+
+                // Инвентарь (правая)
+                Rectangle invBounds = new Rectangle(baseX, baseY, iconSize, iconSize);
+                if (invBounds.contains(p)) {
                     new InventoryWindow(player);
                     return;
                 }
 
-                // Клик по иконке коллекции карт → открываем всю коллекцию игрока
-                if (deckIconBounds.contains(p)) {
+                // Колода (левая)
+                Rectangle deckBounds = new Rectangle(baseX - iconSize - spacing, baseY, iconSize, iconSize);
+                if (deckBounds.contains(p)) {
                     CardCollection collection = player.getCardCollection();
                     if (collection != null && !collection.isEmpty()) {
                         new DeckCollectionWindow(collection);
                     } else {
                         HUDMessageManager.show("Коллекция карт пуста", new Color(255, 180, 100), 22);
                     }
+                    return;
                 }
             }
         });
@@ -67,18 +75,32 @@ public class GamePanel extends JPanel {
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                if (pendingMonster == null) return;
+                Point p = e.getPoint();
+                int iconSize = 64;
+                int margin = 24;
+                int spacing = 16;
 
-                // Динамический расчёт области монстра
-                int size = Math.min(getWidth(), getHeight()) / 4;
-                int x = getWidth() / 2 - size / 2;
-                int y = getHeight() / 2 - size / 2 - 40; // немного выше центра
+                int baseX = getWidth() - margin - iconSize;
+                int baseY = getHeight() - margin - iconSize;
 
-                Rectangle monsterRect = new Rectangle(x, y, size, size);
+                // Инвентарь — правая иконка
+                if (new Rectangle(baseX, baseY, iconSize, iconSize).contains(p)) {
+                    if (!GameWindow.isBattleActive()) {
+                        new InventoryWindow(player);
+                    }
+                    return;
+                }
 
-                if (monsterRect.contains(e.getPoint())) {
-                    game.startBattle(pendingMonster);
-                    clearPendingMonster();
+                // Колода — левая иконка
+                if (new Rectangle(baseX - iconSize - spacing, baseY, iconSize, iconSize).contains(p)) {
+                    if (!GameWindow.isBattleActive()) {
+                        CardCollection coll = player.getCardCollection();
+                        if (coll != null) {
+                            new DeckCollectionWindow(coll);
+                        } else {
+                            HUDMessageManager.show("Ошибка: коллекция карт не инициализирована", Color.RED, 20);
+                        }
+                    }
                 }
             }
         });
