@@ -39,13 +39,13 @@ public class GameKeyListener extends KeyAdapter {
                 }
             }
             case KeyEvent.VK_ESCAPE -> window.exitGame();
-            case KeyEvent.VK_I -> {
-                if (GameWindow.isBattleActive()) {
-                    Toolkit.getDefaultToolkit().beep();
-                    return;
-                }
-                new InventoryWindow(game.getPlayer());
-            }
+//            case KeyEvent.VK_I -> {
+//                if (GameWindow.isBattleActive()) {
+//                    Toolkit.getDefaultToolkit().beep();
+//                    return;
+//                }
+//                new InventoryWindow(game.getPlayer());
+//            }
             // Добавляем кнопку колоды
             case KeyEvent.VK_C -> {
                 if (!GameWindow.isBattleActive()) {
@@ -53,6 +53,8 @@ public class GameKeyListener extends KeyAdapter {
                     // game.getPlayer().showCardCollection();
                 }
             }
+
+
         }
 
         panel.setImage(game.getCurrentImageName());

@@ -14,11 +14,45 @@ public class GamePanel extends JPanel {
     private Monster pendingMonster;
     private Image monsterImage;
     private VisualMazeGame game;
+    private Image inventoryIcon;
+    private final Rectangle inventoryIconBounds;
 
     public GamePanel(Player player, VisualMazeGame game) {
         this.player = player;
         this.game = game;
         HUDMessageManager.init(this);
+
+        // Загружаем иконку инвентаря один раз
+        var iconUrl = getClass().getResource("/images/inventory.png");
+        if (iconUrl != null) {
+            inventoryIcon = new ImageIcon(iconUrl).getImage();
+        } else {
+            System.err.println("❌ Не найдена иконка инвентаря: /images/inventory.png");
+            inventoryIcon = null;
+        }
+
+        // Размер и положение иконки (можно потом вынести в константы)
+        int iconSize = 64;
+        inventoryIconBounds = new Rectangle(0, 0, iconSize, iconSize);
+
+        // Обработчик клика мыши
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                // Проверяем, попал ли клик в область иконки
+                if (inventoryIconBounds.contains(e.getPoint())) {
+                    if (GameWindow.isBattleActive()) {
+                        Toolkit.getDefaultToolkit().beep();
+                        return;
+                    }
+                    new InventoryWindow(player);
+                }
+            }
+        });
+
+        // Чтобы клик работал, включаем получение фокуса и событий мыши
+        setFocusable(true);
+        requestFocusInWindow();
 
         // Добавляем MouseListener для клика по монстру
         addMouseListener(new MouseAdapter() {
@@ -39,6 +73,8 @@ public class GamePanel extends JPanel {
             }
         });
     }
+
+
     // Показать монстра
     public void showPendingMonster(Monster monster) {
         this.pendingMonster = monster;
@@ -89,6 +125,27 @@ public class GamePanel extends JPanel {
         drawLeftHUD(g);
         drawRightHUD(g);
         drawCenterMessages(g);
+        drawInventoryIcon(g);
+    }
+
+    private void drawInventoryIcon(Graphics g) {
+        if (inventoryIcon == null) return;
+
+        int iconSize = 64;
+        int margin = 20;
+
+        // Обновляем координаты (делаем это здесь, чтобы адаптировалось при изменении размера окна)
+        int x = getWidth() - iconSize - margin;
+        int y = getHeight() - iconSize - margin;
+
+        inventoryIconBounds.setBounds(x, y, iconSize, iconSize);
+
+        // Сама иконка
+        g.drawImage(inventoryIcon, x, y, iconSize, iconSize, this);
+
+        // Опционально: лёгкая обводка/тень при наведении (можно реализовать позже через MouseMotionListener)
+        g.setColor(new Color(255, 255, 255, 80));
+        g.drawRoundRect(x - 2, y - 2, iconSize + 4, iconSize + 4, 12, 12);
     }
 
     // ===== ЛЕВАЯ ПАНЕЛЬ =====

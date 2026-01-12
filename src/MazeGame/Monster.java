@@ -67,7 +67,8 @@ public class Monster implements BattleUnit {
                 (int) Math.max(1, attack * factor),
                 (int) Math.max(0, defense * factor),
                 unitType,
-                immortal
+                immortal,
+                imagePath
         );
     }
     public Monster(MonsterTemplate t) {
@@ -90,7 +91,8 @@ public class Monster implements BattleUnit {
                 (int) (attack * 0.5),
                 defense,
                 unitType,
-                true // 👻 бессмертен
+                true, // 👻 бессмертен
+                imagePath
         );
     }
 
