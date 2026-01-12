@@ -11,7 +11,7 @@ public class GamePanel extends JPanel {
 
     private Image image;
     private final Player player;
-    private Monster pendingMonster;
+    private Monster pendingMonster = null;
     private Image monsterImage;
     private VisualMazeGame game;
     private Image inventoryIcon;
@@ -76,22 +76,14 @@ public class GamePanel extends JPanel {
 
 
     // Показать монстра
-    public void showPendingMonster(Monster monster) {
-        this.pendingMonster = monster;
-        var url = getClass().getResource(monster.getImagePath());
-        if (url == null) {
-            System.err.println("❌ Изображение монстра не найдено: " + monster.getImagePath());
-            this.monsterImage = null;
-        } else {
-            this.monsterImage = new ImageIcon(url).getImage();
-        }
+    public void showPendingMonster(Monster m) {
+        this.pendingMonster = m;
         repaint();
     }
 
     // Очистить монстра
     public void clearPendingMonster() {
         this.pendingMonster = null;
-        this.monsterImage = null;
         repaint();
     }
 
@@ -115,17 +107,89 @@ public class GamePanel extends JPanel {
         if (image != null) {
             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
         }
-        if (pendingMonster != null && monsterImage != null) {
-            int size = Math.min(getWidth(), getHeight()) / 4;
-            int x = getWidth() / 2 - size / 2;
-            int y = getHeight() / 2 - size / 2;
-            g.drawImage(monsterImage, x, y, size, size, this);
-        }
 
         drawLeftHUD(g);
         drawRightHUD(g);
         drawCenterMessages(g);
+
+        if (pendingMonster != null) {
+            drawPendingMonster(g, pendingMonster);
+        }
+
         drawInventoryIcon(g);
+    }
+
+    private void drawPendingMonster(Graphics g, Monster monster) {
+        // Размеры и положение — подберите под ваш дизайн
+        int cardWidth = 320;
+        int cardHeight = 480;
+        int x = (getWidth() - cardWidth) / 2;
+        int y = (getHeight() - cardHeight) / 2 - 40;  // немного выше центра
+
+        // Фон карты (можно сделать полупрозрачным или с рамкой)
+        g.setColor(new Color(30, 30, 50, 220));
+        g.fillRoundRect(x, y, cardWidth, cardHeight, 24, 24);
+
+        g.setColor(new Color(180, 40, 40));
+        g.drawRoundRect(x, y, cardWidth, cardHeight, 24, 24);
+        g.drawRoundRect(x+1, y+1, cardWidth-2, cardHeight-2, 22, 22);
+
+        // Изображение монстра
+        String imgPath = monster.getImagePath();
+        Image monsterImg = loadImage(imgPath);
+
+        if (monsterImg != null) {
+            int imgSize = 240;
+            int imgX = x + (cardWidth - imgSize) / 2;
+            int imgY = y + 60;
+            g.drawImage(monsterImg, imgX, imgY, imgSize, imgSize, this);
+        }
+
+        // Имя
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        FontMetrics fm = g.getFontMetrics();
+        String name = monster.getName();
+        int nameX = x + (cardWidth - fm.stringWidth(name)) / 2;
+        g.drawString(name, nameX, y + 40);
+
+        // Уровень
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        g.drawString("Lv. " + monster.getLevel(), x + 30, y + 80);
+
+        // HP
+        g.setColor(Color.RED);
+        g.fillRect(x + 30, y + cardHeight - 80, 260, 30);
+        g.setColor(Color.WHITE);
+        g.drawString("HP: " + monster.getHealth() + " / " + monster.getMaxHealth(),
+                x + 40, y + cardHeight - 58);
+    }
+
+    private Image loadImage(String path) {
+        var url = getClass().getResource(path);
+
+        if (url == null) {
+            // Специальное долгое сообщение об ошибке
+            HUDMessageManager.show(
+                    "НЕ НАЙДЕНА: " + path,
+                    new Color(255, 80, 80),
+                    20
+            );
+
+            // Делаем это сообщение "липким" на 8 секунд
+            HUDMessage msg = new HUDMessage("НЕ НАЙДЕНА: " + path, new Color(255, 80, 80), 20);
+            HUDMessageManager.messages.add(msg);
+            HUDMessageManager.panel.repaint();
+
+            new Timer(8000, e -> {  // ← 8 секунд
+                HUDMessageManager.messages.remove(msg);
+                HUDMessageManager.panel.repaint();
+            }).start();
+
+            return null;
+        }
+
+        return new ImageIcon(url).getImage();
     }
 
     private void drawInventoryIcon(Graphics g) {

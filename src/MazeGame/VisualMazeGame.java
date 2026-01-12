@@ -28,7 +28,7 @@ public class VisualMazeGame {
     private final Player player;
     private final Random random = new Random();
     private static final int MONSTER_ATTACK_CHANCE = 10;
-    private static final int MONSTER_APPEARANCE_CHANCE = 10;
+    private static final int MONSTER_APPEARANCE_CHANCE = 100;
     private static final int HEAL_PER_STEP = 1;
 
 

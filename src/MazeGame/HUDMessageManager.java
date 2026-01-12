@@ -9,8 +9,8 @@ public class HUDMessageManager {
 
     private static final int MESSAGE_LIFETIME_MS = 2000;
 
-    private static final List<HUDMessage> messages = new ArrayList<>();
-    private static JPanel panel;
+    static final List<HUDMessage> messages = new ArrayList<>();
+    static JPanel panel;
 
     public static void init(JPanel gamePanel) {
         panel = gamePanel;
