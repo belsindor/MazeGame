@@ -17,6 +17,8 @@ public interface BattleUnit {
     void takeDamage(int damage);
     void heal(int amount);
     boolean isAlive();
+    int getHealth();
+    int getMaxHealth();
 
     // ===== ВРЕМЕННЫЕ ЭФФЕКТЫ =====
     void addTemporaryAttack(int value);

@@ -5,6 +5,7 @@ import MazeGame.battle.BattleResult;
 import MazeGame.battle.BattleReward;
 import MazeGame.battle.BattleWindow;
 import MazeGame.cards.SummonCard;
+import MazeGame.cards.SummonSelectionWindow;
 import MazeGame.item.Item;
 
 import javax.swing.*;
@@ -15,41 +16,24 @@ public class VisualMazeGame {
     private VisualLocation[][] map;
     private int[][] currentMaze;
     private boolean[][] visited;
-//    private static GamePanel panel;
-
-
 
     private int playerX;
     private int playerY;
-
     private int exitX;
     private int exitY;
 
     private final Player player;
     private final Random random = new Random();
-    private static final int MONSTER_ATTACK_CHANCE = 10;
-    private static final int MONSTER_APPEARANCE_CHANCE = 100;
+
+    private static final int MONSTER_APPEARANCE_CHANCE = 12; // шанс появления монстра после хода
     private static final int HEAL_PER_STEP = 1;
-
-
 
     private boolean secondMazeLoaded = false;
 
-    public Player getPlayer() {
-        return player;
-    }
-
-
-    // ================= КОНСТРУКТОР =================
-
     public VisualMazeGame(Player player) {
         this.player = player;
-
-
         loadMaze(MAZE_1, 4, 3, 27, 9);
     }
-
-    // ================= ЗАГРУЗКА ЛАБИРИНТА =================
 
     private void loadMaze(int[][] maze, int startX, int startY, int exitX, int exitY) {
         this.currentMaze = maze;
@@ -57,16 +41,12 @@ public class VisualMazeGame {
 
         this.playerX = startX;
         this.playerY = startY;
-
         this.exitX = exitX;
         this.exitY = exitY;
 
         visited = new boolean[map.length][map[0].length];
         visited[playerY][playerX] = true;
     }
-
-
-    // ================= ПОСТРОЕНИЕ КАРТЫ =================
 
     private VisualLocation[][] buildMapFromMaze(int[][] maze) {
         int height = maze.length;
@@ -76,7 +56,6 @@ public class VisualMazeGame {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
-
                 if (maze[y][x] == 0) {
                     result[y][x] = null;
                     continue;
@@ -93,8 +72,6 @@ public class VisualMazeGame {
         return result;
     }
 
-    // ================= ТЕКУЩАЯ ЛОКАЦИЯ =================
-
     public VisualLocation getCurrentLocation() {
         return map[playerY][playerX];
     }
@@ -103,8 +80,7 @@ public class VisualMazeGame {
         return getCurrentLocation().getImageName();
     }
 
-    // ================= ДВИЖЕНИЕ =================
-
+    // ДВИЖЕНИЕ
     public void moveNorth() {
         if (playerY > 0 && getCurrentLocation().hasNorth()) {
             playerY--;
@@ -133,162 +109,112 @@ public class VisualMazeGame {
         }
     }
 
-
-
-    public void startBattle(Monster monster) {
-        // Очищаем монстра на панели
-        GameWindow.getPanel().clearPendingMonster();
-
-        // Запускаем битву
-        GameWindow.setBattleActive(true);
-        GameWindow.showBattleScreen();
-
-        SummonCard chosen = player.chooseSummonCard();
-        Monster summon = chosen != null ? chosen.summon() : null;
-
-        BattleWindow bw = new BattleWindow(null, player, monster, summon);
-        bw.setVisible(true);
-
-        GameWindow.hideBattleScreen();
-        GameWindow.setBattleActive(false);
-        BattleOutcome outcome = bw.getOutcome();
-
-        if (outcome == BattleOutcome.PLAYER_LOSE) {
-            JOptionPane.showMessageDialog(null, "Вы погибли");
-            System.exit(0);
-        }
-
-        BattleResult result = bw.getResult();
-        if (result.getReward() != null) {
-            BattleReward reward = result.getReward();
-            if (reward != null) {
-                player.gainExperience(reward.getExperience());
-                HUDMessageManager.showInfo("✨ Опыт: +" + reward.getExperience());
-
-                for (Item item : reward.getItems()) {
-                    player.getInventory().addItem(item);
-                    HUDMessageManager.showInfo("🎁 Найден предмет: " + item.getName());
-                }
-            }
-        }
-    }
-    // ================= ПОСЛЕ ХОДА =================
-
     private void afterMove() {
         visited[playerY][playerX] = true;
-
-        // Очистка предыдущего монстра (при движении)
         GameWindow.getPanel().clearPendingMonster();
 
-        // === ПРОВЕРКА ВЫХОДА ===
+        // Проверка выхода
         if (playerX == exitX && playerY == exitY) {
             if (!secondMazeLoaded) {
-                HUDMessageManager.showInfo("🚪 Второй лабиринт");
+                HUDMessageManager.showInfo("🚪 Второй лабиринт открыт!");
                 loadMaze(MAZE_2, 1, 1, 28, 6);
                 secondMazeLoaded = true;
             } else {
-                HUDMessageManager.showInfo("🏁 Вы нашли выход");
+                HUDMessageManager.showInfo("🏁 Поздравляем! Вы нашли выход!");
             }
             return;
         }
 
-        // Только проверяем появление монстра, а не атаку
         checkMonsterAppearance();
         checkHeal();
     }
 
-    // ================= МОНСТРЫ =================
     private void checkMonsterAppearance() {
-        // Проверяем шанс появления (10%)
         if (random.nextInt(100) < MONSTER_APPEARANCE_CHANCE) {
             Monster enemy = MonsterFactory.createEnemyForPlayer(player.getLevel());
-            // Показываем монстра на панели
             GameWindow.getPanel().showPendingMonster(enemy);
+            HUDMessageManager.showInfo("Появился враг: " + enemy.getName());
         }
     }
-
-    // ================= ГЕТТЕРЫ =================
-    public boolean[][] getVisited() {
-        return visited;
-    }
-
-    public int getPlayerX() {
-        return playerX;
-    }
-
-    public int getPlayerY() {
-        return playerY;
-    }
-
-    public int[][] getCurrentMaze() {
-        return currentMaze;
-    }
-
-    public boolean isSecondMazeLoaded() {
-        return secondMazeLoaded;
-    }
-
-
-     // ================= ИНВЕНТАРЬ =================
-    public void showInventory() {
-        if (!GameWindow.isBattleActive()) {
-            new InventoryWindow(player);
-        }
-    }
-
-
-    // ================= СПРАВКА =================
-
-    public void showHelp() {
-        JOptionPane.showMessageDialog(
-                null,
-                """
-                        Управление:
-                        
-                        W — север
-                        S — юг
-                        A — запад
-                        D — восток
-                        
-                        Дополнительно:
-                        H — помощь
-                        I — инвентарь
-                        M — карта
-                        
-                        Esc - ВЫХОД
-                        
-                        """,
-                "Помощь",
-                JOptionPane.INFORMATION_MESSAGE
-        );
-    }
-
-    // ================= ЛЕЧЕНИЕ =================
-
 
     private void checkHeal() {
         if (player.getHealth() < player.getMaxHealth()) {
             player.healStep();
             HUDMessageManager.showHeal("✨ +1 HP");
         }
-
     }
 
+    public void startBattle(Monster monster) {
+        GameWindow.getPanel().clearPendingMonster();
+        GameWindow.setBattleActive(true);
+        GameWindow.showBattleScreen();
 
+        // Выбор суммона через модальное окно
+        SummonSelectionWindow summonWindow = new SummonSelectionWindow(player.getSummonDeck());
+        SummonCard chosen = summonWindow.getSelectedCard();
 
-    // ================= ЛАБИРИНТЫ =================
+        // Если игрок отменил выбор — можно либо отменить бой, либо продолжить без суммона
+        Monster summon = (chosen != null) ? chosen.summon() : null;
 
+        BattleWindow bw = new BattleWindow(null, player, monster, summon);
+        bw.setVisible(true);
+
+        GameWindow.hideBattleScreen();
+        GameWindow.setBattleActive(false);
+
+        BattleOutcome outcome = bw.getOutcome();
+
+        if (outcome == BattleOutcome.PLAYER_LOSE) {
+            JOptionPane.showMessageDialog(null, "Вы погибли...");
+            System.exit(0);
+        }
+
+        BattleResult result = bw.getResult();
+        if (result != null && result.getReward() != null) {
+            BattleReward reward = result.getReward();
+            player.gainExperience(reward.getExperience());
+            HUDMessageManager.showInfo("✨ Получено опыта: +" + reward.getExperience());
+
+            for (Item item : reward.getItems()) {
+                player.getInventory().addItem(item);
+                HUDMessageManager.showInfo("🎁 Найден предмет: " + item.getName());
+            }
+        }
+    }
+
+    // Геттеры
+    public Player getPlayer() { return player; }
+    public boolean[][] getVisited() { return visited; }
+    public int getPlayerX() { return playerX; }
+    public int getPlayerY() { return playerY; }
+    public int[][] getCurrentMaze() { return currentMaze; }
+    public boolean isSecondMazeLoaded() { return secondMazeLoaded; }
+
+    public void showHelp() {
+        JOptionPane.showMessageDialog(null,
+                """
+                        Управление:
+                        W / S / A / D — движение
+                        H — помощь
+                        M — карта
+                        Esc — выход
+                        
+                        Клик по монстру — начать бой
+                        Клик по иконкам внизу справа — инвентарь / коллекция карт
+                        """,
+                "Помощь", JOptionPane.INFORMATION_MESSAGE);
+    }
+
+    // ЛАБИРИНТЫ
     private static final int[][] MAZE_1 = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},
-
             {0, 0, 0, 0, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 1, 0, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 0, 0, 0, 0, 1, 0, 1, 0, 1, 0, 0, 0, 0, 0, 0},
             {0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0},
-
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0},
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0},
     };
@@ -317,55 +243,5 @@ public class VisualMazeGame {
         );
 
         this.visited = data.visited;
-
-    }
-
-
-
-    // ================= MAIN =================
-
-    public static void main(String[] args) {
-        Player player;
-        VisualMazeGame game;
-
-        GameSaveData data = null;
-
-        if (GameSaveManager.hasSave()) {
-            int choice = JOptionPane.showOptionDialog(
-                    null,
-                    "Обнаружено сохранение.\nЧто вы хотите сделать?",
-                    "Maze Game",
-                    JOptionPane.DEFAULT_OPTION,
-                    JOptionPane.QUESTION_MESSAGE,
-                    null,
-                    new String[]{"Загрузить", "Новая игра", "Выход"},
-                    "Загрузить"
-            );
-
-            if (choice == 0) {
-                data = GameSaveManager.load();
-            } else if (choice == 1) {
-                data = null;
-            } else {
-                System.exit(0);
-            }
-        }
-
-        if (data != null) {
-            player = new Player(data.playerName);
-            player.loadFromSave(data);
-            game = new VisualMazeGame(player);
-            game.loadFromSave(data);
-        } else {
-            String name = JOptionPane.showInputDialog("Введите имя игрока:");
-            if (name == null || name.isBlank()) name = "Герой";
-            player = new Player(name);
-            game = new VisualMazeGame(player);
-        }
-
-        // Убираем статическое присваивание panel
-        new GameWindow(game);
-        game.showHelp();
     }
 }
-
