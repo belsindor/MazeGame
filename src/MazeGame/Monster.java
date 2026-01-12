@@ -19,6 +19,9 @@ public class Monster implements BattleUnit {
     private UnitType unitType;
     private final boolean immortal;
 
+    private final String imagePath;
+
+
     // ===== КОНСТРУКТОРЫ =====
 
     public Monster(
@@ -28,7 +31,8 @@ public class Monster implements BattleUnit {
             int attack,
             int defense,
             UnitType unitType,
-            boolean immortal
+            boolean immortal,
+            String imagePath
     ) {
         this.name = name;
         this.level = level;
@@ -38,6 +42,7 @@ public class Monster implements BattleUnit {
         this.defense = defense;
         this.unitType = unitType;
         this.immortal = immortal;
+        this.imagePath = imagePath;
     }
 
     public Monster(
@@ -46,11 +51,11 @@ public class Monster implements BattleUnit {
             int health,
             int attack,
             int defense,
-            UnitType unitType
+            UnitType unitType,
+            String imagePath
     ) {
-        this(name, level, health, attack, defense, unitType, false);
+        this(name, level, health, attack, defense, unitType, false, imagePath);
     }
-
 
     // ===== ФАБРИКИ =====
 
@@ -72,7 +77,8 @@ public class Monster implements BattleUnit {
                 t.maxHealth(),
                 t.attack(),
                 t.defense(),
-                t.unitType()
+                t.unitType(),
+                t.imagePath()
         );
     }
 
@@ -140,6 +146,10 @@ public class Monster implements BattleUnit {
     @Override
     public String getName() {
         return name;
+    }
+
+    public String getImagePath() {
+        return imagePath;
     }
 
     @Override

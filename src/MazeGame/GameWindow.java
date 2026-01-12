@@ -11,12 +11,11 @@ import java.awt.event.WindowEvent;
 
         private static GamePanel panel;
         private static VisualMazeGame game;
-
-
         private static boolean battleActive = false;
 
-        public GameWindow(VisualMazeGame gameInstance) {
 
+
+        public GameWindow(VisualMazeGame gameInstance) {
             game = gameInstance;
 
             setTitle("Maze Game");
@@ -24,7 +23,8 @@ import java.awt.event.WindowEvent;
             setLayout(new BorderLayout());
             setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-            panel = new GamePanel(game.getPlayer());
+            // Теперь передаем game в конструктор GamePanel
+            panel = new GamePanel(game.getPlayer(), game);
             panel.setImage(game.getCurrentImageName());
             add(panel, BorderLayout.CENTER);
 
@@ -75,9 +75,11 @@ import java.awt.event.WindowEvent;
         System.exit(0);
     }
 
+    public static GamePanel getPanel() {
+        return panel;
+    }
 
-
-    // ===== ЛОГ =====
+        // ===== ЛОГ =====
     public static void log(String message) {
         HUDMessageManager.showInfo(message);
     }

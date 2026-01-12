@@ -20,6 +20,13 @@ public class GameKeyListener extends KeyAdapter {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if (GameWindow.isBattleActive()) {
+            // Блокировка всех клавиш во время боя (кроме ESC, если нужно)
+            if (e.getKeyCode() != KeyEvent.VK_ESCAPE) {
+                Toolkit.getDefaultToolkit().beep();
+                return;
+            }
+        }
         switch (e.getKeyCode()) {
             case KeyEvent.VK_W -> game.moveNorth();
             case KeyEvent.VK_S -> game.moveSouth();
@@ -32,7 +39,6 @@ public class GameKeyListener extends KeyAdapter {
                 }
             }
             case KeyEvent.VK_ESCAPE -> window.exitGame();
-
             case KeyEvent.VK_I -> {
                 if (GameWindow.isBattleActive()) {
                     Toolkit.getDefaultToolkit().beep();
@@ -40,8 +46,15 @@ public class GameKeyListener extends KeyAdapter {
                 }
                 new InventoryWindow(game.getPlayer());
             }
+            // Добавляем кнопку колоды
+            case KeyEvent.VK_C -> {
+                if (!GameWindow.isBattleActive()) {
+                    // Показываем окно с картами (нужно реализовать)
+                    // game.getPlayer().showCardCollection();
+                }
+            }
         }
-// надо добавить кнопку колоды например C
+
         panel.setImage(game.getCurrentImageName());
     }
 }

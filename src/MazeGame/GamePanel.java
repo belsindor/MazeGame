@@ -3,17 +3,60 @@ package MazeGame;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.event.MouseAdapter;
+import java.awt.event.MouseEvent;
 import java.util.List;
 
 public class GamePanel extends JPanel {
 
     private Image image;
     private final Player player;
+    private Monster pendingMonster;
+    private Image monsterImage;
+    private VisualMazeGame game;
 
-    public GamePanel(Player player) {
+    public GamePanel(Player player, VisualMazeGame game) {
         this.player = player;
+        this.game = game;
         HUDMessageManager.init(this);
 
+        // Добавляем MouseListener для клика по монстру
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (pendingMonster == null) return;
+
+                // Рассчитываем текущую область монстра (динамически, на случай ресайза)
+                int size = Math.min(getWidth(), getHeight()) / 4;  // 1/4 от мин. стороны
+                int x = getWidth() / 2 - size / 2;
+                int y = getHeight() / 2 - size / 2;
+                Rectangle monsterRect = new Rectangle(x, y, size, size);
+
+                if (monsterRect.contains(e.getPoint())) {
+                    game.startBattle(pendingMonster);  // Запускаем бой
+                    clearPendingMonster();             // Очищаем после клика
+                }
+            }
+        });
+    }
+    // Показать монстра
+    public void showPendingMonster(Monster monster) {
+        this.pendingMonster = monster;
+        var url = getClass().getResource(monster.getImagePath());
+        if (url == null) {
+            System.err.println("❌ Изображение монстра не найдено: " + monster.getImagePath());
+            this.monsterImage = null;
+        } else {
+            this.monsterImage = new ImageIcon(url).getImage();
+        }
+        repaint();
+    }
+
+    // Очистить монстра
+    public void clearPendingMonster() {
+        this.pendingMonster = null;
+        this.monsterImage = null;
+        repaint();
     }
 
     public void setImage(String imageName) {
@@ -35,6 +78,12 @@ public class GamePanel extends JPanel {
         // ===== ФОН =====
         if (image != null) {
             g.drawImage(image, 0, 0, getWidth(), getHeight(), this);
+        }
+        if (pendingMonster != null && monsterImage != null) {
+            int size = Math.min(getWidth(), getHeight()) / 4;
+            int x = getWidth() / 2 - size / 2;
+            int y = getHeight() / 2 - size / 2;
+            g.drawImage(monsterImage, x, y, size, size, this);
         }
 
         drawLeftHUD(g);
