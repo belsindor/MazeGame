@@ -25,7 +25,7 @@ public class VisualMazeGame {
     private final Player player;
     private final Random random = new Random();
 
-    private static final int MONSTER_APPEARANCE_CHANCE = 12; // шанс появления монстра после хода
+    private static final int MONSTER_APPEARANCE_CHANCE = 100; // шанс появления монстра после хода
     private static final int HEAL_PER_STEP = 1;
 
     private boolean secondMazeLoaded = false;
@@ -133,7 +133,6 @@ public class VisualMazeGame {
         if (random.nextInt(100) < MONSTER_APPEARANCE_CHANCE) {
             Monster enemy = MonsterFactory.createEnemyForPlayer(player.getLevel());
             GameWindow.getPanel().showPendingMonster(enemy);
-            HUDMessageManager.showInfo("Появился враг: " + enemy.getName());
         }
     }
 
@@ -183,12 +182,29 @@ public class VisualMazeGame {
     }
 
     // Геттеры
-    public Player getPlayer() { return player; }
-    public boolean[][] getVisited() { return visited; }
-    public int getPlayerX() { return playerX; }
-    public int getPlayerY() { return playerY; }
-    public int[][] getCurrentMaze() { return currentMaze; }
-    public boolean isSecondMazeLoaded() { return secondMazeLoaded; }
+    public Player getPlayer() {
+        return player;
+    }
+
+    public boolean[][] getVisited() {
+        return visited;
+    }
+
+    public int getPlayerX() {
+        return playerX;
+    }
+
+    public int getPlayerY() {
+        return playerY;
+    }
+
+    public int[][] getCurrentMaze() {
+        return currentMaze;
+    }
+
+    public boolean isSecondMazeLoaded() {
+        return secondMazeLoaded;
+    }
 
     public void showHelp() {
         JOptionPane.showMessageDialog(null,
@@ -199,8 +215,8 @@ public class VisualMazeGame {
                         M — карта
                         Esc — выход
                         
-                        Клик по монстру — начать бой
-                        Клик по иконкам внизу справа — инвентарь / коллекция карт
+                        
+                    
                         """,
                 "Помощь", JOptionPane.INFORMATION_MESSAGE);
     }

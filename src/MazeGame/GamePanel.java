@@ -50,12 +50,6 @@ public class GamePanel extends JPanel {
                 int baseX = getWidth() - margin - iconSize;
                 int baseY = getHeight() - margin - iconSize;
 
-                // Инвентарь (правая)
-                Rectangle invBounds = new Rectangle(baseX, baseY, iconSize, iconSize);
-                if (invBounds.contains(p)) {
-                    new InventoryWindow(player);
-                    return;
-                }
 
                 // Колода (левая)
                 Rectangle deckBounds = new Rectangle(baseX - iconSize - spacing, baseY, iconSize, iconSize);
@@ -194,43 +188,36 @@ public class GamePanel extends JPanel {
         int x = (getWidth() - cardWidth) / 2;
         int y = (getHeight() - cardHeight) / 2 - 40;
 
-        // Фон карты
-        g.setColor(new Color(30, 30, 50, 220));
-        g.fillRoundRect(x, y, cardWidth, cardHeight, 24, 24);
+        // Добавляем полупрозрачный темный фон для лучшей видимости
+        g.setColor(new Color(0, 0, 0, 150));
+        g.fillRect(0, 0, getWidth(), getHeight());
 
-        g.setColor(new Color(180, 40, 40));
-        g.drawRoundRect(x, y, cardWidth, cardHeight, 24, 24);
-        g.drawRoundRect(x + 1, y + 1, cardWidth - 2, cardHeight - 2, 22, 22);
 
         // Изображение монстра
         String imgPath = monster.getImagePath();
         Image monsterImg = loadImage(imgPath);
 
         if (monsterImg != null) {
-            int imgSize = 240;
-            int imgX = x + (cardWidth - imgSize) / 2;
-            int imgY = y + 60;
-            g.drawImage(monsterImg, imgX, imgY, imgSize, imgSize, this);
+            // Пропорции оригинального изображения (832x1248)
+            double originalRatio = 832.0 / 1248.0; // ≈ 0.6667 (ширина/высота)
+            // Размеры для отрисовки (прямоугольные)
+            int imgHeight = 280; // высота изображения
+            int imgWidth = (int)(imgHeight * originalRatio); // сохраняем пропорции
+
+            int imgX = x + (cardWidth - imgWidth) / 2;
+            int imgY = y + 70; // позиция ниже заголовка
+
+            // Рисуем изображение с сохранением пропорций
+            g.drawImage(monsterImg, imgX, imgY, imgWidth, imgHeight, this);
+
+            // Декоративная рамка вокруг изображения
+            g.setColor(new Color(150, 150, 150, 100));
+            g.drawRect(imgX - 2, imgY - 2, imgWidth + 4, imgHeight + 4);
+
+
         }
 
-        // Имя
-        g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 28));
-        FontMetrics fm = g.getFontMetrics();
-        String name = monster.getName();
-        int nameX = x + (cardWidth - fm.stringWidth(name)) / 2;
-        g.drawString(name, nameX, y + 40);
 
-        // Уровень
-        g.setFont(new Font("Arial", Font.BOLD, 18));
-        g.drawString("Lv. " + monster.getLevel(), x + 30, y + 80);
-
-        // HP
-        g.setColor(Color.RED);
-        g.fillRect(x + 30, y + cardHeight - 80, 260, 30);
-        g.setColor(Color.WHITE);
-        g.drawString("HP: " + monster.getHealth() + " / " + monster.getMaxHealth(),
-                x + 40, y + cardHeight - 58);
     }
 
     private Image loadImage(String path) {
