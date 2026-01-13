@@ -217,6 +217,18 @@ public class GamePanel extends JPanel {
 
         }
 
+        // Имя
+        g.setColor(Color.WHITE);
+        g.setFont(new Font("Arial", Font.BOLD, 28));
+        FontMetrics fm = g.getFontMetrics();
+        String name = monster.getName();
+        int nameX = x + (cardWidth - fm.stringWidth(name)) / 2;
+        g.drawString(name, nameX, y + 40);
+
+        // Уровень
+        g.setFont(new Font("Arial", Font.BOLD, 18));
+        g.drawString("Lv. " + monster.getLevel(), x + 30, y + 80);
+
 
     }
 

@@ -1,10 +1,13 @@
 package MazeGame;
 
+import MazeGame.battle.BattleResult;
+import MazeGame.battle.BattleReward;
 import MazeGame.battle.BattleUnit;
 import MazeGame.cards.*;
+import MazeGame.item.Item;
 
 
-public class Player implements BattleUnit {
+public class Player implements BattleUnit{
 
     private String name;
     private int health;
@@ -41,15 +44,8 @@ public class Player implements BattleUnit {
         this.experienceToNextLevel = calculateExpToNextLevel(level);
         this.inventory = new Inventory();
 
-        // Стартовые колоды
-        this.combatDeck = CombatDeck.createStarterDeck();
-        this.summonDeck = SummonDeck.createStarterDeck();
 
-        // Добавляем стартовые карты в коллекцию
-        for (Card card : CardLibrary.starterCombatDeck()) {
-            cardCollection.add(card);
-        }
-        cardCollection.add(MonsterFactory.createStarterSummonCard());
+
     }
 
     // BattleUnit методы
@@ -73,13 +69,17 @@ public class Player implements BattleUnit {
     @Override public boolean isAlive() { return health > 0; }
     @Override public String getName() { return name; }
     @Override public UnitType getUnitType() { return unitType; }
-    @Override public void setUnitType(UnitType type) { /* игнорируем */ }
-
-    // Логика игры
-    public void heal(int amount) {
-        health = Math.min(maxHealth, health + amount);
+    @Override
+    public void setUnitType(UnitType type) {
+        throw new UnsupportedOperationException("Игрок не может менять свой тип юнита");
     }
 
+    public void clearTemporaryEffects() {
+        temporaryAttack = 0;
+        temporaryDefense = 0;
+    }
+
+    // Логика игры
     public void healStep() {
         heal(1);
     }
@@ -135,10 +135,50 @@ public class Player implements BattleUnit {
                 data.inventoryItems);
     }
 
+    public void processBattleReward(BattleResult result) {
+        if (!result.isPlayerWin()) {
+            return;
+        }
+
+        // Опыт и предметы
+        BattleReward reward = result.getReward();
+        gainExperience(reward.getExperience());
+        for (Item item : reward.getItems()) {
+            inventory.addItem(item);
+        }
+
+        // Карты
+        for (Card card : result.getDroppedCards()) {
+            if (card instanceof SummonCard summon) {
+                boolean changed = summonDeck.tryAddOrUpgrade(summon);
+                if (changed) {
+                    String msg = activeSummons.containsKey(summon.getUnitType())
+                            ? "Улучшен суммон: " + summon.getUnitName()
+                            : "Новый суммон: " + summon.getUnitName();
+                    HUDMessageManager.showInfo(msg + " (" + summon.getRarity() + ")");
+                }
+            } else {
+                // Обычная боевая карта
+                cardCollection.add(card);
+                // можно сразу предлагать добавить в боевую колоду, если захочешь
+            }
+        }
+    }
+
+
     // Геттеры
+    @Override
     public int getHealth() { return health; }
+    @Override
     public int getMaxHealth() { return maxHealth; }
-    public int getLevel() { return level; }
+    @Override
+    public int getLevel() { return level;}
+    @Override
+    public void heal(int amount) {
+        health = Math.min(maxHealth, health + amount);
+    }
+
+
     public Inventory getInventory() { return inventory; }
     public int getExperience() { return experience; }
     public int getExperienceToNextLevel() { return experienceToNextLevel; }

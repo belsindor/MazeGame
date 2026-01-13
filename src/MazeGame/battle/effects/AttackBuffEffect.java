@@ -12,11 +12,6 @@ public class AttackBuffEffect extends AbstractBattleEffect {
     }
 
     @Override
-    public String getName() {
-        return "Бафф атаки +" + bonus;
-    }
-
-    @Override
     public void onApply(BattleContext context) {
         target.addTemporaryAttack(bonus);
     }
@@ -24,5 +19,10 @@ public class AttackBuffEffect extends AbstractBattleEffect {
     @Override
     public void onExpire(BattleContext context) {
         target.addTemporaryAttack(-bonus);
+    }
+
+    @Override
+    public String getName() {
+        return "Атака +" + bonus + " (" + getRemainingTurns() + ")";
     }
 }
