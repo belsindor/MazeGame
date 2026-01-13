@@ -1,5 +1,6 @@
 package MazeGame.battle;
 
+import MazeGame.GameState;
 import MazeGame.Monster;
 import MazeGame.cards.Card;
 import MazeGame.cards.CardDropService;
@@ -95,6 +96,9 @@ public class BattleEngine {
         if (summon != null) {
             summon.clearTemporaryEffects();
         }
+
+        GameState.get().combat().clear();
+
 
         return result;
     }

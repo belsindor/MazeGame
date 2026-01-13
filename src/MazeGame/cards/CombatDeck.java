@@ -3,12 +3,23 @@ package MazeGame.cards;
 import MazeGame.MonsterFactory;
 import MazeGame.UnitType;
 
-import java.util.Collection;
-import java.util.EnumMap;
-
-import java.util.Map;
+import java.util.*;
 
 public class CombatDeck {
+
+    private final List<Card> cards = new ArrayList<>();
+
+    public void add(Card card) {
+        cards.add(card);
+    }
+
+    public void clear() {
+        cards.clear();
+    }
+
+    public List<Card> draw(int count) {
+        return cards.subList(0, Math.min(count, cards.size()));
+    }
 
     private final Map<UnitType, SummonCard> activeCards = new EnumMap<>(UnitType.class);
 

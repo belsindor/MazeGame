@@ -12,6 +12,18 @@ public class SummonCard extends UnitCard {
         super(template);
     }
 
+    public SummonCard copyForBattle() {
+        return new SummonCard(
+                getName(),
+                getUnitType(),
+                getRarity(),
+                getAttack(),
+                getHealth(),
+                getImagePath()
+        );
+    }
+
+
     @Override
     public CardType getType() {
         return CardType.SUMMON;

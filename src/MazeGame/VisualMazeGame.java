@@ -1,14 +1,13 @@
 package MazeGame;
 
-import MazeGame.battle.BattleOutcome;
-import MazeGame.battle.BattleResult;
-import MazeGame.battle.BattleReward;
-import MazeGame.battle.BattleWindow;
+import MazeGame.battle.*;
+import MazeGame.cards.BattleSummon;
 import MazeGame.cards.SummonCard;
 import MazeGame.cards.SummonSelectionWindow;
 import MazeGame.item.Item;
 
 import javax.swing.*;
+import java.util.Optional;
 import java.util.Random;
 
 public class VisualMazeGame {
@@ -144,25 +143,46 @@ public class VisualMazeGame {
     }
 
     public void startBattle(Monster monster) {
+
+        // --- подготовка экрана ---
         GameWindow.getPanel().clearPendingMonster();
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
-        // Выбор суммона через модальное окно
+        // --- выбор суммона (обязательный) ---
         SummonSelectionWindow window =
                 new SummonSelectionWindow(GameState.get().summons().getAll());
-        window.show();
 
+        Optional<SummonCard> selected = window.showAndWait();
 
-        // Если игрок отменил выбор — можно либо отменить бой, либо продолжить без суммона
-        Monster summon = (chosen != null) ? chosen.summon() : null;
+        if (selected.isEmpty()) {
+            // если игрок закрыл окно — отменяем бой
+            GameWindow.hideBattleScreen();
+            GameWindow.setBattleActive(false);
+            return;
+        }
 
-        BattleWindow bw = new BattleWindow(null, player, monster, summon);
+        // --- создаём БОЕВОГО суммона ---
+        BattleSummon battleSummon = new BattleSummon(selected.get());
+
+        // --- создаём контекст боя ---
+        BattleContext context = new BattleContext(player, monster);
+        context.setSummon(battleSummon);
+
+        // --- создаём окно боя ---
+        BattleWindow bw = new BattleWindow(
+                context,
+                player,
+                monster,
+                battleSummon
+        );
         bw.setVisible(true);
 
+        // --- выход из боя ---
         GameWindow.hideBattleScreen();
         GameWindow.setBattleActive(false);
 
+        // --- обработка результата ---
         BattleOutcome outcome = bw.getOutcome();
 
         if (outcome == BattleOutcome.PLAYER_LOSE) {
@@ -172,7 +192,9 @@ public class VisualMazeGame {
 
         BattleResult result = bw.getResult();
         if (result != null && result.getReward() != null) {
+
             BattleReward reward = result.getReward();
+
             player.gainExperience(reward.getExperience());
             HUDMessageManager.showInfo("✨ Получено опыта: +" + reward.getExperience());
 
@@ -182,6 +204,7 @@ public class VisualMazeGame {
             }
         }
     }
+
 
     // Геттеры
     public Player getPlayer() {

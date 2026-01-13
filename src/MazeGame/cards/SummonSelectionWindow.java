@@ -4,10 +4,22 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.util.Collection;
+import java.util.Optional;
 
 public class SummonSelectionWindow extends JDialog {
 
-    private SummonCard selected = null;
+    private SummonCard selected;
+
+    public SummonSelectionWindow(Collection<SummonCard> summons) {
+        // UI список
+    }
+
+    public Optional<SummonCard> showAndWait() {
+        // если 1 карта — сразу выбрать
+        // иначе ждать клика
+        return Optional.ofNullable(selected);
+    }
 
     public SummonSelectionWindow(SummonDeck deck) {
         super((Frame) null, "Выберите суммон", true);
