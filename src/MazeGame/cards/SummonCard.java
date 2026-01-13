@@ -22,7 +22,9 @@ public class SummonCard extends UnitCard {
                 getImagePath()
         );
     }
-
+    public BattleSummon toBattleSummon() {
+        return new BattleSummon(this);
+    }
 
     @Override
     public CardType getType() {
@@ -36,12 +38,12 @@ public class SummonCard extends UnitCard {
 
     @Override
     public void play(BattleContext context, BattleResult result) {
-        // Базовая реализация призыва
-        Monster m = summon();
-        // Здесь можно добавить логику вставки в бой, если у вас есть соответствующие методы.
-        // Пример (раскомментируйте и адаптируйте под ваш API):
-//        context.addUnitToBattle(m);
-//        result.registerSummon(m);
+        Monster summon = summon();
+
+        context.setSummon(summon);
+        context.getPlayerSide().addUnit(summon);
+
+        result.addMessage("🔮 Призван суммон: " + summon.getName());
     }
 
 
