@@ -149,8 +149,10 @@ public class VisualMazeGame {
         GameWindow.showBattleScreen();
 
         // Выбор суммона через модальное окно
-        SummonSelectionWindow summonWindow = new SummonSelectionWindow(player.getSummonDeck());
-        SummonCard chosen = summonWindow.getSelectedCard();
+        SummonSelectionWindow window =
+                new SummonSelectionWindow(GameState.get().summons().getAll());
+        window.show();
+
 
         // Если игрок отменил выбор — можно либо отменить бой, либо продолжить без суммона
         Monster summon = (chosen != null) ? chosen.summon() : null;

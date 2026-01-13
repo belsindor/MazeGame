@@ -1,5 +1,6 @@
 package MazeGame.cards;
 
+import MazeGame.GameState;
 import MazeGame.Monster;
 import MazeGame.MonsterFactory;
 
@@ -39,6 +40,25 @@ public final class CardDropService {
 
         return drop;
     }
+
+    public class MonsterDropService {
+
+        public static void onMonsterKilled(Monster monster) {
+
+            GameState state = GameState.get();
+
+            // 1️⃣ обычные карты (бафы и т.п.)
+            List<Card> drops = CardDropService.dropCards(monster);
+            drops.forEach(state.cards()::add);
+
+            // 2️⃣ суммон (100%)
+            SummonCard summon = SummonFactory.fromMonster(monster);
+
+            state.cards().add(summon);
+            state.summons().tryAddOrReplace(summon);
+        }
+    }
+
 
     /* ================= ОГРАНИЧЕНИЕ РЕДКОСТИ ================= */
 
@@ -81,4 +101,10 @@ public final class CardDropService {
 
         return pool.get(RANDOM.nextInt(pool.size()));
     }
+
+    public static SummonCard dropSummon(Monster monster) {
+        return MonsterFactory.createSummonCard(monster);
+    }
+
+
 }

@@ -82,10 +82,12 @@ public class BattleEngine {
             result.setDroppedCards(dropped);
 
             // Передаём именно Player
+
             processDroppedCards((Player) playerSide.getUnit(), dropped);
         } else if (!playerSide.isAlive()) {
             result.setPlayerLose();
             result.setDroppedCards(List.of());
+
         }
 
         // Очистка временных баффов без длительности

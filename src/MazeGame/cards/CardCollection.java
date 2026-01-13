@@ -1,30 +1,17 @@
 package MazeGame.cards;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class CardCollection {
 
-    private final List<Card> cards = new ArrayList<>();
+    private final Map<Card, Integer> cards = new HashMap<>();
 
     public void add(Card card) {
-        cards.add(card);
+        cards.merge(card, 1, Integer::sum);
     }
 
-    public void remove(Card card) {
-        cards.remove(card);
-    }
-
-    public List<Card> getCards() {
-        return Collections.unmodifiableList(cards);
-    }
-
-    public int size() {
-        return cards.size();
-    }
-
-    public boolean isEmpty() {
-        return cards.isEmpty();
+    public Map<Card, Integer> getAll() {
+        return Collections.unmodifiableMap(cards);
     }
 }
+
