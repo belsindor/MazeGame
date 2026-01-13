@@ -37,5 +37,6 @@ public interface BattleUnit {
     default void onTurnStart(BattleContext ctx) { /* можно переопределить */ }
     default void onTurnEnd(BattleContext ctx) { /* можно переопределить */ }
     default void onBattleEnd(BattleContext ctx) { /* опционально */ }
+    void setUnitType(UnitType type);
 
 }

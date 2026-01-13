@@ -152,15 +152,17 @@ public class Player implements BattleUnit{
             if (card instanceof SummonCard summon) {
                 boolean changed = summonDeck.tryAddOrUpgrade(summon);
                 if (changed) {
-                    String msg = activeSummons.containsKey(summon.getUnitType())
+                    // activeSummons — это поле из SummonDeck, а не из Player!
+                    // Нужно обращаться через summonDeck
+                    SummonCard current = summonDeck.getByType(summon.getUnitType());
+                    String msg = (current != null && current != summon)
                             ? "Улучшен суммон: " + summon.getUnitName()
                             : "Новый суммон: " + summon.getUnitName();
+
                     HUDMessageManager.showInfo(msg + " (" + summon.getRarity() + ")");
                 }
             } else {
-                // Обычная боевая карта
                 cardCollection.add(card);
-                // можно сразу предлагать добавить в боевую колоду, если захочешь
             }
         }
     }

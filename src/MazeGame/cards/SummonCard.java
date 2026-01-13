@@ -2,6 +2,7 @@ package MazeGame.cards;
 
 import MazeGame.Monster;
 import MazeGame.MonsterTemplate;
+import MazeGame.UnitType;
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
 
@@ -30,4 +31,6 @@ public class SummonCard extends UnitCard {
 //        context.addUnitToBattle(m);
 //        result.registerSummon(m);
     }
+
+
 }

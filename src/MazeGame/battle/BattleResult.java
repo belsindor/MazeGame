@@ -33,6 +33,14 @@ public class BattleResult {
         this.outcome = BattleOutcome.PLAYER_LOSE;
     }
 
+    public boolean isPlayerWin() {
+        return outcome == BattleOutcome.PLAYER_WIN;
+    }
+
+    public boolean isPlayerLose() {
+        return outcome == BattleOutcome.PLAYER_LOSE;
+    }
+
     public boolean isBattleOver() {
         return battleOver;
     }

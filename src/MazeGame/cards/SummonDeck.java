@@ -50,6 +50,10 @@ public class SummonDeck {
         }
     }
 
+    public SummonCard getByType(UnitType type) {
+        return activeSummons.get(type);
+    }
+
     public Map<UnitType, SummonCard> getAll() {
         return Collections.unmodifiableMap(activeSummons);
     }
