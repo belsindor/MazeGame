@@ -24,7 +24,7 @@ public class VisualMazeGame {
     private final Player player;
     private final Random random = new Random();
 
-    private static final int MONSTER_APPEARANCE_CHANCE = 100; // шанс появления монстра после хода
+    private static final int MONSTER_APPEARANCE_CHANCE = 100;
     private static final int HEAL_PER_STEP = 1;
 
     private boolean secondMazeLoaded = false;
@@ -33,6 +33,8 @@ public class VisualMazeGame {
         this.player = player;
         loadMaze(MAZE_1, 4, 3, 27, 9);
     }
+
+    // ================== ЛАБИРИНТ ==================
 
     private void loadMaze(int[][] maze, int startX, int startY, int exitX, int exitY) {
         this.currentMaze = maze;
@@ -55,6 +57,7 @@ public class VisualMazeGame {
 
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
+
                 if (maze[y][x] == 0) {
                     result[y][x] = null;
                     continue;
@@ -62,8 +65,8 @@ public class VisualMazeGame {
 
                 boolean north = y > 0 && maze[y - 1][x] == 1;
                 boolean south = y < height - 1 && maze[y + 1][x] == 1;
-                boolean west = x > 0 && maze[y][x - 1] == 1;
-                boolean east = x < width - 1 && maze[y][x + 1] == 1;
+                boolean west  = x > 0 && maze[y][x - 1] == 1;
+                boolean east  = x < width - 1 && maze[y][x + 1] == 1;
 
                 result[y][x] = new VisualLocation(north, east, south, west);
             }
@@ -79,7 +82,8 @@ public class VisualMazeGame {
         return getCurrentLocation().getImageName();
     }
 
-    // ДВИЖЕНИЕ
+    // ================== ДВИЖЕНИЕ ==================
+
     public void moveNorth() {
         if (playerY > 0 && getCurrentLocation().hasNorth()) {
             playerY--;
@@ -112,7 +116,7 @@ public class VisualMazeGame {
         visited[playerY][playerX] = true;
         GameWindow.getPanel().clearPendingMonster();
 
-        // Проверка выхода
+        // выход
         if (playerX == exitX && playerY == exitY) {
             if (!secondMazeLoaded) {
                 HUDMessageManager.showInfo("🚪 Второй лабиринт открыт!");
@@ -138,51 +142,44 @@ public class VisualMazeGame {
     private void checkHeal() {
         if (player.getHealth() < player.getMaxHealth()) {
             player.healStep();
-            HUDMessageManager.showHeal("✨ +1 HP");
+            HUDMessageManager.showHeal("✨ +" + HEAL_PER_STEP + " HP");
         }
     }
 
+    // ================== БОЙ ==================
+
     public void startBattle(Monster monster) {
 
-        // --- подготовка экрана ---
         GameWindow.getPanel().clearPendingMonster();
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
-        // --- выбор суммона (обязательный) ---
+        // выбор суммона
         SummonSelectionWindow window =
                 new SummonSelectionWindow(GameState.get().summons().getAll());
 
         Optional<SummonCard> selected = window.showAndWait();
 
         if (selected.isEmpty()) {
-            // если игрок закрыл окно — отменяем бой
             GameWindow.hideBattleScreen();
             GameWindow.setBattleActive(false);
             return;
         }
 
-        // --- создаём БОЕВОГО суммона ---
-        BattleSummon battleSummon = new BattleSummon(selected.get());
+        // карта → боевой суммон
+        BattleSummon summon = selected.get().toBattleSummon();
 
-        // --- создаём контекст боя ---
+        // контекст боя
         BattleContext context = new BattleContext(player, monster);
-        context.setSummon(battleSummon);
+        context.setSummon(summon);
+        context.getPlayerSide().addUnit(summon);
 
-        // --- создаём окно боя ---
-        BattleWindow bw = new BattleWindow(
-                context,
-                player,
-                monster,
-                battleSummon
-        );
+        BattleWindow bw = new BattleWindow(context, player, monster, summon);
         bw.setVisible(true);
 
-        // --- выход из боя ---
         GameWindow.hideBattleScreen();
         GameWindow.setBattleActive(false);
 
-        // --- обработка результата ---
         BattleOutcome outcome = bw.getOutcome();
 
         if (outcome == BattleOutcome.PLAYER_LOSE) {
@@ -194,7 +191,6 @@ public class VisualMazeGame {
         if (result != null && result.getReward() != null) {
 
             BattleReward reward = result.getReward();
-
             player.gainExperience(reward.getExperience());
             HUDMessageManager.showInfo("✨ Получено опыта: +" + reward.getExperience());
 
@@ -205,44 +201,24 @@ public class VisualMazeGame {
         }
     }
 
+    // ================== ПРОЧЕЕ ==================
 
-    // Геттеры
-    public Player getPlayer() {
-        return player;
-    }
-
-    public boolean[][] getVisited() {
-        return visited;
-    }
-
-    public int getPlayerX() {
-        return playerX;
-    }
-
-    public int getPlayerY() {
-        return playerY;
-    }
-
-    public int[][] getCurrentMaze() {
-        return currentMaze;
-    }
-
-    public boolean isSecondMazeLoaded() {
-        return secondMazeLoaded;
-    }
+    public Player getPlayer() { return player; }
+    public boolean[][] getVisited() { return visited; }
+    public int getPlayerX() { return playerX; }
+    public int getPlayerY() { return playerY; }
+    public int[][] getCurrentMaze() { return currentMaze; }
+    public boolean isSecondMazeLoaded() { return secondMazeLoaded; }
 
     public void showHelp() {
         JOptionPane.showMessageDialog(null,
                 """
-                        Управление:
-                        W / S / A / D — движение
-                        H — помощь
-                        M — карта
-                        Esc — выход
-                        
-                        
-                    
-                        """,
+                Управление:
+                W / S / A / D — движение
+                H — помощь
+                M — карта
+                Esc — выход
+                """,
                 "Помощь", JOptionPane.INFORMATION_MESSAGE);
     }
 
