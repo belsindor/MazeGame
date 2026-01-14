@@ -154,7 +154,6 @@ public class VisualMazeGame {
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
-        // выбор суммона
         SummonSelectionWindow window =
                 new SummonSelectionWindow(GameState.get().summons().getAll());
 
@@ -166,15 +165,18 @@ public class VisualMazeGame {
             return;
         }
 
-        // карта → боевой суммон
-        BattleSummon summon = selected.get().toBattleSummon();
-
-        // контекст боя
         BattleContext context = new BattleContext(player, monster);
-        context.setSummon(summon);
-        context.getPlayerSide().addUnit(summon);
 
-        BattleWindow bw = new BattleWindow(context, player, monster, summon);
+        BattleSummon summon = selected.get().toBattleSummon();
+        context.setSummon(summon);
+
+        BattleWindow bw = new BattleWindow(
+                context,
+                player,
+                monster,
+                summon
+        );
+
         bw.setVisible(true);
 
         GameWindow.hideBattleScreen();
@@ -189,8 +191,8 @@ public class VisualMazeGame {
 
         BattleResult result = bw.getResult();
         if (result != null && result.getReward() != null) {
-
             BattleReward reward = result.getReward();
+
             player.gainExperience(reward.getExperience());
             HUDMessageManager.showInfo("✨ Получено опыта: +" + reward.getExperience());
 
@@ -200,6 +202,7 @@ public class VisualMazeGame {
             }
         }
     }
+
 
     // ================== ПРОЧЕЕ ==================
 
