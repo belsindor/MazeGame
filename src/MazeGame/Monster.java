@@ -22,6 +22,7 @@ public class Monster implements BattleUnit {
     private final String imagePath;
 
 
+
     // ===== КОНСТРУКТОРЫ =====
 
     public Monster(

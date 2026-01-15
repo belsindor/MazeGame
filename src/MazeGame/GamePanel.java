@@ -21,6 +21,10 @@ public class GamePanel extends JPanel {
     private final Rectangle inventoryIconBounds = new Rectangle();
     private final Rectangle deckIconBounds = new Rectangle();
 
+    // Добавляем ссылки на окна
+    private static InventoryWindow inventoryWindow = null;
+    private static DeckCollectionWindow deckWindow = null;
+
     public GamePanel(Player player, VisualMazeGame game) {
         this.player = player;
         this.game = game;
@@ -31,8 +35,10 @@ public class GamePanel extends JPanel {
         deckIcon = loadIcon("/images/deckCollection.png");
 
         int iconSize = 64;
+        int margin = 24;
+        int spacing = 16;
 
-        // Обработчик кликов по иконкам в правом нижнем углу
+        // Обработчик кликов по иконкам
         addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
@@ -43,58 +49,21 @@ public class GamePanel extends JPanel {
                     return;
                 }
 
-                int iconSize = 64;
-                int margin = 24;
-                int spacing = 16;
-
                 int baseX = getWidth() - margin - iconSize;
                 int baseY = getHeight() - margin - iconSize;
 
+                // Проверяем клик по иконке инвентаря
+                Rectangle invBounds = new Rectangle(baseX, baseY, iconSize, iconSize);
+                if (invBounds.contains(p)) {
+                    toggleInventoryWindow();
+                    return;
+                }
 
-                // Колода (левая)
+                // Проверяем клик по иконке колоды
                 Rectangle deckBounds = new Rectangle(baseX - iconSize - spacing, baseY, iconSize, iconSize);
                 if (deckBounds.contains(p)) {
-                    CardCollection collection = player.getCardCollection();
-                    if (collection != null && !collection.isEmpty()) {
-                        new DeckCollectionWindow(collection);
-                    } else {
-                        HUDMessageManager.show("Коллекция карт пуста", new Color(255, 180, 100), 22);
-                    }
+                    toggleDeckWindow();
                     return;
-                }
-            }
-        });
-
-        // Отдельный обработчик клика по монстру
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                Point p = e.getPoint();
-                int iconSize = 64;
-                int margin = 24;
-                int spacing = 16;
-
-                int baseX = getWidth() - margin - iconSize;
-                int baseY = getHeight() - margin - iconSize;
-
-                // Инвентарь — правая иконка
-                if (new Rectangle(baseX, baseY, iconSize, iconSize).contains(p)) {
-                    if (!GameWindow.isBattleActive()) {
-                        new InventoryWindow(player);
-                    }
-                    return;
-                }
-
-                // Колода — левая иконка
-                if (new Rectangle(baseX - iconSize - spacing, baseY, iconSize, iconSize).contains(p)) {
-                    if (!GameWindow.isBattleActive()) {
-                        CardCollection coll = player.getCardCollection();
-                        if (coll != null) {
-                            new DeckCollectionWindow(coll);
-                        } else {
-                            HUDMessageManager.show("Ошибка: коллекция карт не инициализирована", Color.RED, 20);
-                        }
-                    }
                 }
             }
         });
@@ -103,6 +72,54 @@ public class GamePanel extends JPanel {
         requestFocusInWindow();
     }
 
+    // Метод для переключения окна инвентаря
+    private void toggleInventoryWindow() {
+        if (GameWindow.isBattleActive()) {
+            Toolkit.getDefaultToolkit().beep();
+            return;
+        }
+
+        if (inventoryWindow != null && inventoryWindow.isVisible()) {
+            inventoryWindow.dispose();
+            inventoryWindow = null;
+        } else {
+            inventoryWindow = new InventoryWindow(player);
+            inventoryWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+                @Override
+                public void windowClosed(java.awt.event.WindowEvent e) {
+                    inventoryWindow = null;
+                }
+            });
+        }
+    }
+
+    // Метод для переключения окна коллекции карт
+    private void toggleDeckWindow() {
+        if (GameWindow.isBattleActive()) {
+            Toolkit.getDefaultToolkit().beep();
+            return;
+        }
+
+        CardCollection collection = player.getCardCollection();
+        if (collection != null && !collection.isEmpty()) {
+            if (deckWindow != null && deckWindow.isVisible()) {
+                deckWindow.dispose();
+                deckWindow = null;
+            } else {
+                deckWindow = new DeckCollectionWindow(collection);
+                deckWindow.addWindowListener(new java.awt.event.WindowAdapter() {
+                    @Override
+                    public void windowClosed(java.awt.event.WindowEvent e) {
+                        deckWindow = null;
+                    }
+                });
+            }
+        } else {
+            HUDMessageManager.show("Коллекция карт пуста", new Color(255, 180, 100), 22);
+        }
+    }
+
+    // ... остальной код остается без изменений ...
     private Image loadIcon(String path) {
         var url = getClass().getResource(path);
         if (url == null) {
@@ -137,7 +154,6 @@ public class GamePanel extends JPanel {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
 
-        // Фон локации
         if (backgroundImage != null) {
             g.drawImage(backgroundImage, 0, 0, getWidth(), getHeight(), this);
         }
@@ -188,36 +204,26 @@ public class GamePanel extends JPanel {
         int x = (getWidth() - cardWidth) / 2;
         int y = (getHeight() - cardHeight) / 2 - 40;
 
-        // Добавляем полупрозрачный темный фон для лучшей видимости
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, getWidth(), getHeight());
 
-
-        // Изображение монстра
         String imgPath = monster.getImagePath();
         Image monsterImg = loadImage(imgPath);
 
         if (monsterImg != null) {
-            // Пропорции оригинального изображения (832x1248)
-            double originalRatio = 832.0 / 1248.0; // ≈ 0.6667 (ширина/высота)
-            // Размеры для отрисовки (прямоугольные)
-            int imgHeight = 280; // высота изображения
-            int imgWidth = (int)(imgHeight * originalRatio); // сохраняем пропорции
+            double originalRatio = 832.0 / 1248.0;
+            int imgHeight = 280;
+            int imgWidth = (int)(imgHeight * originalRatio);
 
             int imgX = x + (cardWidth - imgWidth) / 2;
-            int imgY = y + 70; // позиция ниже заголовка
+            int imgY = y + 70;
 
-            // Рисуем изображение с сохранением пропорций
             g.drawImage(monsterImg, imgX, imgY, imgWidth, imgHeight, this);
 
-            // Декоративная рамка вокруг изображения
             g.setColor(new Color(150, 150, 150, 100));
             g.drawRect(imgX - 2, imgY - 2, imgWidth + 4, imgHeight + 4);
-
-
         }
 
-        // Имя
         g.setColor(Color.WHITE);
         g.setFont(new Font("Arial", Font.BOLD, 28));
         FontMetrics fm = g.getFontMetrics();
@@ -225,11 +231,8 @@ public class GamePanel extends JPanel {
         int nameX = x + (cardWidth - fm.stringWidth(name)) / 2;
         g.drawString(name, nameX, y + 40);
 
-        // Уровень
         g.setFont(new Font("Arial", Font.BOLD, 18));
         g.drawString("Lv. " + monster.getLevel(), x + 30, y + 80);
-
-
     }
 
     private Image loadImage(String path) {
@@ -242,7 +245,6 @@ public class GamePanel extends JPanel {
                     20
             );
 
-            // Долгое сообщение об ошибке
             HUDMessage msg = new HUDMessage("НЕ НАЙДЕНА: " + path, new Color(255, 80, 80), 20);
             HUDMessageManager.messages.add(msg);
             HUDMessageManager.panel.repaint();
@@ -258,7 +260,6 @@ public class GamePanel extends JPanel {
         return new ImageIcon(url).getImage();
     }
 
-    // ЛЕВАЯ ПАНЕЛЬ (HUD)
     private void drawLeftHUD(Graphics g) {
         g.setColor(new Color(0, 0, 0, 160));
         g.fillRoundRect(20, 20, 260, 110, 15, 15);
@@ -270,7 +271,6 @@ public class GamePanel extends JPanel {
         g.drawString("Уровень: " + player.getLevel(), 35, 65);
         g.drawString("⚔ ATK " + player.getTotalAttack() + "   🛡 DEF " + player.getTotalDefense(), 35, 85);
 
-        // EXP BAR
         int barX = 35;
         int barY = 95;
         int barWidth = 220;
@@ -284,7 +284,6 @@ public class GamePanel extends JPanel {
         g.fillRect(barX, barY, (int) (barWidth * expPercent), barHeight);
     }
 
-    // ПРАВАЯ ПАНЕЛЬ (HP)
     private void drawRightHUD(Graphics g) {
         int x = getWidth() - 240;
         int y = 20;
@@ -313,7 +312,6 @@ public class GamePanel extends JPanel {
         g.drawString("HP " + hp + " / " + maxHp, barX + 40, barY - 5);
     }
 
-    // ЦЕНТРАЛЬНЫЕ СООБЩЕНИЯ
     private void drawCenterMessages(Graphics g) {
         List<HUDMessage> messages = HUDMessageManager.getActiveMessages();
         if (messages.isEmpty()) return;
