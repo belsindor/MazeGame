@@ -22,6 +22,7 @@ public class Monster implements BattleUnit {
     private final String imagePath;
 
 
+
     // ===== КОНСТРУКТОРЫ =====
 
     public Monster(
@@ -57,7 +58,7 @@ public class Monster implements BattleUnit {
         this(name, level, health, attack, defense, unitType, false, imagePath);
     }
 
-    // ===== ФАБРИКИ =====
+    // ===== ФАБРИКИ ======
 
     public Monster createWeakened(double factor) {
         return new Monster(
