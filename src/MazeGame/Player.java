@@ -9,6 +9,7 @@ import MazeGame.item.Item;
 
 public class Player implements BattleUnit{
 
+
     private String name;
     private int health;
     private int maxHealth;
@@ -149,7 +150,7 @@ public class Player implements BattleUnit{
 
         // Карты
         for (Card card : result.getDroppedCards()) {
-            if (card instanceof SummonCard summon) {
+            if (card instanceof SummonFactory summon) {
                 boolean changed = summonDeck.tryAddOrUpgrade(summon);
                 if (changed) {
                     // activeSummons — это поле из SummonDeck, а не из Player!

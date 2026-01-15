@@ -2,17 +2,18 @@ package MazeGame.cards;
 
 import MazeGame.MonsterFactory;
 import MazeGame.UnitType;
+import MazeGame.MonsterTemplate;
 
 import java.util.*;
 
 
 public class SummonDeck {
 
-    private final Map<UnitType, SummonCard> active = new EnumMap<>(UnitType.class);
+    private final Map<UnitType, SummonFactory> active = new EnumMap<>(UnitType.class);
 
-    public boolean tryAddOrReplace(SummonCard card) {
+    public boolean tryAddOrReplace(SummonFactory card) {
 
-        SummonCard current = active.get(card.getUnitType());
+        SummonFactory current = active.get(card.getUnitType());
 
         if (current == null) {
             active.put(card.getUnitType(), card);
@@ -27,11 +28,11 @@ public class SummonDeck {
         return false;
     }
 
-    public Collection<SummonCard> getAll() {
+    public Collection<SummonFactory> getAll() {
         return active.values();
     }
 
-    public void addInitialSummon(SummonCard card) {
+    public void addInitialSummon(SummonFactory card) {
         active.put(card.getUnitType(), card);
     }
 }

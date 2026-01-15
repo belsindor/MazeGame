@@ -21,21 +21,21 @@ public class CombatDeck {
         return cards.subList(0, Math.min(count, cards.size()));
     }
 
-    private final Map<UnitType, SummonCard> activeCards = new EnumMap<>(UnitType.class);
+    private final Map<UnitType, SummonFactory> activeCards = new EnumMap<>(UnitType.class);
 
-    public void SummonDeck() {
+    public void SummonFactoryDeck() {
         // стартовая карта
-        SummonCard starter = MonsterFactory.createStarterSummonCard();
+        SummonFactory starter = MonsterFactory.createStarterSummonFactory();
         activeCards.put(starter.getUnitType(), starter);
     }
 
-    public boolean tryAddOrUpgrade(SummonCard newCard) {
+    public boolean tryAddOrUpgrade(SummonFactory newCard) {
         if (newCard == null) {
             return false;
         }
 
         UnitType type = newCard.getUnitType();
-        SummonCard current = activeCards.get(type);
+        SummonFactory current = activeCards.get(type);
 
         // Новый тип — просто добавляем
         if (current == null) {
@@ -55,12 +55,12 @@ public class CombatDeck {
         return false;
     }
 
-    public SummonCard getByType(UnitType type) {
+    public SummonFactory getByType(UnitType type) {
         return activeCards.get(type);
     }
 
 
-    public Collection<SummonCard> getAllActive() {
+    public Collection<SummonFactory> getAllActive() {
         return activeCards.values();
     }
 
@@ -69,7 +69,7 @@ public class CombatDeck {
         return activeCards.size();
     }
 
-    public SummonCard getSelectedForBattle() {
+    public SummonFactory getSelectedForBattle() {
         if (activeCards.isEmpty()) {
             return null;
         }
@@ -80,7 +80,7 @@ public class CombatDeck {
         return activeCards.values().iterator().next();
     }
 
-    public Map<UnitType, SummonCard> debugGetMap() {
+    public Map<UnitType, SummonFactory> debugGetMap() {
         return new EnumMap<>(activeCards);
     }
 

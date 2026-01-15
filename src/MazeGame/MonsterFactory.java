@@ -22,18 +22,21 @@ public final class MonsterFactory {
     static {
         // ===== УРОВЕНЬ 1 =====
         ALL_MONSTERS.add(new MonsterTemplate(
+                100,
                 "Паук-метатель",
                 1, 12, 2, 0,
                 UnitType.ARCHER,
                 "/images/monsters/spider.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                120,
                 "Летучая мышь",
                 1, 10, 3, 0,
                 UnitType.FLYING,
                 "/images/monsters/bat.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                140,
                 "Дикий волк",
                 1, 15, 1, 1,
                 UnitType.INFANTRY,
@@ -42,18 +45,21 @@ public final class MonsterFactory {
 
         // ===== УРОВЕНЬ 2 =====
         ALL_MONSTERS.add(new MonsterTemplate(
+                160,
                 "Гоблин-воин",
                 2, 20, 4, 1,
                 UnitType.INFANTRY,
                 "/images/monsters/goblin_warrior.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                180,
                 "Скелет-лучник",
                 2, 18, 5, 2,
                 UnitType.ARCHER,
                 "/images/monsters/skeleton_archer.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                200,
                 "Имп",
                 2, 22, 4, 1,
                 UnitType.FLYING,
@@ -62,18 +68,21 @@ public final class MonsterFactory {
 
         // ===== УРОВЕНЬ 3 =====
         ALL_MONSTERS.add(new MonsterTemplate(
+                220,
                 "Орк",
                 3, 35, 7, 2,
                 UnitType.INFANTRY,
                 "/images/monsters/orc.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                240,
                 "Голова зомби",
                 3, 40, 5, 3,
                 UnitType.FLYING,
                 "/images/monsters/zombie_head.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                260,
                 "Оборотень",
                 3, 38, 8, 2,
                 UnitType.ARCHER,
@@ -82,18 +91,21 @@ public final class MonsterFactory {
 
         // ===== УРОВЕНЬ 4 =====
         ALL_MONSTERS.add(new MonsterTemplate(
+                280,
                 "Вампир",
                 4, 55, 9, 3,
                 UnitType.FLYING,
                 "/images/monsters/vampire.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                300,
                 "Циклоп",
                 4, 60, 8, 5,
                 UnitType.ARCHER,
                 "/images/monsters/cyclops.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                320,
                 "Рыцарь смерти",
                 4, 65, 7, 6,
                 UnitType.INFANTRY,
@@ -102,24 +114,29 @@ public final class MonsterFactory {
 
         // ===== УРОВЕНЬ 5 =====
         ALL_MONSTERS.add(new MonsterTemplate(
+                340,
                 "Дракончик",
                 5, 80, 12, 5,
                 UnitType.FLYING,
                 "/images/monsters/dragonling.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                360,
                 "Владыка демонов",
                 5, 75, 13, 4,
                 UnitType.ARCHER,
                 "/images/monsters/demon_lord.jpg"
         ));
         ALL_MONSTERS.add(new MonsterTemplate(
+                380,
                 "Король минотавров",
                 5, 85, 10, 7,
                 UnitType.INFANTRY,
                 "/images/monsters/minotaur_king.jpg"
         ));
     }
+
+
 
     /* ================= СОЗДАНИЕ ВРАГА ================= */
 
@@ -172,6 +189,7 @@ public final class MonsterFactory {
 
     public static SummonCard createStarterSummonCard() {
         MonsterTemplate template = new MonsterTemplate(
+                1000,
                 "Дух предка",
                 1,
                 6,
