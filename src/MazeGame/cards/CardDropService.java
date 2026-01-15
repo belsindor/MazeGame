@@ -59,6 +59,11 @@ public final class CardDropService {
         }
     }
 
+    public static List<Card> dropCards(Monster monster) {
+        return generateDrop(monster);
+    }
+
+
 
     /* ================= ОГРАНИЧЕНИЕ РЕДКОСТИ ================= */
 

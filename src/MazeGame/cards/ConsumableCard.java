@@ -3,7 +3,6 @@ package MazeGame.cards;
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
 
-
 import java.util.function.Consumer;
 
 public class ConsumableCard extends Card {
@@ -16,16 +15,8 @@ public class ConsumableCard extends Card {
     }
 
     @Override
-    public CardType getType() {
-        return CardType.CONSUMABLE;
-    }
-
-    @Override
     public void play(BattleContext context, BattleResult result) {
         action.accept(context);
-        result.addMessage("🧪 Предмет использован");
+        result.addMessage("🧪 Карта использована");
     }
 }
-
-
-

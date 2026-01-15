@@ -9,7 +9,8 @@ public abstract class UnitCard extends Card {
     protected final MonsterTemplate template;
 
     protected UnitCard(MonsterTemplate template) {
-        super(CardRarity.fromLevel(template.level()));
+        super(CardType.UNIT, rarity, imagePath);
+
         this.template = template;
     }
 

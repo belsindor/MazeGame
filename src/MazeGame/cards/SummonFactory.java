@@ -6,14 +6,16 @@ public class SummonFactory {
 
     public static SummonCard fromMonster(Monster monster) {
 
+        int summonId = monster.getId() / 10;
         CardRarity rarity = CardRarity.fromLevel(monster.getLevel());
 
         return new SummonCard(
+                summonId,
                 monster.getName(),
                 monster.getUnitType(),
                 rarity,
-                monster.getAttack() / 2,
-                monster.getHealth() / 2,
+                monster.getAttack(),
+                monster.getHealth(),
                 getSummonImage(monster, rarity)
         );
     }

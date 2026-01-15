@@ -43,6 +43,9 @@ public class Player implements BattleUnit{
         this.experience = 0;
         this.experienceToNextLevel = calculateExpToNextLevel(level);
         this.inventory = new Inventory();
+        this.summonDeck = new SummonDeck();
+        this.summonDeck.tryAddOrUpgrade(SummonFactory.createAncestorSpirit());
+
 
 
 
@@ -143,6 +146,7 @@ public class Player implements BattleUnit{
         // Опыт и предметы
         BattleReward reward = result.getReward();
         gainExperience(reward.getExperience());
+
         for (Item item : reward.getItems()) {
             inventory.addItem(item);
         }

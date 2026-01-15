@@ -11,6 +11,18 @@ public class SummonCard extends UnitCard {
     public SummonCard(MonsterTemplate template) {
         super(template);
     }
+    public SummonCard(
+            int id,
+            String name,
+            UnitType type,
+            CardRarity rarity,
+            int attack,
+            int health,
+            String imagePath
+    ){
+
+    }
+
 
     public SummonCard copyForBattle() {
         return new SummonCard(
@@ -44,6 +56,21 @@ public class SummonCard extends UnitCard {
         context.getPlayerSide().addUnit(summon);
 
         result.addMessage("🔮 Призван суммон: " + summon.getName());
+    }
+    public int getAttack() {
+        return attack;
+    }
+
+    public int getHealth() {
+        return health;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getId() {
+        return id;
     }
 
 

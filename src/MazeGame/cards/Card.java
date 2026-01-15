@@ -10,7 +10,8 @@ public abstract class Card {
     protected final CardType type;
     protected final CardRarity rarity;
     protected final String imagePath;
-    protected int copies = 1;
+
+    protected boolean upgraded = false;
 
     protected Card(CardType type, CardRarity rarity, String imagePath) {
         this.type = type;
@@ -18,24 +19,20 @@ public abstract class Card {
         this.imagePath = imagePath;
     }
 
-    protected Card(CardRarity rarity) {
-        this.type = null; // или нужен дефолтный тип
-        this.rarity = rarity;
-        this.imagePath = "";
-    }
-
     public CardRarity getRarity() {
         return rarity;
     }
 
-    public int getCopies() {
-        return copies;
+    public boolean isUpgraded() {
+        return upgraded;
     }
+
+    public void markUpgraded() {
+        this.upgraded = true;
+    }
+
     public CardType getType() {
         return type;
-    }
-    public String getImagePath() {
-        return imagePath;
     }
 
     public abstract void play(BattleContext context, BattleResult result);
@@ -43,10 +40,4 @@ public abstract class Card {
     public ImageIcon getImageIcon() {
         return new ImageIcon(getClass().getResource(imagePath));
     }
-
-    protected Card(CardType type, CardRarity rarity) {
-        this(type, rarity, "");
-    }
-
-
 }

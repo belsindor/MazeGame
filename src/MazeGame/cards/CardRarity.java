@@ -4,22 +4,12 @@ import java.awt.*;
 
 public enum CardRarity {
 
-    GRAY(new Color(255, 255, 255)),
-    GREEN(new Color(0, 180, 0)),
-    BLUE(new Color(0, 120, 255)),
-    VIOLETTE(new Color(148, 0, 211)),
-    RED(new Color(148, 0, 0)),
-    GOLD(new Color(255, 215, 0));
-
-    private final Color frameColor;
-
-    CardRarity(Color frameColor) {
-        this.frameColor = frameColor;
-    }
-
-    public Color getFrameColor() {
-        return frameColor;
-    }
+    GRAY,
+    GREEN,
+    BLUE,
+    VIOLETTE,
+    RED,
+    GOLD;
 
     public CardRarity next() {
         return switch (this) {
@@ -32,6 +22,14 @@ public enum CardRarity {
         };
     }
 
+    public boolean canUpgrade() {
+        return this != GOLD;
+    }
+
+    public boolean isHigherThan(CardRarity other) {
+        return this.ordinal() > other.ordinal();
+    }
+
     public static CardRarity fromLevel(int level) {
         return switch (level) {
             case 1 -> GRAY;
@@ -42,5 +40,4 @@ public enum CardRarity {
             default -> GOLD;
         };
     }
-
 }

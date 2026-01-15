@@ -9,8 +9,10 @@ public class BattleSummon extends Monster {
     public BattleSummon(SummonCard card) {
         super(
                 card.getName(),
-                card.getAttack(),
-                card.getHealth()
+                card.getAttack() / 2,
+                card.getHealth() / 2,
+                card.getUnitType(),
+                card.getId()
         );
         this.source = card;
     }
