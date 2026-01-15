@@ -21,6 +21,10 @@ public enum CardRarity {
         return frameColor;
     }
 
+    public boolean isHigherThan(CardRarity other) {
+        return this.ordinal() > other.ordinal();
+    }
+
     public CardRarity next() {
         return switch (this) {
             case GRAY -> GREEN;
@@ -42,5 +46,4 @@ public enum CardRarity {
             default -> GOLD;
         };
     }
-
 }

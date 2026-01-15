@@ -24,6 +24,7 @@ public class Monster implements BattleUnit {
     private final int id;
 
 
+
     // ===== КОНСТРУКТОРЫ =====
 
     public Monster(
@@ -62,7 +63,7 @@ public class Monster implements BattleUnit {
         this(id, name, level, health, attack, defense, unitType, false, imagePath);
     }
 
-    // ===== ФАБРИКИ =====
+    // ===== ФАБРИКИ ======
 
     public Monster createWeakened(double factor) {
         return new Monster(

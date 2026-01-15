@@ -79,7 +79,8 @@ public class BattleEngine {
             BattleReward reward = createReward();
             result.setReward(reward);
 
-            List<Card> dropped = CardDropService.generateDrop(enemySide.getUnit());
+            List<Card> dropped =
+                    CardDropService.generateDrop(context.getEnemy());
             result.setDroppedCards(dropped);
 
             // Передаём именно Player
@@ -110,7 +111,7 @@ public class BattleEngine {
 
         for (Card card : dropped) {
             if (card instanceof SummonCard summonCard) {
-                player.getSummonDeck().tryAddOrUpgrade(summonCard);
+                player.getSummonDeck().tryAddOrReplace(summonCard);
             } else {
                 player.getCardCollection().add(card);
             }

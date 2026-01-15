@@ -1,9 +1,6 @@
 package MazeGame;
 
-import MazeGame.cards.CardRarity;
-import MazeGame.cards.CardType;
-import MazeGame.cards.MonsterCard;
-import MazeGame.cards.SummonCard;
+import MazeGame.cards.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -151,14 +148,16 @@ public final class MonsterFactory {
         return new MonsterCard(pickTemplate(playerLevel));
     }
     public static SummonCard createSummonCardByRarity(CardRarity rarity) {
-        List<MonsterTemplate> pool = ALL_MONSTERS.stream()
-                .filter(t -> CardRarity.fromLevel(t.level()) == rarity)
+        var candidates = SummonLibrary.getAllSummons().values().stream()
+                .filter(e -> e.rarity() == rarity)
                 .toList();
 
-        MonsterTemplate t =
-                pool.get(RANDOM.nextInt(pool.size()));
+        if (candidates.isEmpty()) {
+            throw new IllegalStateException("Нет суммонов с редкостью " + rarity);
+        }
 
-        return new SummonCard(t);
+        var entry = candidates.get(RANDOM.nextInt(candidates.size()));
+        return entry.toSummonCard();
     }
 
     public static SummonCard createSummonCard(int playerLevel) {

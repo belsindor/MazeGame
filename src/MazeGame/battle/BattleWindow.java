@@ -14,19 +14,19 @@ public class BattleWindow extends JDialog {
     private final BattleEngine battleEngine;
     private final Player player;
     private final Monster enemy;
-    private final Monster summon;
+
 
     private Card selectedCard;
     private BattleResult lastResult;
     private BattleOutcome outcome;
 
-    public BattleWindow(JFrame owner, Player player, Monster enemy, Monster summon) {
+    public BattleWindow(JFrame owner, Player player, Monster enemy) {
         super(owner, "Бой", true);
         this.player = player;
         this.enemy = enemy;
-        this.summon = summon;
 
-        this.battleEngine = new BattleEngine(player, enemy, summon);
+
+        this.battleEngine = new BattleEngine(player, enemy);
 
         setSize(900, 650);
         setLocationRelativeTo(null);
