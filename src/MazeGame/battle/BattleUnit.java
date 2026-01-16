@@ -7,6 +7,7 @@ public interface BattleUnit {
     // ===== ИДЕНТИФИКАЦИЯ =====
     String getName();
     UnitType getUnitType();
+    int getId();
 
     // ===== БАЗОВЫЕ СТАТЫ =====
     int getAttack();           // базовая атака без модификаторов

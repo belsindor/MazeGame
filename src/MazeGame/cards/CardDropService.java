@@ -1,110 +1,174 @@
 package MazeGame.cards;
 
-import MazeGame.GameState;
-import MazeGame.Monster;
-import MazeGame.MonsterFactory;
+import MazeGame.item.Item;
+import MazeGame.item.ItemFactory;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public final class CardDropService {
+public class CardDropService {
 
     private static final Random RANDOM = new Random();
 
-    private CardDropService() {}
+    // Шанс выпадения карты призыва (почти всегда)
+    private static final double SUMMON_CARD_DROP_CHANCE = 1.00; // 100%
 
-    /* ================= ОСНОВНОЙ МЕТОД ================= */
+    // Шанс выпадения обычной карты (Buff/Curse/Poison/etc) или предмета
+    private static final double CARD_OR_ITEM_DROP_CHANCE = 0.65; // 65%
 
-    public static List<Card> generateDrop(Monster enemy) {
+    // Максимальное количество обычных карт/предметов за один дроп (кроме summon)
+    private static final int MAX_ADDITIONAL_DROPS = 3;
 
-        List<Card> drop = new ArrayList<>();
+    /**
+     * Генерирует дроп после победы над монстром
+     *
+     * @param monsterLevel уровень монстра (1..5)
+     * @return список выпавших карт и/или предметов
+     */
+    public List<DropEntry> generateDrop(int monsterLevel) {
+        List<DropEntry> drops = new ArrayList<>();
 
-        CardRarity monsterRarity =
-                CardRarity.fromLevel(enemy.getLevel());
+        CardRarity maxRarity = getMaxRarityByMonsterLevel(monsterLevel);
 
-        // ===== 1️⃣ СУММОН (100%, ТОЛЬКО СООТВЕТСТВУЮЩЕЙ РЕДКОСТИ) =====
-        drop.add(
-                MonsterFactory.createSummonCardByRarity(monsterRarity)
-        );
-
-        // ===== 2️⃣ ДОПОЛНИТЕЛЬНАЯ КАРТА =====
-        CardRarity rolled = rollRarity();
-
-        if (rolled != null) {
-            CardRarity finalRarity =
-                    limitRarity(rolled, monsterRarity);
-
-            drop.add(randomCardByRarity(finalRarity));
+        // Всегда 1 призыв
+        SummonCard summon = pickRandomSummonCard(monsterLevel);
+        if (summon != null) {
+            drops.add(new DropEntry(summon));
         }
 
-        return drop;
-    }
-
-    public class MonsterDropService {
-
-        public static void onMonsterKilled(Monster monster) {
-
-            GameState state = GameState.get();
-
-            // 1️⃣ обычные карты (бафы и т.п.)
-            List<Card> drops = CardDropService.dropCards(monster);
-            drops.forEach(state.cards()::add);
-
-            // 2️⃣ суммон (100%)
-            SummonCard summon = SummonFactory.fromMonster(monster);
-
-            state.cards().add(summon);
-            state.summons().tryAddOrReplace(summon);
-        }
-    }
-
-
-    /* ================= ОГРАНИЧЕНИЕ РЕДКОСТИ ================= */
-
-    private static CardRarity limitRarity(
-            CardRarity rolled,
-            CardRarity monster
-    ) {
-        return rolled.ordinal() <= monster.ordinal()
-                ? rolled
-                : monster;
-    }
-
-    /* ================= РЕДКОСТЬ (ШАНСЫ) ================= */
-
-    private static CardRarity rollRarity() {
-
-        double roll = RANDOM.nextDouble() * 100;
-
-        if (roll < 0.25) return CardRarity.GOLD;
-        if (roll < 1.25) return CardRarity.RED;
-        if (roll < 6.25) return CardRarity.VIOLETTE;
-        if (roll < 21.25) return CardRarity.BLUE;
-        if (roll < 46.25) return CardRarity.GREEN;
-        if (roll < 81.25) return CardRarity.GRAY;
-
-        return null; // ничего не выпало
-    }
-
-    /* ================= КАРТА ПО РЕДКОСТИ ================= */
-
-    private static Card randomCardByRarity(CardRarity rarity) {
-
-        List<Card> pool = CardLibrary.getCardsByRarity(rarity);
-
-        if (pool.isEmpty()) {
-            throw new IllegalStateException(
-                    "Нет карт редкости: " + rarity
-            );
+        // Почти всегда что-то ещё (85–95%)
+        if (RANDOM.nextDouble() < 0.90) {
+            // 60% шанс на карту, 40% на предмет
+            if (RANDOM.nextDouble() < 0.60) {
+                Card card = pickRandomNonSummonCard(maxRarity);
+                if (card != null) drops.add(new DropEntry(card));
+            } else {
+                Item item = pickRandomItem(maxRarity);
+                if (item != null) drops.add(new DropEntry(item));
+            }
         }
 
-        return pool.get(RANDOM.nextInt(pool.size()));
+        // Довольно часто — второй дополнительный дроп (45–55%)
+        if (RANDOM.nextDouble() < 0.50) {
+            if (RANDOM.nextDouble() < 0.55) {
+                Card card = pickRandomNonSummonCard(maxRarity);
+                if (card != null) drops.add(new DropEntry(card));
+            } else {
+                Item item = pickRandomItem(maxRarity);
+                if (item != null) drops.add(new DropEntry(item));
+            }
+        }
+
+        return drops;
     }
 
-    public static SummonCard dropSummon(Monster monster) {
-        return MonsterFactory.createSummonCard(monster);
+    // -------------------------------------------------------------------------
+    // Вспомогательные методы
+    // -------------------------------------------------------------------------
+
+    private CardRarity getMaxRarityByMonsterLevel(int level) {
+        return switch (level) {
+            case 1 -> CardRarity.GRAY;
+            case 2 -> CardRarity.GREEN;
+            case 3 -> CardRarity.BLUE;
+            case 4 -> CardRarity.VIOLETTE;
+            case 5 -> CardRarity.RED;
+            default -> CardRarity.GRAY;
+        };
     }
 
+    private SummonCard pickRandomSummonCard(int monsterLevel) {
+        List<SummonCard> candidates = SummonFactory.ALL_SUMMON_CARDS.stream()
+                .filter(card -> {
+                    int cardLevel = card.getMonsterTemplate().level();
+                    // ±1 уровень от монстра — основной диапазон
+                    return cardLevel >= monsterLevel - 1 && cardLevel <= monsterLevel + 1;
+                })
+                .toList();
 
+        if (candidates.isEmpty()) {
+            return SummonFactory.ALL_SUMMON_CARDS.get(RANDOM.nextInt(SummonFactory.ALL_SUMMON_CARDS.size()));
+        }
+
+        return candidates.get(RANDOM.nextInt(candidates.size()));
+    }
+
+    private Card pickRandomNonSummonCard(CardRarity maxRarity) {
+        List<Card> candidates = CardLibrary.getAllCards().stream()
+                .filter(c -> c.getRarity().compareTo(maxRarity) <= 0)
+                // Золотые обычные карты не дропаются (только consumable могут быть золотыми)
+                .filter(c -> !(c.getRarity() == CardRarity.GOLD && !(c instanceof ConsumableCard)))
+                .toList();
+
+        if (candidates.isEmpty()) {
+            return null;
+        }
+
+        return candidates.get(RANDOM.nextInt(candidates.size()));
+    }
+
+    private Item pickRandomItem(CardRarity maxRarity) {
+        List<Item> candidates = ItemFactory.ALL_ITEMS.stream()
+                .filter(item -> item.getRarity().compareTo(maxRarity) <= 0)
+                .toList();
+
+        if (candidates.isEmpty()) {
+            return null;
+        }
+
+        return candidates.get(RANDOM.nextInt(candidates.size()));
+    }
+
+    // -------------------------------------------------------------------------
+    // Класс-обёртка для результата дропа
+    // -------------------------------------------------------------------------
+    public static class DropEntry {
+        private final Card card;
+        private final SummonCard summonCard;
+        private final Item item;
+
+        public DropEntry(Card card) {
+            this.card = card;
+            this.summonCard = null;
+            this.item = null;
+        }
+
+        public DropEntry(Item item) {
+            this.card = null;
+            this.summonCard = null;
+            this.item = item;
+        }
+
+        public DropEntry(SummonCard summon) {
+            this.card = null;
+            this.summonCard = summon;
+            this.item = null;
+        }
+
+        public SummonCard getSummonCard() { return summonCard; }
+
+        public boolean isCard() {
+            return card != null;
+        }
+
+        public Card getCard() {
+            return card;
+        }
+
+        public Item getItem() {
+            return item;
+        }
+
+        @Override
+        public String toString() {
+            if (isCard()) {
+                return "Card: " + card.getClass().getSimpleName() +
+                        " (" + card.getRarity() + ")";
+            } else {
+                return "Item: " + item.getName() +
+                        " (" + item.getRarity() + ")";
+            }
+        }
+    }
 }

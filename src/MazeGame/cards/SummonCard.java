@@ -1,50 +1,31 @@
 package MazeGame.cards;
 
-import MazeGame.Monster;
+
 import MazeGame.MonsterTemplate;
-import MazeGame.UnitType;
-import MazeGame.battle.BattleContext;
-import MazeGame.battle.BattleResult;
 
-public class SummonCard extends UnitCard {
 
-    public SummonCard(MonsterTemplate template) {
-        super(template);
+public class SummonCard {
+
+    private final MonsterTemplate template;
+    // другие поля...
+
+    public SummonCard(MonsterTemplate template /*, другие параметры */) {
+        this.template = template;
+        // ...
     }
 
-    public SummonCard copyForBattle() {
-        return new SummonCard(
-                getName(),
-                getUnitType(),
-                getRarity(),
-                getAttack(),
-                getHealth(),
-                getImagePath()
-        );
-    }
-    public BattleSummon toBattleSummon() {
-        return new BattleSummon(this);
+    // Вариант А — самый правильный
+    public MonsterTemplate getMonsterTemplate() {
+        return template;
     }
 
-    @Override
-    public CardType getType() {
-        return CardType.SUMMON;
+    // Вариант Б — ещё удобнее для частого использования
+    public int getLevel() {
+        return template.level();
     }
 
-    @Override
-    public Monster summon() {
-        return new Monster(template).createSummon();
+    // Желательно также:
+    public String getSummonName() {
+        return template.name();
     }
-
-    @Override
-    public void play(BattleContext context, BattleResult result) {
-        Monster summon = summon();
-
-        context.setSummon(summon);
-        context.getPlayerSide().addUnit(summon);
-
-        result.addMessage("🔮 Призван суммон: " + summon.getName());
-    }
-
-
 }

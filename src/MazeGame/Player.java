@@ -6,8 +6,11 @@ import MazeGame.battle.BattleUnit;
 import MazeGame.cards.*;
 import MazeGame.item.Item;
 
+import java.util.List;
 
-public class Player implements BattleUnit{
+//+
+public class Player {
+
 
     private String name;
     private int health;
@@ -29,7 +32,7 @@ public class Player implements BattleUnit{
     private CombatDeck combatDeck;
 
     // Колода суммонов (только карты-призывы)
-    private SummonDeck summonDeck;
+    private List<SummonCard> ALL_SUMMON_CARDS;
 
     private final UnitType unitType = UnitType.INFANTRY;
 
@@ -48,28 +51,28 @@ public class Player implements BattleUnit{
 
     }
 
-    // BattleUnit методы
-    @Override public int getTotalAttack() {
+
+public int getTotalAttack() {
         return baseAttack + temporaryAttack + inventory.getTotalAttackBonus();
     }
 
-    @Override public int getTotalDefense() {
+public int getTotalDefense() {
         return baseDefense + temporaryDefense + inventory.getTotalDefenseBonus();
     }
 
-    @Override public int getAttack() { return baseAttack; }
-    @Override public int getDefense() { return baseDefense; }
-    @Override public void addTemporaryAttack(int value) { temporaryAttack += value; }
-    @Override public void addTemporaryDefense(int value) { temporaryDefense += value; }
-    @Override public void takeDamage(int damage) {
+public int getAttack() { return baseAttack; }
+public int getDefense() { return baseDefense; }
+public void addTemporaryAttack(int value) { temporaryAttack += value; }
+public void addTemporaryDefense(int value) { temporaryDefense += value; }
+public void takeDamage(int damage) {
         int actual = Math.max(1, damage - getTotalDefense());
         health -= actual;
         if (health < 0) health = 0;
     }
-    @Override public boolean isAlive() { return health > 0; }
-    @Override public String getName() { return name; }
-    @Override public UnitType getUnitType() { return unitType; }
-    @Override
+public boolean isAlive() { return health > 0; }
+public String getName() { return name; }
+public UnitType getUnitType() { return unitType; }
+
     public void setUnitType(UnitType type) {
         throw new UnsupportedOperationException("Игрок не может менять свой тип юнита");
     }
@@ -115,9 +118,9 @@ public class Player implements BattleUnit{
         return combatDeck;
     }
 
-    public SummonDeck getSummonDeck() {
-        return summonDeck;
-    }
+//    public SummonCard getSummonDeck() {
+//        return List <SummonCard> ALL_SUMMON_CARDS;
+//    }
 
     public void setCombatDeck(CombatDeck newDeck) {
         this.combatDeck = newDeck;
@@ -147,35 +150,18 @@ public class Player implements BattleUnit{
             inventory.addItem(item);
         }
 
-        // Карты
-        for (Card card : result.getDroppedCards()) {
-            if (card instanceof SummonCard summon) {
-                boolean changed = summonDeck.tryAddOrUpgrade(summon);
-                if (changed) {
-                    // activeSummons — это поле из SummonDeck, а не из Player!
-                    // Нужно обращаться через summonDeck
-                    SummonCard current = summonDeck.getByType(summon.getUnitType());
-                    String msg = (current != null && current != summon)
-                            ? "Улучшен суммон: " + summon.getUnitName()
-                            : "Новый суммон: " + summon.getUnitName();
 
-                    HUDMessageManager.showInfo(msg + " (" + summon.getRarity() + ")");
-                }
-            } else {
-                cardCollection.add(card);
-            }
-        }
     }
 
 
     // Геттеры
-    @Override
+
     public int getHealth() { return health; }
-    @Override
+
     public int getMaxHealth() { return maxHealth; }
-    @Override
+
     public int getLevel() { return level;}
-    @Override
+
     public void heal(int amount) {
         health = Math.min(maxHealth, health + amount);
     }

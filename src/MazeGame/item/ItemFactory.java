@@ -1,91 +1,143 @@
 package MazeGame.item;
 
+import MazeGame.cards.CardRarity;
+
+import java.util.List;
 import java.util.Random;
 
-public class ItemFactory {
+public final class ItemFactory {
 
-    private static final Random random = new Random();
+    private static final Random RANDOM = new Random();
 
-    // Создание оружия
-     public static Weapon createStick() {
-        return new Weapon("Палка", 1, 0.2, 5);
+    private ItemFactory() {
     }
 
-    public static Weapon createOldDagger() {
-        return new Weapon("Старый кинжал", 2, 0.15, 8);
+    // ──────────────────────────────────────────────────────────────
+    // Оружие (Weapon)
+    // ──────────────────────────────────────────────────────────────
+
+    public static Weapon stick() {
+        return new Weapon("Палка", 1, 0.20, 5, CardRarity.GRAY);
     }
 
-    public static Weapon createRustySword() {
-        return new Weapon("Ржавый меч", 3, 0.1, 10);
+    public static Weapon oldDagger() {
+        return new Weapon("Старый кинжал", 2, 0.15, 8, CardRarity.GREEN);
     }
 
-    // Создание брони
-    public static Armor createPatchedShorts() {
-        return new Armor("Шорты с заплатками рудокопа", "низ", 1, 0.1, 10);
+    public static Weapon rustySword() {
+        return new Weapon("Ржавый меч", 3, 0.10, 10, CardRarity.BLUE);
     }
 
-    public static Armor createMinerPants() {
-        return new Armor("Штаны рудокопа", "низ", 2, 0.08, 15);
+    // ──────────────────────────────────────────────────────────────
+    // Броня (Armor) — верх/низ/щит
+    // ──────────────────────────────────────────────────────────────
+
+    // Низ
+    public static Armor patchedShorts() {
+        return new Armor("Шорты с заплатками рудокопа","низ",1,0.10,10, CardRarity.GRAY);
     }
 
-    public static Armor createWornShirt() {
-        return new Armor("Дранянная рубаха рудокопа", "верх", 1, 0.1, 10);
+    public static Armor minerPants() {
+        return new Armor("Штаны рудокопа","низ",2,0.08,15, CardRarity.GREEN);
     }
 
-    public static Armor createFurVest() {
-        return new Armor("Меховая жилетка рудокопа", "верх", 2, 0.08, 15);
+    // Верх
+    public static Armor wornShirt() {
+        return new Armor("Дрянная рубаха рудокопа", "верх", 1, 0.10, 10, CardRarity.GRAY);
     }
 
-    // Создание шитов
-    public static Armor createShieldSkin() { return new Armor("Кожаный щит", "shield", 1, 0.2, 10); }
-
-    public static Armor createShieldWood() {
-        return new Armor("Деревянный щит", "shield", 2, 0.15, 15);
+    public static Armor furVest() {
+        return new Armor("Меховая жилетка рудокопа", "верх", 2, 0.08, 15, CardRarity.GREEN);
     }
 
-    public static Armor createShieldIron() {
-        return new Armor("Дранянная рубаха рудокопа", "shield", 3, 0.1, 10);
+    // Щит
+    public static Armor leatherShield() {
+        return new Armor("Кожаный щит", "shield", 1, 0.20, 10, CardRarity.GRAY);
     }
 
+    public static Armor woodenShield() {
+        return new Armor("Деревянный щит", "shield", 2, 0.15, 15, CardRarity.GREEN);
+    }
+
+    public static Armor ironShield() {
+        return new Armor("Железный щит", "shield", 3, 0.10, 20, CardRarity.BLUE);
+    }
+
+    // ──────────────────────────────────────────────────────────────
+    // Все возможные предметы в виде списка
+    // ──────────────────────────────────────────────────────────────
+
+    public static final List<Item> ALL_ITEMS = List.of(
+            stick(),
+            oldDagger(),
+            rustySword(),
+            patchedShorts(),
+            minerPants(),
+            wornShirt(),
+            furVest(),
+            leatherShield(),
+            woodenShield(),
+            ironShield()
+    );
 
 
+//        private static CardRarity rollRarity() {
+//
+//        double roll = RANDOM.nextDouble() * 100;
+//
+//        if (roll < 0.25) return CardRarity.GOLD;
+//        if (roll < 1.25) return CardRarity.RED;
+//        if (roll < 6.25) return CardRarity.VIOLETTE;
+//        if (roll < 21.25) return CardRarity.BLUE;
+//        if (roll < 46.25) return CardRarity.GREEN;
+//        if (roll < 81.25) return CardRarity.GRAY;
+//
+//        return null; // ничего не выпало
+//    }
 
+    // ──────────────────────────────────────────────────────────────
+    // Вспомогательные методы
+    // ──────────────────────────────────────────────────────────────
 
-    // Генерация предмета в зависимости от уровня монстра
-    public static Item generateLoot(int monsterLevel) {
-        double roll = random.nextDouble();
+    private record WeightedItem(Item item, int weight) {
+    }
 
-        switch (monsterLevel) {
+    private static WeightedItem weighted(Item item, int weight) {
+        return new WeightedItem(item, weight);
+    }
 
-            case 1 -> {
-                if (roll < 0.20) return createStick();
-            }
+    private static Item weightedChoice(List<WeightedItem> options) {
+        if (options.isEmpty()) {
+            return null;
+        }
 
-            case 2 -> {
-                if (roll < 0.15) return createOldDagger();
-                if (roll < 0.25) return createPatchedShorts();
-                if (roll < 0.35) return createWornShirt();
-                if (roll < 0.45) return createShieldSkin();
-            }
+        int totalWeight = options.stream().mapToInt(WeightedItem::weight).sum();
+        int roll = RANDOM.nextInt(totalWeight);
 
-            case 3 -> {
-                if (roll < 0.10) return createRustySword();
-                if (roll < 0.20) return createMinerPants();
-                if (roll < 0.30) return createFurVest();
-                if (roll < 0.40) return createShieldWood();
-            }
-
-            case 4 -> {
-                if (roll < 0.50) return createShieldIron();
-            }
-
-            case 5 -> {
-                if (roll < 0.15) return createRustySword();
-                if (roll < 0.25) return createMinerPants();
-                if (roll < 0.35) return createFurVest();
+        int current = 0;
+        for (WeightedItem option : options) {
+            current += option.weight;
+            if (roll < current) {
+                return option.item;
             }
         }
 
-        return null; // ничего не выпало
+        // теоретически недостижимо, но на всякий случай
+        return options.get(options.size() - 1).item;
+    }
+
+    /**
+     * Получить все предметы определённого типа
+     */
+    public static List<Item> getAllWeapons() {
+        return ALL_ITEMS.stream()
+                .filter(item -> item instanceof Weapon)
+                .toList();
+    }
+
+    public static List<Item> getAllArmor() {
+        return ALL_ITEMS.stream()
+                .filter(item -> item instanceof Armor)
+                .toList();
     }
 }

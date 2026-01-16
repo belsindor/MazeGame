@@ -11,14 +11,17 @@ public abstract class Card {
     protected final CardRarity rarity;
     protected final String imagePath;
     protected int copies = 1;
+    protected int id;
 
-    protected Card(CardType type, CardRarity rarity, String imagePath) {
+    protected Card(int id, CardType type, CardRarity rarity, String imagePath) {
+        this.id = id;
         this.type = type;
         this.rarity = rarity;
         this.imagePath = imagePath;
     }
 
     protected Card(CardRarity rarity) {
+        this.id = id;
         this.type = null; // или нужен дефолтный тип
         this.rarity = rarity;
         this.imagePath = "";
@@ -26,6 +29,10 @@ public abstract class Card {
 
     public CardRarity getRarity() {
         return rarity;
+    }
+
+    public int getId() {
+        return id;
     }
 
     public int getCopies() {
@@ -44,8 +51,8 @@ public abstract class Card {
         return new ImageIcon(getClass().getResource(imagePath));
     }
 
-    protected Card(CardType type, CardRarity rarity) {
-        this(type, rarity, "");
+    protected Card(int id, CardType type, CardRarity rarity) {
+        this(id, type, rarity, "");
     }
 
 

@@ -6,11 +6,11 @@ import java.util.function.Function;
 import java.util.function.Supplier;
 
 public class RegenerationCard extends BuffCard {
-    public RegenerationCard(
+    public RegenerationCard(int id,
             Function effectFactory,
             CardRarity rarity,
             String imagePath
     ) {
-        super(effectFactory, rarity, imagePath);
+        super(id, effectFactory, rarity, imagePath);
     }
 }

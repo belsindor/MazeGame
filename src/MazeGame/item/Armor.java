@@ -1,11 +1,13 @@
 package MazeGame.item;
 
+import MazeGame.cards.CardRarity;
+
 public class Armor extends Item {
     private String armorType;
     private static final long serialVersionUID = 1L;
 
-    public Armor(String name, String armorType, int protection, double dropChance, int strength) {
-        super(name, strength, protection, dropChance);
+    public Armor(String name, String armorType, int protection, double dropChance, int strength, CardRarity rarity) {
+        super(name, strength, protection, dropChance, rarity);
         this.armorType = armorType;
     }
     @Override

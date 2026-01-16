@@ -8,10 +8,10 @@ import java.util.function.Supplier;
 
 public class PoisonCard extends CurseCard {
     public PoisonCard(
-            Function<Monster, BattleEffect> effectFactory,
+            int id, Function<Monster, BattleEffect> effectFactory,
             CardRarity rarity,
             String imagePath
     ) {
-        super(effectFactory, rarity, imagePath);
+        super(id, effectFactory, rarity, imagePath);
     }
 }

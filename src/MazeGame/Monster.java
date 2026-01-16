@@ -2,6 +2,7 @@ package MazeGame;
 
 import MazeGame.battle.BattleUnit;
 
+//+
 public class Monster implements BattleUnit {
 
     private final String name;
@@ -21,10 +22,14 @@ public class Monster implements BattleUnit {
 
     private final String imagePath;
 
+    private final int id;
+
+
 
     // ===== КОНСТРУКТОРЫ =====
 
     public Monster(
+            int id,
             String name,
             int level,
             int health,
@@ -34,6 +39,7 @@ public class Monster implements BattleUnit {
             boolean immortal,
             String imagePath
     ) {
+        this.id = id;
         this.name = name;
         this.level = level;
         this.maxHealth = health;
@@ -46,6 +52,7 @@ public class Monster implements BattleUnit {
     }
 
     public Monster(
+            int id,
             String name,
             int level,
             int health,
@@ -54,13 +61,14 @@ public class Monster implements BattleUnit {
             UnitType unitType,
             String imagePath
     ) {
-        this(name, level, health, attack, defense, unitType, false, imagePath);
+        this(id, name, level, health, attack, defense, unitType, false, imagePath);
     }
 
-    // ===== ФАБРИКИ =====
+    // ===== ФАБРИКИ ======
 
     public Monster createWeakened(double factor) {
         return new Monster(
+                id,
                 name,
                 level,
                 (int) Math.max(1, maxHealth * factor),
@@ -73,6 +81,7 @@ public class Monster implements BattleUnit {
     }
     public Monster(MonsterTemplate t) {
         this(
+                t.id(),
                 t.name(),
                 t.level(),
                 t.maxHealth(),
@@ -85,6 +94,7 @@ public class Monster implements BattleUnit {
 
     public Monster createSummon() {
         return new Monster(
+                id,
                 name,
                 level,
                 (int) (maxHealth * 0.5),
@@ -148,6 +158,11 @@ public class Monster implements BattleUnit {
     @Override
     public String getName() {
         return name;
+    }
+
+//    @Override
+    public int getId() {
+        return id;
     }
 
     public String getImagePath() {

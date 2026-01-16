@@ -1,5 +1,7 @@
 package MazeGame.item;
 
+import MazeGame.cards.CardRarity;
+
 import java.io.Serializable;
 
 public abstract class Item implements Serializable {
@@ -10,18 +12,24 @@ public abstract class Item implements Serializable {
     protected double dropChance;
     protected int value;
     public abstract String getIconPath();
+    private final CardRarity rarity;
 
-    public Item(String name, int strength, int value, double dropChance) {
+    public Item(String name, int strength, int value, double dropChance, CardRarity rarity) {
         this.name = name;
         this.strength = strength;
         this.currentStrength = strength;
         this.value = value;
         this.dropChance = dropChance;
+        this.rarity = rarity;
     }
 
     public abstract String getType();
     public abstract int getProtection();
     public abstract int getAttack();
+
+    public CardRarity getRarity() {
+        return rarity;
+    }
 
     public void reduceStrength() {
         if (currentStrength > 0) currentStrength--;
