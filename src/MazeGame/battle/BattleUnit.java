@@ -1,7 +1,7 @@
 package MazeGame.battle;
 
 import MazeGame.UnitType;
-
+//+
 public interface BattleUnit {
 
     // ===== ИДЕНТИФИКАЦИЯ =====

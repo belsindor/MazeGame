@@ -3,7 +3,7 @@ package MazeGame.cards;
 
 import MazeGame.MonsterTemplate;
 import MazeGame.UnitType;
-
+import MazeGame.battle.BattleUnit;
 
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +11,7 @@ import java.util.Map;
 import java.util.Optional;
 
 
-public final class SummonFactory {
+public class SummonFactory {
 
     private static final Map<Integer, SummonEntry> SUMMONS = new HashMap<>();
 

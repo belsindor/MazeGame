@@ -3,7 +3,7 @@ package MazeGame.cards;
 
 import MazeGame.MonsterTemplate;
 
-
+//+
 public class SummonCard {
 
     private final MonsterTemplate template;

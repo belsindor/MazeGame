@@ -2,13 +2,12 @@ package MazeGame;
 
 import MazeGame.battle.BattleResult;
 import MazeGame.battle.BattleReward;
-import MazeGame.battle.BattleUnit;
 import MazeGame.cards.*;
 import MazeGame.item.Item;
 
 import java.util.List;
 
-//+
+
 public class Player {
 
 
@@ -145,8 +144,8 @@ public UnitType getUnitType() { return unitType; }
 
         // Опыт и предметы
         BattleReward reward = result.getReward();
-        gainExperience(reward.getExperience());
-        for (Item item : reward.getItems()) {
+        gainExperience(reward.experience());
+        for (Item item : reward.items()) {
             inventory.addItem(item);
         }
 

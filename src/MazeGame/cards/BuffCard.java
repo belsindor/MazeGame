@@ -7,7 +7,7 @@ import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
 
-
+//+
 public class BuffCard extends Card {
 
     private final Function<Player, BattleEffect> effectFactory;

@@ -1,7 +1,7 @@
 package MazeGame.item;
 
 import MazeGame.cards.CardRarity;
-
+//+
 public class Weapon extends Item {
     private static final long serialVersionUID = 1L;
     public Weapon(String name, int attack, double dropChance, int strength, CardRarity rarity) {

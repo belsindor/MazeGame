@@ -4,7 +4,8 @@ import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
 
 import javax.swing.*;
-
+import java.util.Objects;
+//+
 public abstract class Card {
 
     protected final CardType type;
@@ -21,7 +22,6 @@ public abstract class Card {
     }
 
     protected Card(CardRarity rarity) {
-        this.id = id;
         this.type = null; // или нужен дефолтный тип
         this.rarity = rarity;
         this.imagePath = "";
@@ -48,7 +48,7 @@ public abstract class Card {
     public abstract void play(BattleContext context, BattleResult result);
 
     public ImageIcon getImageIcon() {
-        return new ImageIcon(getClass().getResource(imagePath));
+        return new ImageIcon(Objects.requireNonNull(getClass().getResource(imagePath)));
     }
 
     protected Card(int id, CardType type, CardRarity rarity) {

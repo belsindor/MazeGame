@@ -4,7 +4,7 @@ import MazeGame.cards.CardRarity;
 
 import java.util.List;
 import java.util.Random;
-
+//+
 public final class ItemFactory {
 
     private static final Random RANDOM = new Random();
@@ -81,23 +81,6 @@ public final class ItemFactory {
     );
 
 
-//        private static CardRarity rollRarity() {
-//
-//        double roll = RANDOM.nextDouble() * 100;
-//
-//        if (roll < 0.25) return CardRarity.GOLD;
-//        if (roll < 1.25) return CardRarity.RED;
-//        if (roll < 6.25) return CardRarity.VIOLETTE;
-//        if (roll < 21.25) return CardRarity.BLUE;
-//        if (roll < 46.25) return CardRarity.GREEN;
-//        if (roll < 81.25) return CardRarity.GRAY;
-//
-//        return null; // ничего не выпало
-//    }
-
-    // ──────────────────────────────────────────────────────────────
-    // Вспомогательные методы
-    // ──────────────────────────────────────────────────────────────
 
     private record WeightedItem(Item item, int weight) {
     }
@@ -123,7 +106,7 @@ public final class ItemFactory {
         }
 
         // теоретически недостижимо, но на всякий случай
-        return options.get(options.size() - 1).item;
+        return options.getLast().item;
     }
 
     /**

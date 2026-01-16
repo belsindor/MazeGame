@@ -1,12 +1,12 @@
 package MazeGame;
 
-import MazeGame.cards.*;
+
 
 import java.util.List;
 import java.util.Random;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
+//+
 public final class MonsterFactory {
 
     private static final Random RANDOM = new Random();
@@ -149,11 +149,11 @@ public final class MonsterFactory {
     private static MonsterTemplate pickTemplate(int playerLevel) {
         List<MonsterTemplate> candidates = ALL_TEMPLATES.stream()
                 .filter(t -> t.level() >= playerLevel - 1 && t.level() <= playerLevel + 1)
-                .collect(Collectors.toList());
+                .toList();
 
         if (candidates.isEmpty()) {
             // запасной вариант — самый слабый монстр
-            return ALL_TEMPLATES.get(0);
+            return ALL_TEMPLATES.getFirst();
         }
 
         return candidates.get(RANDOM.nextInt(candidates.size()));

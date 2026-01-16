@@ -1,7 +1,7 @@
 package MazeGame.cards;
 
 import MazeGame.battle.BattleContext;
-
+//+
 public abstract class AdditionalCard extends Card {
 
     protected AdditionalCard(int id, CardType type, CardRarity rarity) {
