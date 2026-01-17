@@ -1,84 +1,90 @@
 package MazeGame.cards;
 
-import MazeGame.MonsterFactory;
-import MazeGame.UnitType;
-
+//+
 import java.util.*;
 
 public class CombatDeck {
 
-    private final List<Card> cards = new ArrayList<>();
+    // Активные карты по эффектам (одна на эффект — лучшая по раритету)
+    private final Map<TypeEffect, Card> active = new EnumMap<>(TypeEffect.class);
 
-    public void add(Card card) {
-        cards.add(card);
+    public CombatDeck() {
+        // Можно добавить начальные карты, если нужно
+    }
+
+    /**
+     * Добавление одной новой карты (например, при дропе или апгрейде)
+     */
+    public void addCard(Card newCard) {
+        if (newCard == null || newCard instanceof SummonCard) return;  // Игнорируем суммоны
+
+        TypeEffect effect = getTypeEffectById(newCard.getId());
+        if (effect == null) return;  // Неизвестный эффект — игнорируем
+
+        Card current = active.get(effect);
+
+        if (current == null ||
+                newCard.getRarity().ordinal() > current.getRarity().ordinal()) {
+            active.put(effect, newCard);
+        }
+    }
+
+    /**
+     * Полное обновление деки из коллекции regularCards
+     */
+    public void updateFromCollection(CardCollection collection) {
+        active.clear();
+
+        Map<TypeEffect, Card> bestByEffect = new EnumMap<>(TypeEffect.class);
+
+        for (Map.Entry<Card, Integer> entry : collection.getAllCards().entrySet()) {
+            Card card = entry.getKey();
+            if (card instanceof SummonCard) continue;  // Пропускаем суммоны
+
+            TypeEffect effect = getTypeEffectById(card.getId());
+            if (effect == null) continue;
+
+            Card currentBest = bestByEffect.get(effect);
+
+            if (currentBest == null ||
+                    card.getRarity().ordinal() > currentBest.getRarity().ordinal()) {
+                bestByEffect.put(effect, card);
+            }
+        }
+
+        active.putAll(bestByEffect);
+    }
+    // Вспомогательный метод: определяет эффект по id карты
+    private TypeEffect getTypeEffectById(int id) {
+        return switch (id / 100) {  // По диапазонам id
+            case 10 -> TypeEffect.ATTACK_BUFF;    // 1001-1006
+            case 11 -> TypeEffect.DEFENSE_BUFF;   // 1100-1105
+            case 12 -> TypeEffect.CURSE;          // 1200-1205
+            case 13 -> TypeEffect.POISON;         // 1300-1305
+            case 14 -> TypeEffect.REGENERATION;   // 1400-1401
+            case 15 -> TypeEffect.DESTRUCTION;    // 1500
+            case 16 -> TypeEffect.METEOR_SHOWER;  // 1600
+            case 17 -> TypeEffect.RESURRECTION;   // 1700
+            default -> null;                      // Неизвестный
+        };
+    }
+    public Card getActiveByEffect(TypeEffect effect) {
+        return active.get(effect);
+    }
+
+    public Map<TypeEffect, Card> getActiveCards() {
+        return new EnumMap<>(active);
+    }
+
+    public boolean hasCardForEffect(TypeEffect effect) {
+        return active.containsKey(effect);
+    }
+
+    public void removeCard(TypeEffect effect) {
+        active.remove(effect);
     }
 
     public void clear() {
-        cards.clear();
-    }
-
-    public List<Card> draw(int count) {
-        return cards.subList(0, Math.min(count, cards.size()));
-    }
-
-    private final Map<UnitType, SummonFactory> activeCards = new EnumMap<>(UnitType.class);
-
-    public boolean tryAddOrUpgrade(SummonFactory newCard) {
-        if (newCard == null) {
-            return false;
-        }
-
-        UnitType type = newCard.getUnitType();
-        SummonFactory current = activeCards.get(type);
-
-        // Новый тип — просто добавляем
-        if (current == null) {
-            activeCards.put(type, newCard);
-            return true;
-        }
-
-        // Сравниваем редкость
-        if (newCard.getRarity().ordinal() > current.getRarity().ordinal()) {
-            activeCards.put(type, newCard);
-            // можно логировать/уведомлять игрока: "Улучшен [имя] до [новая редкость]"
-            return true;
-        }
-
-        // Такая же или хуже редкость — игнорируем
-        // (или можно положить в "коллекцию трофеев", если она у тебя планируется)
-        return false;
-    }
-
-    public SummonFactory getByType(UnitType type) {
-        return activeCards.get(type);
-    }
-
-
-    public Collection<SummonFactory> getAllActive() {
-        return activeCards.values();
-    }
-
-
-    public int size() {
-        return activeCards.size();
-    }
-
-    public SummonFactory getSelectedForBattle() {
-        if (activeCards.isEmpty()) {
-            return null;
-        }
-        // Вариант 1 — случайный
-        // return new ArrayList<>(activeCards.values()).get(new Random().nextInt(size()));
-
-        // Вариант 2 — всегда первый по порядку enum (стабильнее для тестов)
-        return activeCards.values().iterator().next();
-    }
-
-    public Map<UnitType, SummonFactory> debugGetMap() {
-        return new EnumMap<>(activeCards);
-    }
-
-
-    public Card[] getCards() {
+        active.clear();
     }
 }

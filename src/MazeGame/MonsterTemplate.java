@@ -1,5 +1,5 @@
 package MazeGame;
-//+
+//++
 public record MonsterTemplate(
         int id,
         String name,

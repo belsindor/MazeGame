@@ -1,7 +1,7 @@
 package MazeGame;
 
 import java.util.EnumSet;
-//+
+//++
 public class VisualLocation {
 
     private final EnumSet<Direction> exits;

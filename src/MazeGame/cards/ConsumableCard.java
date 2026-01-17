@@ -3,15 +3,15 @@ package MazeGame.cards;
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
 
-
+//+
 import java.util.function.Consumer;
 
 public class ConsumableCard extends Card {
 
     private final Consumer<BattleContext> action;
 
-    public ConsumableCard(int id, Consumer<BattleContext> action, CardRarity rarity, String imagePath) {
-        super(id, CardType.CONSUMABLE, rarity, imagePath);
+    public ConsumableCard(int id, Consumer<BattleContext> action, CardRarity rarity, TypeEffect effect, String imagePath) {
+        super(id, CardType.CONSUMABLE, rarity, effect, imagePath);
         this.action = action;
     }
 

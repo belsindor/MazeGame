@@ -3,14 +3,14 @@ package MazeGame.cards;
 
 import MazeGame.MonsterTemplate;
 import MazeGame.UnitType;
-import MazeGame.battle.BattleUnit;
+
 
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
-
+//+
 public class SummonFactory {
 
     private static final Map<Integer, SummonEntry> SUMMONS = new HashMap<>();
@@ -186,7 +186,7 @@ public class SummonFactory {
     private static SummonCard summonCard(int id, String name, int level, int hp, int damage, int armor,
                                          UnitType type, String imagePath, CardRarity rarity) {
         MonsterTemplate template = new MonsterTemplate(id, name, level, hp, damage, armor, type, imagePath);
-        return new SummonCard(template);
+        return new SummonCard(template, rarity);
     }
 
 
@@ -274,6 +274,5 @@ public class SummonFactory {
             MINOTAUR_KING_RED(),
             MINOTAUR_KING_GOLD()
     );
-
 
 }

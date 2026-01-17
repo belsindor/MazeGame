@@ -2,13 +2,8 @@ package MazeGame.battle;
 
 import MazeGame.GameState;
 import MazeGame.Monster;
-import MazeGame.cards.Card;
-import MazeGame.cards.CardDropService;
-import MazeGame.cards.SummonCard;
-import MazeGame.cards.SummonFactory;
-import MazeGame.item.Item;
-import MazeGame.item.ItemFactory;
 import MazeGame.Player;
+import MazeGame.cards.*;
 
 import java.util.List;
 
@@ -18,14 +13,13 @@ public class BattleEngine {
     private final BattleSide enemySide;
     private final BattleContext context;
 
-    public BattleEngine(Player player, Monster monster, SummonFactory summon) {
-        this.playerSide = new BattleSide(player);
+    /**
+     * Конструктор без SummonFactory — суммон уже выбран и передан в context извне
+     */
+    public BattleEngine(Player player, Monster monster) {
+        this.playerSide = new BattleSide((BattleUnit) player);
         this.enemySide = new BattleSide(monster);
         this.context = new BattleContext(player, monster);
-
-        // SummonCard → Monster (призыв)
-        Monster summon = player.getSummonDeck().getSelectedSummon().summon();
-        this.context.setSummon(summon);
     }
 
     public BattleResult resolveTurn(PlayerTurn turn) {
@@ -40,7 +34,7 @@ public class BattleEngine {
             summon.onTurnStart(context);
         }
 
-        // Ход игрока (карта)
+        // Ход игрока
         if (playerSide.isAlive()) {
             turn.apply(context, result);
         }
@@ -52,7 +46,7 @@ public class BattleEngine {
             result.addMessage("⚔ " + playerSide.getName() + " наносит " + dmg);
         }
 
-        // Атака суммона
+        // Атака суммона (если есть)
         if (summon != null && summon.isAlive() && enemySide.isAlive()) {
             int dmg = DamageCalculator.calculate(summon, enemySide.getUnit());
             enemySide.takeDamage(dmg);
@@ -66,64 +60,70 @@ public class BattleEngine {
             result.addMessage("🐲 " + enemySide.getName() + " наносит " + dmg);
         }
 
-        // Конец хода → тикают эффекты
+        // Конец хода — эффекты
         playerSide.onTurnEnd(context);
         enemySide.onTurnEnd(context);
         if (summon != null && summon.isAlive()) {
             summon.onTurnEnd(context);
         }
 
-        // Проверка окончания боя
+        // Проверка конца боя
+        boolean battleEnded = false;
+
         if (!enemySide.isAlive()) {
             result.setPlayerWin();
+            battleEnded = true;
 
-            BattleReward reward = createReward();
+            BattleReward reward = createReward(enemySide.getUnit().getLevel());
             result.setReward(reward);
 
-            List<Card> dropped = CardDropService.generateDrop(enemySide.getUnit());
-            result.setDroppedCards(dropped);
-
-            // Передаём именно Player
-
-            processDroppedCards((Player) playerSide.getUnit(), dropped);
+            List<CardDropService.DropEntry> drops = new CardDropService().generateDrop(enemySide.getUnit().getLevel());
+            processDroppedCards((Player) playerSide.getUnit(), drops);
         } else if (!playerSide.isAlive()) {
             result.setPlayerLose();
-            result.setDroppedCards(List.of());
-
+            battleEnded = true;
         }
 
-        // Очистка временных баффов без длительности
-        playerSide.getUnit().clearTemporaryEffects();
-        if (summon != null) {
-            summon.clearTemporaryEffects();
+        // Финальная очистка только при завершении боя
+        if (battleEnded) {
+            playerSide.getUnit().clearTemporaryEffects();
+            if (summon != null) {
+                summon.clearTemporaryEffects();
+            }
+
+            // Сбрасываем выбор суммона после завершения боя
+            playerSide.getUnit().getSummonDeck().resetSelection();
         }
 
         GameState.get().combat().clear();
 
-
         return result;
     }
 
-    private void processDroppedCards(Player player, List<Card> dropped) {
-        if (dropped == null || dropped.isEmpty()) {
-            return;
-        }
+    private void processDroppedCards(Player player, List<CardDropService.DropEntry> drops) {
+        if (drops == null || drops.isEmpty()) return;
 
-        for (Card card : dropped) {
-            if (card instanceof SummonCard summonCard) {
-                player.getSummonDeck().tryAddOrUpgrade(summonCard);
-            } else {
-                player.getCardCollection().add(card);
+        CardCollection cardCollection = player.getCardCollection();
+        SummonDeck summonDeck = player.getSummonDeck();
+
+        for (CardDropService.DropEntry entry : drops) {
+            if (entry.getSummonCard() != null) {
+                summonDeck.addSummon(entry.getSummonCard());
+            } else if (entry.getCard() != null) {
+                cardCollection.addCard(entry.getCard());
+            } else if (entry.getItem() != null) {
+                player.addItem(entry.getItem());
             }
         }
     }
 
-    private BattleReward createReward() {
-        int level = enemySide.getLevel();
-        int exp = level * 20;
+    private BattleReward createReward(int monsterLevel) {
+        int exp = monsterLevel * 20 + (monsterLevel * 10); // можно усложнить формулу
+        return new BattleReward(exp, List.of()); // предметы пока не добавляем в базовую награду
+    }
 
-        Item loot = ItemFactory.generateLoot(level);
-
-        return new BattleReward(exp, loot != null ? List.of(loot) : List.of());
+    // Полезный геттер для доступа к контексту (нужен в BattleWindow)
+    public BattleContext getContext() {
+        return context;
     }
 }

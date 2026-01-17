@@ -1,5 +1,5 @@
 package MazeGame;
-//+
+//++
 public enum UnitType {
     INFANTRY {
         @Override

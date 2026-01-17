@@ -1,6 +1,8 @@
 package MazeGame.battle;
 
 import MazeGame.UnitType;
+import MazeGame.cards.SummonDeck;
+
 //+
 public interface BattleUnit {
 
@@ -40,4 +42,5 @@ public interface BattleUnit {
     default void onBattleEnd(BattleContext ctx) { /* опционально */ }
     void setUnitType(UnitType type);
 
+    SummonDeck getSummonDeck();
 }

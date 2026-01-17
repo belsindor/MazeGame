@@ -1,8 +1,9 @@
 package MazeGame;
 
 import MazeGame.battle.BattleUnit;
+import MazeGame.cards.SummonDeck;
 
-//+
+//++
 public class Monster implements BattleUnit {
 
     private final String name;
@@ -177,6 +178,11 @@ public class Monster implements BattleUnit {
     @Override
     public void setUnitType(UnitType type) {
         this.unitType = type;
+    }
+
+    @Override
+    public SummonDeck getSummonDeck() {
+        return null;
     }
 
     public void revive() {

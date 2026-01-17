@@ -5,13 +5,14 @@ import MazeGame.battle.BattleReward;
 import MazeGame.cards.*;
 import MazeGame.item.Item;
 
+import java.util.ArrayList;
 import java.util.List;
 
-
+//+
 public class Player {
 
 
-    private String name;
+    private final String name;
     private int health;
     private int maxHealth;
     private int baseAttack;
@@ -19,13 +20,15 @@ public class Player {
     private int experience;
     private int level;
     private int experienceToNextLevel;
-    private Inventory inventory;
+    private final Inventory inventory;
 
     private int temporaryAttack = 0;
     private int temporaryDefense = 0;
 
     // Коллекция всех карт игрока (всё, что собрано)
     private final CardCollection cardCollection = new CardCollection();
+    private final SummonDeck summonDeck = new SummonDeck();
+    private final List<Item> items = new ArrayList<>();
 
     // Текущая боевая колода (выбранные карты для боя, без суммонов)
     private CombatDeck combatDeck;
@@ -152,8 +155,21 @@ public UnitType getUnitType() { return unitType; }
 
     }
 
+    public List<Item> getItems() {
+        return new ArrayList<>(items); // защитная копия
+    }
 
+    public void addItem(Item item) {
+        if (item != null) {
+            items.add(item);
+        }
+    }
     // Геттеры
+
+
+    public SummonDeck getSummonDeck() {
+        return summonDeck;
+    }
 
     public int getHealth() { return health; }
 

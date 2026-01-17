@@ -7,13 +7,13 @@ import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
 
-
+//+
 public class CurseCard extends Card {
 
     private final Function<Monster, BattleEffect> effectFactory;
 
-    public CurseCard(int id, Function<Monster, BattleEffect> effectFactory, CardRarity rarity, String imagePath) {
-        super(id, CardType.CURSE, rarity, imagePath);
+    public CurseCard(int id, Function<Monster, BattleEffect> effectFactory, CardRarity rarity, TypeEffect effect, String imagePath) {
+        super(id, CardType.CURSE, rarity, effect, imagePath);
         this.effectFactory = effectFactory;
     }
 

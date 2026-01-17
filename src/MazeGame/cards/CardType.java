@@ -1,5 +1,5 @@
 package MazeGame.cards;
-
+//+
 public enum CardType {
     MONSTER,
     SUMMON,

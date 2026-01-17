@@ -14,7 +14,7 @@ public class GameState {
 
     private GameState() {
         // стартовый суммон
-        summonDeck.addInitialSummon(SummonCard.ancestorSpirit());
+
     }
 
     public static GameState get() {

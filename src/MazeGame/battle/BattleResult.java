@@ -13,7 +13,7 @@ public class BattleResult {
     private boolean battleOver = false;
     private BattleOutcome outcome;
     private BattleReward reward;
-    private final List droppedCards = new ArrayList<>();
+    private final List addDrop = new ArrayList<>();
 
     private List<Item> items = new ArrayList<>();
     private List<Card> cards = new ArrayList<>();

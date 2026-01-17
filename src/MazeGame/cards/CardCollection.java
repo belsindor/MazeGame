@@ -1,101 +1,94 @@
 package MazeGame.cards;
 
-import java.util.*;
+//+
+import java.util.HashMap;
+import java.util.Map;
 
 public class CardCollection {
 
     private final Map<Card, Integer> regularCards = new HashMap<>();
-    private final List<SummonCard> summons = new ArrayList<>();
 
-    public void addRegularCard(Card card) {
+    /**
+     * Универсальный метод добавления любой карты
+     */
+    public void addCard(Card card) {
         if (card == null) return;
 
         regularCards.merge(card, 1, Integer::sum);
-        checkAndConvert(card);
+        checkAndConvert(card);   // улучшение 10→1 работает для всех, в т.ч. SummonCard
     }
 
-    public void addSummon(SummonCard summon) {
-        if (summon != null) {
-            summons.add(summon);
-        }
-    }
-
+    /**
+     * Удобный метод для добавления дропа
+     */
     public void addDrop(CardDropService.DropEntry entry) {
         if (entry == null) return;
 
         if (entry.getSummonCard() != null) {
-            addSummon(entry.getSummonCard());
+            addCard(entry.getSummonCard());
         } else if (entry.isCard()) {
-            addRegularCard(entry.getCard());
+            addCard(entry.getCard());
         }
-        // Item игнорируется — он идёт в инвентарь
+        // Item игнорируется
     }
 
     private void checkAndConvert(Card currentCard) {
         int count = regularCards.getOrDefault(currentCard, 0);
-        if (count < 10) {
-            return;
-        }
+        if (count < 10) return;
 
         Card nextCard = findNextLevelCard(currentCard);
 
         if (nextCard != null) {
-            // Убираем 10 текущих карт
             regularCards.put(currentCard, count - 10);
             if (regularCards.get(currentCard) == 0) {
                 regularCards.remove(currentCard);
             }
 
-            // Добавляем одну карту следующего уровня
-            // (рекурсия позволит обработать цепочку, если будет 100, 1000 и т.д.)
-            addRegularCard(nextCard);
-
-            // Можно здесь добавить событие/уведомление/лог/эффект
-            // System.out.println("Улучшение: 10× " + currentCard + " → 1× " + nextCard);
+            addCard(nextCard);  // рекурсия, цепная конвертация возможна
         }
-        // Если следующей карты нет → оставляем как есть (10+ штук)
+        // если следующей нет — остаётся 10+ штук
     }
 
-    /**
-     * Находит карту следующего уровня по id текущей карты
-     * id увеличивается на 1 в рамках одной линейки (buff attack, curse и т.д.)
-     */
     private Card findNextLevelCard(Card current) {
-        int currentId = current.getId();
-        int nextId = currentId + 1;
-
-        // Ищем карту с id = currentId + 1 среди всех карт
+        int nextId = current.getId() + 1;
         return CardLibrary.getAllCards().stream()
                 .filter(c -> c.getId() == nextId)
                 .findFirst()
                 .orElse(null);
     }
 
-    // ── Геттеры и вспомогательные методы ─────────────────────────────────
+    // ── Геттеры ───────────────────────────────────────────────
 
-    public Map<Card, Integer> getRegularCards() {
-        return new HashMap<>(regularCards); // защитная копия
+    /**
+     * Все карты игрока с количеством
+     */
+    public Map<Card, Integer> getAllCards() {
+        return new HashMap<>(regularCards);
     }
 
-    public List<SummonCard> getSummons() {
-        return new ArrayList<>(summons);
+    /**
+     * Только карты-призывы с количеством
+     */
+    public Map<SummonCard, Integer> getSummons() {
+        Map<SummonCard, Integer> result = new HashMap<>();
+        for (Map.Entry<Card, Integer> e : regularCards.entrySet()) {
+            if (e.getKey() instanceof SummonCard summon) {
+                result.put(summon, e.getValue());
+            }
+        }
+        return result;
     }
 
-    public int getRegularCardCount() {
+    public int getTotalCount() {
         return regularCards.values().stream().mapToInt(Integer::intValue).sum();
-    }
-
-    public int getSummonCount() {
-        return summons.size();
-    }
-
-    public int getTotalCardCount() {
-        return getRegularCardCount() + getSummonCount();
     }
 
     public void clear() {
         regularCards.clear();
-        summons.clear();
+    }
+
+
+    public boolean isEmpty() {
+        return false;
     }
 }
-

@@ -15,6 +15,9 @@ import java.awt.event.WindowEvent;
 
 
 
+
+
+
         public GameWindow(VisualMazeGame gameInstance) {
             game = gameInstance;
 
@@ -73,6 +76,11 @@ import java.awt.event.WindowEvent;
         }
 
         System.exit(0);
+    }
+
+    public void setGame(VisualMazeGame game) {
+        this.game = game;
+        // Здесь можно обновить UI, если нужно (например, перерисовать карту)
     }
 
     public static GamePanel getPanel() {

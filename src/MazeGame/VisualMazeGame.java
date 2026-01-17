@@ -1,8 +1,7 @@
 package MazeGame;
 
 import MazeGame.battle.*;
-import MazeGame.cards.SummonCard;
-import MazeGame.cards.SummonSelectionWindow;
+import MazeGame.cards.*;
 import MazeGame.item.Item;
 
 import javax.swing.*;
@@ -23,7 +22,7 @@ public class VisualMazeGame {
     private final Player player;
     private final Random random = new Random();
 
-    private static final int MONSTER_APPEARANCE_CHANCE = 100; // шанс появления монстра после хода
+    private static final int MONSTER_APPEARANCE_CHANCE = 100;
     private static final int HEAL_PER_STEP = 1;
 
     private boolean secondMazeLoaded = false;
@@ -75,33 +74,34 @@ public class VisualMazeGame {
     }
 
     public String getCurrentImageName() {
-        return getCurrentLocation().getImageName();
+        VisualLocation loc = getCurrentLocation();
+        return loc != null ? loc.getImageName() : "";
     }
 
     // ДВИЖЕНИЕ
     public void moveNorth() {
-        if (playerY > 0 && getCurrentLocation().hasNorth()) {
+        if (playerY > 0 && getCurrentLocation() != null && getCurrentLocation().hasNorth()) {
             playerY--;
             afterMove();
         }
     }
 
     public void moveSouth() {
-        if (playerY < map.length - 1 && getCurrentLocation().hasSouth()) {
+        if (playerY < map.length - 1 && getCurrentLocation() != null && getCurrentLocation().hasSouth()) {
             playerY++;
             afterMove();
         }
     }
 
     public void moveWest() {
-        if (playerX > 0 && getCurrentLocation().hasWest()) {
+        if (playerX > 0 && getCurrentLocation() != null && getCurrentLocation().hasWest()) {
             playerX--;
             afterMove();
         }
     }
 
     public void moveEast() {
-        if (playerX < map[0].length - 1 && getCurrentLocation().hasEast()) {
+        if (playerX < map[0].length - 1 && getCurrentLocation() != null && getCurrentLocation().hasEast()) {
             playerX++;
             afterMove();
         }
@@ -111,7 +111,6 @@ public class VisualMazeGame {
         visited[playerY][playerX] = true;
         GameWindow.getPanel().clearPendingMonster();
 
-        // Проверка выхода
         if (playerX == exitX && playerY == exitY) {
             if (!secondMazeLoaded) {
                 HUDMessageManager.showInfo("🚪 Второй лабиринт открыт!");
@@ -136,64 +135,56 @@ public class VisualMazeGame {
 
     private void checkHeal() {
         if (player.getHealth() < player.getMaxHealth()) {
-            player.healStep();
+            player.heal(HEAL_PER_STEP);
             HUDMessageManager.showHeal("✨ +1 HP");
         }
     }
 
-    public void startBattle(Monster monster) {
-
-        // --- подготовка экрана ---
+    /**
+     * Запуск боя с передачей главного окна как owner (для модальности и центрирования)
+     */
+    public void startBattle(JFrame owner, Monster monster) {
         GameWindow.getPanel().clearPendingMonster();
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
-        // --- выбор суммона (обязательный) ---
-        SummonSelectionWindow window =
-                new SummonSelectionWindow(GameState.get().summons().getAll());
+        SummonDeck summonDeck = GameState.get().summons();
+        SummonSelectionWindow summonWindow = new SummonSelectionWindow(summonDeck);
+        Optional<SummonCard> selectedOpt = summonWindow.showAndWait();
 
-        Optional<SummonCard> selected = window.showAndWait();
-
-        if (selected.isEmpty()) {
-            // если игрок закрыл окно — отменяем бой
-            GameWindow.hideBattleScreen();
-            GameWindow.setBattleActive(false);
-            return;
+        Monster summonInstance = null;
+        if (selectedOpt.isPresent()) {
+            SummonCard selectedCard = selectedOpt.get();
+            summonInstance = new Monster(selectedCard.getMonsterTemplate());
+            summonDeck.selectSummon(selectedCard);
         }
 
-        // --- создаём БОЕВОГО суммона ---
-        BattleSummon battleSummon = new BattleSummon(selected.get());
-
-        // --- создаём контекст боя ---
         BattleContext context = new BattleContext(player, monster);
-        context.setSummon(battleSummon);
+        if (summonInstance != null) {
+            context.setSummon(summonInstance);
+        }
 
-        // --- создаём окно боя ---
-        BattleWindow bw = new BattleWindow(
-                context,
+        BattleWindow battleWindow = new BattleWindow(
+                owner,              // ← главное окно (JFrame)
                 player,
                 monster,
-                battleSummon
+                summonInstance
         );
-        bw.setVisible(true);
+        battleWindow.setVisible(true);
 
-        // --- выход из боя ---
         GameWindow.hideBattleScreen();
         GameWindow.setBattleActive(false);
 
-        // --- обработка результата ---
-        BattleOutcome outcome = bw.getOutcome();
+        BattleOutcome outcome = battleWindow.getOutcome();
 
         if (outcome == BattleOutcome.PLAYER_LOSE) {
-            JOptionPane.showMessageDialog(null, "Вы погибли...");
+            JOptionPane.showMessageDialog(owner, "Вы погибли...");
             System.exit(0);
         }
 
-        BattleResult result = bw.getResult();
-        if (result != null && result.getReward() != null) {
-
+        BattleResult result = battleWindow.getResult();
+        if (result != null && result.isPlayerWin() && result.getReward() != null) {
             BattleReward reward = result.getReward();
-
             player.gainExperience(reward.experience());
             HUDMessageManager.showInfo("✨ Получено опыта: +" + reward.experience());
 
@@ -202,33 +193,17 @@ public class VisualMazeGame {
                 HUDMessageManager.showInfo("🎁 Найден предмет: " + item.getName());
             }
         }
-    }
 
+        summonDeck.resetSelection();
+    }
 
     // Геттеры
-    public Player getPlayer() {
-        return player;
-    }
-
-    public boolean[][] getVisited() {
-        return visited;
-    }
-
-    public int getPlayerX() {
-        return playerX;
-    }
-
-    public int getPlayerY() {
-        return playerY;
-    }
-
-    public int[][] getCurrentMaze() {
-        return currentMaze;
-    }
-
-    public boolean isSecondMazeLoaded() {
-        return secondMazeLoaded;
-    }
+    public Player getPlayer() { return player; }
+    public boolean[][] getVisited() { return visited; }
+    public int getPlayerX() { return playerX; }
+    public int getPlayerY() { return playerY; }
+    public int[][] getCurrentMaze() { return currentMaze; }
+    public boolean isSecondMazeLoaded() { return secondMazeLoaded; }
 
     public void showHelp() {
         JOptionPane.showMessageDialog(null,
@@ -238,13 +213,9 @@ public class VisualMazeGame {
                         H — помощь
                         M — карта
                         Esc — выход
-                        
-                        
-                    
                         """,
                 "Помощь", JOptionPane.INFORMATION_MESSAGE);
     }
-
     // ЛАБИРИНТЫ
     private static final int[][] MAZE_1 = {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0},

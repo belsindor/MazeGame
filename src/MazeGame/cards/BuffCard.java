@@ -7,13 +7,13 @@ import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
 
-//+
+//++
 public class BuffCard extends Card {
 
     private final Function<Player, BattleEffect> effectFactory;
 
-    public BuffCard(int id, Function effectFactory, CardRarity rarity, String imagePath) {
-        super(id, CardType.BUFF, rarity, imagePath);
+    public BuffCard(int id, Function effectFactory, CardRarity rarity, TypeEffect effect, String imagePath) {
+        super(id, CardType.BUFF, rarity, effect, imagePath);
         this.effectFactory = effectFactory;
     }
 

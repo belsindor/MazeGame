@@ -1,7 +1,7 @@
 package MazeGame.cards;
 
 import java.awt.*;
-
+//+
 public enum CardRarity {
 
     GRAY(new Color(255, 255, 255)),

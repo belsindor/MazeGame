@@ -2,7 +2,7 @@ package MazeGame.cards;
 
 
 import MazeGame.Monster;
-
+//+
 class EnemyCardView {
 
     private final Monster monster;
