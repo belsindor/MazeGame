@@ -10,6 +10,7 @@ public class GameLauncher {
             VisualMazeGame game;
             GameSaveData data = null;
 
+            // Проверяем наличие сохранения
             if (GameSaveManager.hasSave()) {
                 int choice = JOptionPane.showOptionDialog(
                         null,
@@ -31,14 +32,14 @@ public class GameLauncher {
                 }
             }
 
-            GameWindow window = new GameWindow(null); // временно null
-
             if (data != null) {
+                // Загрузка из сохранения
                 player = new Player(data.playerName);
                 player.loadFromSave(data);
                 game = new VisualMazeGame(player);
                 game.loadFromSave(data);
             } else {
+                // Новая игра
                 String name = JOptionPane.showInputDialog(null,
                         "Введите имя игрока:",
                         "Новая игра",
@@ -52,10 +53,10 @@ public class GameLauncher {
                 game = new VisualMazeGame(player);
             }
 
-            // Теперь передаём game в окно и показываем
-            window.setGame(game);
-            window.setVisible(true);
+            // Создаём главное окно и передаём ему игру
+            GameWindow window = new GameWindow(game);
 
+            // Показываем помощь
             game.showHelp();
         });
     }

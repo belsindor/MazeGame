@@ -14,6 +14,7 @@ public class VisualMazeGame {
     private int[][] currentMaze;
     private boolean[][] visited;
 
+
     private int playerX;
     private int playerY;
     private int exitX;

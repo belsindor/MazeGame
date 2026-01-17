@@ -14,7 +14,7 @@ public class GamePanel extends JPanel {
     private Image backgroundImage;
     private final Player player;
     private Monster pendingMonster = null;
-    private final VisualMazeGame game;
+    private VisualMazeGame game;
 
     private Image inventoryIcon;
     private Image deckIcon;
@@ -101,6 +101,12 @@ public class GamePanel extends JPanel {
 
         setFocusable(true);
         requestFocusInWindow();
+    }
+
+    public void setGame(VisualMazeGame newGame) {
+        this.game = newGame;
+        // можно обновить изображение или карту
+        setImage(game.getCurrentImageName());
     }
 
     private Image loadIcon(String path) {
