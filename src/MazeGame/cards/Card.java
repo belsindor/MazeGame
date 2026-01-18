@@ -10,7 +10,6 @@ public abstract class Card {
 
     protected final CardType type;
     protected final CardRarity rarity;
-//    protected final TypeEffect effect;
     protected final String imagePath;
     protected int copies = 1;
     protected int id;
@@ -19,14 +18,12 @@ public abstract class Card {
         this.id = id;
         this.type = type;
         this.rarity = rarity;
-//        this.effect = effect;
         this.imagePath = imagePath;
     }
 
     protected Card(CardRarity rarity, TypeEffect effect) {
         this.type = null; // или нужен дефолтный тип
         this.rarity = rarity;
-//        this.effect = effect;
         this.imagePath = "";
     }
 
@@ -45,9 +42,6 @@ public abstract class Card {
         return type;
     }
 
-//    public TypeEffect getEffect() {
-//        return effect;
-//    }
 
     public String getImagePath() {
         return imagePath;

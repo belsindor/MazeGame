@@ -54,7 +54,7 @@ public class GameLauncher {
                 player = new Player(name);
                 game = new VisualMazeGame(player);
             }
-            player.getCardCollection().addCard(SummonFactory.ancestor_spirit());
+
             // Создаём главное окно и передаём ему игру
             GameWindow window = new GameWindow(game);
 

@@ -44,19 +44,18 @@ public class GamePanel extends JPanel {
 
                 Point p = e.getPoint();
 
-                // Клик по монстру
+                // 1. Клик по монстру (если отображается)
                 if (pendingMonster != null) {
                     Rectangle monsterBounds = getMonsterClickBounds();
                     if (monsterBounds != null && monsterBounds.contains(p)) {
                         System.out.println("Клик по монстру → запускаем бой!");
-                        // Передаём ВСЕГДА текущее окно как owner (this — JFrame)
                         game.startBattle((JFrame) SwingUtilities.getWindowAncestor(GamePanel.this), pendingMonster);
                         clearPendingMonster();
                         return;
                     }
                 }
 
-                // Клик по иконкам
+                // 2. Клик по иконкам (инвентарь / колода)
                 int iconSize = 64;
                 int margin = 24;
                 int spacing = 16;
@@ -64,19 +63,20 @@ public class GamePanel extends JPanel {
                 int baseX = getWidth() - margin - iconSize;
                 int baseY = getHeight() - margin - iconSize;
 
+                // Колода (левая иконка)
                 Rectangle deckBounds = new Rectangle(baseX - iconSize - spacing, baseY, iconSize, iconSize);
                 if (deckBounds.contains(p)) {
+                    System.out.println("Клик по иконке колоды → открываем DeckCollectionWindow");
                     CardCollection collection = player.getCardCollection();
-                    if (collection != null && !collection.getAllCards().isEmpty()) {
-                        new DeckCollectionWindow(collection);
-                    } else {
-                        HUDMessageManager.show("Коллекция карт пуста", new Color(255, 180, 100), 22);
-                    }
+                    // Всегда открываем окно, даже если коллекция null или пустая
+                    new DeckCollectionWindow(collection != null ? collection : new CardCollection());
                     return;
                 }
 
+                // Инвентарь (правая иконка)
                 Rectangle invBounds = new Rectangle(baseX, baseY, iconSize, iconSize);
                 if (invBounds.contains(p)) {
+                    System.out.println("Клик по иконке инвентаря → открываем InventoryWindow");
                     new InventoryWindow(player);
                 }
             }
@@ -85,7 +85,6 @@ public class GamePanel extends JPanel {
 
     /**
      * Прямоугольник области монстра для клика
-     * (увеличен запас для удобства)
      */
     private Rectangle getMonsterClickBounds() {
         if (pendingMonster == null) return null;
@@ -95,7 +94,7 @@ public class GamePanel extends JPanel {
         int x = (getWidth() - cardWidth) / 2;
         int y = (getHeight() - cardHeight) / 2 - 40;
 
-        // Запас +80 пикселей со всех сторон — кликать проще
+        // Запас +80 пикселей для удобства клика
         return new Rectangle(x - 80, y - 80, cardWidth + 160, cardHeight + 160);
     }
 
@@ -149,27 +148,33 @@ public class GamePanel extends JPanel {
     }
 
     private void drawPendingMonster(Graphics g, Monster monster) {
-        int cardWidth = 320;
-        int cardHeight = 480;
+        int cardWidth = 320;   // ширина карточки (можно уменьшить до 280–300)
+        int cardHeight = 480;  // высота карточки (можно уменьшить до 420–450)
         int x = (getWidth() - cardWidth) / 2;
         int y = (getHeight() - cardHeight) / 2 - 40;
 
+        // Полупрозрачный фон
         g.setColor(new Color(0, 0, 0, 150));
         g.fillRect(0, 0, getWidth(), getHeight());
 
+        // Изображение монстра
         String imgPath = monster.getImagePath();
         Image monsterImg = loadImage(imgPath);
 
         if (monsterImg != null) {
-            double originalRatio = 832.0 / 1248.0;
-            int imgHeight = 280;
+            double originalRatio = 832.0 / 1248.0; // пропорции оригинала
+
+            // Уменьшенные размеры изображения (подбирай под себя)
+            int imgHeight = 220; // ← основной параметр — чем меньше, тем компактнее
             int imgWidth = (int)(imgHeight * originalRatio);
 
             int imgX = x + (cardWidth - imgWidth) / 2;
-            int imgY = y + 70;
+            int imgY = y + 60; // чуть выше, чтобы текст не налезал
 
+            // Рисуем изображение
             g.drawImage(monsterImg, imgX, imgY, imgWidth, imgHeight, this);
 
+            // Рамка вокруг изображения
             g.setColor(new Color(150, 150, 150, 100));
             g.drawRect(imgX - 2, imgY - 2, imgWidth + 4, imgHeight + 4);
         }

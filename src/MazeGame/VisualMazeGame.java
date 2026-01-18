@@ -31,6 +31,16 @@ public class VisualMazeGame {
     public VisualMazeGame(Player player) {
         this.player = player;
         loadMaze(MAZE_1, 4, 3, 27, 9);
+        SummonCard startingSummon = SummonFactory.ancestor_spirit();
+        if (startingSummon != null) {
+            player.getCardCollection().addCard(startingSummon);
+            // Можно сразу добавить в активные суммоны, если нужно
+            player.getSummonDeck().addSummon(startingSummon);
+            System.out.println("Стартовый суммон ancestor_spirit добавлен в коллекцию!");
+        } else {
+            System.out.println("Ошибка: ancestor_spirit() не найден в SummonFactory");
+        }
+
     }
 
     private void loadMaze(int[][] maze, int startX, int startY, int exitX, int exitY) {
