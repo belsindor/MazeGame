@@ -42,6 +42,8 @@ public class SummonDeck {
      * Конструктор — можно инициализировать пустым или с начальными суммонами
      */
     public SummonDeck() {
+
+
         // Если нужно добавить дефолтные суммоны — добавьте здесь
     }
 
@@ -123,7 +125,7 @@ public class SummonDeck {
     }
 
     /**
-     * Удалить суммон по типу (если нужно для логики игры)
+     * Удалить суммон по типу
      */
     public void removeSummon(UnitType type) {
         active.remove(type);

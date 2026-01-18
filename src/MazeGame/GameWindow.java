@@ -19,7 +19,6 @@ public class GameWindow extends JFrame {
         setLayout(new BorderLayout());
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
 
-        // Создаём панель с передачей game и player
         panel = new GamePanel(game.getPlayer(), game);
         panel.setImage(game.getCurrentImageName());
         add(panel, BorderLayout.CENTER);
@@ -31,31 +30,19 @@ public class GameWindow extends JFrame {
             }
         });
 
-        // Слушатель клавиатуры
         addKeyListener(new GameKeyListener(game, panel, this));
 
         setFocusable(true);
-        requestFocusInWindow(); // важно для клавиатуры
         setVisible(true);
     }
 
     public void exitGame() {
         if (battleActive) {
-            JOptionPane.showMessageDialog(
-                    this,
-                    "Нельзя выйти во время боя!",
-                    "Бой",
-                    JOptionPane.WARNING_MESSAGE
-            );
+            JOptionPane.showMessageDialog(this, "Нельзя выйти во время боя!", "Бой", JOptionPane.WARNING_MESSAGE);
             return;
         }
 
-        int result = JOptionPane.showConfirmDialog(
-                this,
-                "Сохранить игру перед выходом?",
-                "Выход из игры",
-                JOptionPane.YES_NO_CANCEL_OPTION
-        );
+        int result = JOptionPane.showConfirmDialog(this, "Сохранить игру перед выходом?", "Выход", JOptionPane.YES_NO_CANCEL_OPTION);
 
         if (result == JOptionPane.CANCEL_OPTION) return;
 
@@ -66,13 +53,6 @@ public class GameWindow extends JFrame {
         System.exit(0);
     }
 
-    public void setGame(VisualMazeGame newGame) {
-        game = newGame;
-        panel.setGame(newGame); // если в GamePanel есть метод setGame
-        panel.setImage(newGame.getCurrentImageName());
-        repaint();
-    }
-
     public static GamePanel getPanel() {
         return panel;
     }
@@ -81,11 +61,6 @@ public class GameWindow extends JFrame {
         return game;
     }
 
-    public static void log(String message) {
-        HUDMessageManager.showInfo(message);
-    }
-
-    // ===== БОЙ =====
     public static void setBattleActive(boolean value) {
         battleActive = value;
     }
@@ -95,14 +70,10 @@ public class GameWindow extends JFrame {
     }
 
     public static void showBattleScreen() {
-        if (panel != null) {
-            panel.setImage("battle.jpg");
-        }
+        if (panel != null) panel.setImage("battle.jpg");
     }
 
     public static void hideBattleScreen() {
-        if (panel != null && game != null) {
-            panel.setImage(game.getCurrentImageName());
-        }
+        if (panel != null && game != null) panel.setImage(game.getCurrentImageName());
     }
 }

@@ -144,39 +144,56 @@ public class VisualMazeGame {
     /**
      * Запуск боя с передачей главного окна как owner (для модальности и центрирования)
      */
+    /**
+     * Запуск боя — с подробной отладкой
+     */
     public void startBattle(JFrame owner, Monster monster) {
+        System.out.println("=== startBattle ЗАПУЩЕН для монстра: " + monster.getName() + " ===");
+
         GameWindow.getPanel().clearPendingMonster();
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
+        System.out.println("Открываем окно выбора суммона...");
         SummonDeck summonDeck = GameState.get().summons();
         SummonSelectionWindow summonWindow = new SummonSelectionWindow(summonDeck);
         Optional<SummonCard> selectedOpt = summonWindow.showAndWait();
+
+        System.out.println("Выбор суммона завершён. Результат: " + (selectedOpt.isPresent() ? "выбран" : "отменён/пусто"));
 
         Monster summonInstance = null;
         if (selectedOpt.isPresent()) {
             SummonCard selectedCard = selectedOpt.get();
             summonInstance = new Monster(selectedCard.getMonsterTemplate());
             summonDeck.selectSummon(selectedCard);
+            System.out.println("Суммон создан: " + summonInstance.getName());
+        } else {
+            System.out.println("Суммон НЕ выбран (игрок отменил или закрыл окно)");
         }
 
+        System.out.println("Создаём контекст боя...");
         BattleContext context = new BattleContext(player, monster);
         if (summonInstance != null) {
             context.setSummon(summonInstance);
         }
 
+        System.out.println("Создаём BattleWindow...");
         BattleWindow battleWindow = new BattleWindow(
-                owner,              // ← главное окно (JFrame)
+                owner,
                 player,
                 monster,
                 summonInstance
         );
+
+        System.out.println("Устанавливаем BattleWindow visible...");
         battleWindow.setVisible(true);
+        System.out.println("BattleWindow открыт!");
 
         GameWindow.hideBattleScreen();
         GameWindow.setBattleActive(false);
 
         BattleOutcome outcome = battleWindow.getOutcome();
+        System.out.println("Результат боя: " + outcome);
 
         if (outcome == BattleOutcome.PLAYER_LOSE) {
             JOptionPane.showMessageDialog(owner, "Вы погибли...");
@@ -196,6 +213,7 @@ public class VisualMazeGame {
         }
 
         summonDeck.resetSelection();
+        System.out.println("=== startBattle ЗАВЕРШЁН ===");
     }
 
     // Геттеры

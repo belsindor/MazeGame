@@ -1,16 +1,18 @@
 package MazeGame;
 
+import MazeGame.battle.BattleContext;
+import MazeGame.battle.BattleUnit;
 import MazeGame.battle.BattleResult;
 import MazeGame.battle.BattleReward;
-import MazeGame.cards.*;
+import MazeGame.cards.CardCollection;
+import MazeGame.cards.SummonDeck;
+import MazeGame.cards.CombatDeck;
 import MazeGame.item.Item;
 
 import java.util.ArrayList;
 import java.util.List;
 
-//+
-public class Player {
-
+public class Player implements BattleUnit {
 
     private final String name;
     private int health;
@@ -33,9 +35,6 @@ public class Player {
     // Текущая боевая колода (выбранные карты для боя, без суммонов)
     private CombatDeck combatDeck;
 
-    // Колода суммонов (только карты-призывы)
-    private List<SummonCard> ALL_SUMMON_CARDS;
-
     private final UnitType unitType = UnitType.INFANTRY;
 
     public Player(String name) {
@@ -48,43 +47,116 @@ public class Player {
         this.experience = 0;
         this.experienceToNextLevel = calculateExpToNextLevel(level);
         this.inventory = new Inventory();
-
-
-
+        this.combatDeck = new CombatDeck();
     }
 
+    // ===== Реализация интерфейса BattleUnit =====
 
-public int getTotalAttack() {
-        return baseAttack + temporaryAttack + inventory.getTotalAttackBonus();
+    @Override
+    public String getName() {
+        return name;
     }
 
-public int getTotalDefense() {
-        return baseDefense + temporaryDefense + inventory.getTotalDefenseBonus();
+    @Override
+    public UnitType getUnitType() {
+        return unitType;
     }
 
-public int getAttack() { return baseAttack; }
-public int getDefense() { return baseDefense; }
-public void addTemporaryAttack(int value) { temporaryAttack += value; }
-public void addTemporaryDefense(int value) { temporaryDefense += value; }
-public void takeDamage(int damage) {
-        int actual = Math.max(1, damage - getTotalDefense());
-        health -= actual;
-        if (health < 0) health = 0;
+    @Override
+    public int getId() {
+        return 0;
     }
-public boolean isAlive() { return health > 0; }
-public String getName() { return name; }
-public UnitType getUnitType() { return unitType; }
 
+    @Override
     public void setUnitType(UnitType type) {
         throw new UnsupportedOperationException("Игрок не может менять свой тип юнита");
     }
 
+    @Override
+    public int getAttack() {
+        return baseAttack;
+    }
+
+    @Override
+    public int getDefense() {
+        return baseDefense;
+    }
+
+    @Override
+    public int getTotalAttack() {
+        return baseAttack + temporaryAttack + inventory.getTotalAttackBonus();
+    }
+
+    @Override
+    public int getTotalDefense() {
+        return baseDefense + temporaryDefense + inventory.getTotalDefenseBonus();
+    }
+
+    @Override
+    public int getHealth() {
+        return health;
+    }
+
+    @Override
+    public int getMaxHealth() {
+        return maxHealth;
+    }
+
+    @Override
+    public boolean isAlive() {
+        return health > 0;
+    }
+
+    @Override
+    public void takeDamage(int damage) {
+        int actual = Math.max(1, damage - getTotalDefense());
+        health -= actual;
+        if (health < 0) health = 0;
+    }
+
+    @Override
+    public void heal(int amount) {
+        health = Math.min(maxHealth, health + amount);
+    }
+
+    @Override
+    public void addTemporaryAttack(int value) {
+        temporaryAttack += value;
+    }
+
+    @Override
+    public void addTemporaryDefense(int value) {
+        temporaryDefense += value;
+    }
+
+    @Override
     public void clearTemporaryEffects() {
         temporaryAttack = 0;
         temporaryDefense = 0;
     }
 
-    // Логика игры
+    @Override
+    public void onTurnStart(BattleContext ctx) {
+        BattleUnit.super.onTurnStart(ctx);
+    }
+
+    @Override
+    public void onTurnEnd(BattleContext ctx) {
+        BattleUnit.super.onTurnEnd(ctx);
+    }
+
+    @Override
+    public void onBattleEnd(BattleContext ctx) {
+        BattleUnit.super.onBattleEnd(ctx);
+    }
+
+    @Override
+    public int getLevel() {
+        return level;
+    }
+
+    // ===== Остальные методы (без изменений) =====
+
     public void healStep() {
         heal(1);
     }
@@ -120,43 +192,16 @@ public UnitType getUnitType() { return unitType; }
         return combatDeck;
     }
 
-//    public SummonCard getSummonDeck() {
-//        return List <SummonCard> ALL_SUMMON_CARDS;
-//    }
-
     public void setCombatDeck(CombatDeck newDeck) {
         this.combatDeck = newDeck;
     }
 
-    public void loadFromSave(GameSaveData data) {
-        this.health = data.health;
-        this.maxHealth = data.maxHealth;
-        this.level = data.level;
-        this.experience = data.experience;
-        this.experienceToNextLevel =
-                calculateExpToNextLevel(level);
-
-        this.inventory.loadFromData(data.equippedItems,
-                data.inventoryItems);
-    }
-
-    public void processBattleReward(BattleResult result) {
-        if (!result.isPlayerWin()) {
-            return;
-        }
-
-        // Опыт и предметы
-        BattleReward reward = result.getReward();
-        gainExperience(reward.experience());
-        for (Item item : reward.items()) {
-            inventory.addItem(item);
-        }
-
-
+    public SummonDeck getSummonDeck() {
+        return summonDeck;
     }
 
     public List<Item> getItems() {
-        return new ArrayList<>(items); // защитная копия
+        return new ArrayList<>(items);
     }
 
     public void addItem(Item item) {
@@ -164,25 +209,38 @@ public UnitType getUnitType() { return unitType; }
             items.add(item);
         }
     }
-    // Геттеры
 
-
-    public SummonDeck getSummonDeck() {
-        return summonDeck;
+    public Inventory getInventory() {
+        return inventory;
     }
 
-    public int getHealth() { return health; }
-
-    public int getMaxHealth() { return maxHealth; }
-
-    public int getLevel() { return level;}
-
-    public void heal(int amount) {
-        health = Math.min(maxHealth, health + amount);
+    public int getExperience() {
+        return experience;
     }
 
+    public int getExperienceToNextLevel() {
+        return experienceToNextLevel;
+    }
 
-    public Inventory getInventory() { return inventory; }
-    public int getExperience() { return experience; }
-    public int getExperienceToNextLevel() { return experienceToNextLevel; }
+    public void loadFromSave(GameSaveData data) {
+        this.health = data.health;
+        this.maxHealth = data.maxHealth;
+        this.level = data.level;
+        this.experience = data.experience;
+        this.experienceToNextLevel = calculateExpToNextLevel(level);
+
+        this.inventory.loadFromData(data.equippedItems, data.inventoryItems);
+    }
+
+    public void processBattleReward(BattleResult result) {
+        if (!result.isPlayerWin()) {
+            return;
+        }
+
+        BattleReward reward = result.getReward();
+        gainExperience(reward.experience());
+        for (Item item : reward.items()) {
+            inventory.addItem(item);
+        }
+    }
 }

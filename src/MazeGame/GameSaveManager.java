@@ -38,11 +38,11 @@ public class GameSaveManager {
 
             out.writeObject(data);
 
-            GameWindow.log("💾 Игра сохранена");
+//            GameWindow.log("💾 Игра сохранена");
 
         } catch (IOException e) {
             e.printStackTrace();
-            GameWindow.log("❌ Ошибка сохранения");
+//            GameWindow.log("❌ Ошибка сохранения");
         }
     }
 
