@@ -141,24 +141,24 @@ public class SummonFactory {
 
     public static SummonCard DEATH_KNIGHT_VIOLETTE() {
         return summonCard(32, "Рыцарь смерти", 4, 65, 7, 6,
-                UnitType.INFANTRY, "/images/summons/death_knight_violette.jpg", CardRarity.VIOLETTE);
+                UnitType.INFANTRY, "/images/summons/knight_violette.jpg", CardRarity.VIOLETTE);
     }
 
     public static SummonCard DEATH_KNIGHT_RED() {
         return summonCard(33, "Рыцарь смерти", 4, 65, 7, 6,
-                UnitType.INFANTRY, "/images/summons/death_knight_red.jpg", CardRarity.RED);
+                UnitType.INFANTRY, "/images/summons/knight_red.jpg", CardRarity.RED);
     }
 
     // Уровень 5
 
     public static SummonCard DRAGONLING_RED() {
         return summonCard(34, "Дракончик", 5, 80, 12, 5,
-                UnitType.FLYING, "/images/summons/dragonling_red.jpg", CardRarity.RED);
+                UnitType.FLYING, "/images/summons/dragon_red.jpg", CardRarity.RED);
     }
 
     public static SummonCard DRAGONLING_GOLD() {
         return summonCard(35, "Дракончик", 5, 80, 12, 5,
-                UnitType.FLYING, "/images/summons/dragonling_gold.jpg", CardRarity.GOLD);
+                UnitType.FLYING, "/images/summons/dragon_gold.jpg", CardRarity.GOLD);
     }
 
     public static SummonCard DEMON_LORD_RED() {
