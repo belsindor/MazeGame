@@ -4,9 +4,7 @@ import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleUnit;
 import MazeGame.battle.BattleResult;
 import MazeGame.battle.BattleReward;
-import MazeGame.cards.CardCollection;
-import MazeGame.cards.SummonDeck;
-import MazeGame.cards.CombatDeck;
+import MazeGame.cards.*;
 import MazeGame.item.Item;
 
 import java.util.ArrayList;
@@ -30,7 +28,7 @@ public class Player implements BattleUnit {
     // Коллекция всех карт игрока (всё, что собрано)
     private final CardCollection cardCollection = new CardCollection();
     private final SummonDeck summonDeck = new SummonDeck();
-    private final List<Item> items = new ArrayList<>();
+    private boolean hasUsedStartingSummon = false;
 
     // Текущая боевая колода (выбранные карты для боя, без суммонов)
     private CombatDeck combatDeck;
@@ -155,6 +153,14 @@ public class Player implements BattleUnit {
         return level;
     }
 
+    public boolean hasUsedStartingSummon() {
+        return hasUsedStartingSummon;
+    }
+
+    public void markStartingSummonUsed() {
+        this.hasUsedStartingSummon = true;
+    }
+
     // ===== Остальные методы (без изменений) =====
 
     public void healStep() {
@@ -167,6 +173,38 @@ public class Player implements BattleUnit {
             experience -= experienceToNextLevel;
             levelUp();
         }
+    }
+
+    public void processDrop(List<CardDropService.DropEntry> drops) {
+        if (drops == null || drops.isEmpty()) return;
+
+        CardCollection cardCollection = getCardCollection();
+        SummonDeck summonDeck = getSummonDeck();
+        CombatDeck combatDeck = getCombatDeck();  // если он есть в Player
+
+        for (CardDropService.DropEntry entry : drops) {
+            if (entry.getSummonCard() != null) {
+                SummonCard summon = entry.getSummonCard();
+                cardCollection.addCard(summon);           // → regularCards
+                summonDeck.addSummon(summon);             // → active по типу
+                System.out.println("Дроп суммона: " + summon.getName());
+            }
+            else if (entry.getCard() != null) {
+                Card card = entry.getCard();
+                cardCollection.addCard(card);             // → regularCards
+                combatDeck.addCard(card);                 // → combat по эффекту (если это боевая карта)
+                System.out.println("Дроп карты: " + card.getId());
+            }
+            else if (entry.getItem() != null) {
+                inventory.addItem(entry.getItem());       // → ВНИМАНИЕ: inventory.addItem!
+                System.out.println("Дроп предмета: " + entry.getItem().getName());
+            }
+        }
+
+        // После добавления всех карт обновляем колоды
+        summonDeck.updateFromCollection(cardCollection);
+        combatDeck.updateFromCollection(cardCollection);  // если метод есть
+        System.out.println("После дропа в инвентаре предметов: " + getInventory().getSize());
     }
 
     private void levelUp() {
@@ -198,16 +236,6 @@ public class Player implements BattleUnit {
 
     public SummonDeck getSummonDeck() {
         return summonDeck;
-    }
-
-    public List<Item> getItems() {
-        return new ArrayList<>(items);
-    }
-
-    public void addItem(Item item) {
-        if (item != null) {
-            items.add(item);
-        }
     }
 
     public Inventory getInventory() {

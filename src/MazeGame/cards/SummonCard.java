@@ -26,6 +26,10 @@ public class SummonCard extends Card {   // предполагается нас�
         return template.level();
     }
 
+    public String getName() {
+        return template.name();
+    }
+
     public UnitType getUnitType() {
         return template.unitType();
     }

@@ -1,19 +1,24 @@
 package MazeGame.cards;
 
-//+
-import java.util.*;
+import java.util.EnumMap;
+import java.util.Map;
 
+/**
+ * Боевая колода — содержит активные карты по эффектам (одна лучшая на каждый TypeEffect).
+ * Обновляется автоматически из общей коллекции regularCards.
+ */
 public class CombatDeck {
 
-    // Активные карты по эффектам (одна на эффект — лучшая по раритету)
+    // Активные боевые карты по эффектам (одна на эффект — лучшая по раритету)
     private final Map<TypeEffect, Card> active = new EnumMap<>(TypeEffect.class);
 
     public CombatDeck() {
-        // Можно добавить начальные карты, если нужно
+        // Можно добавить начальные карты, если нужно (по умолчанию пусто)
     }
 
     /**
      * Добавление одной новой карты (например, при дропе или апгрейде)
+     * НЕ рекомендуется использовать напрямую при дропе — лучше добавлять в CardCollection и вызывать updateFromCollection
      */
     public void addCard(Card newCard) {
         if (newCard == null || newCard instanceof SummonCard) return;  // Игнорируем суммоны
@@ -23,14 +28,14 @@ public class CombatDeck {
 
         Card current = active.get(effect);
 
-        if (current == null ||
-                newCard.getRarity().ordinal() > current.getRarity().ordinal()) {
+        if (current == null || newCard.getRarity().ordinal() > current.getRarity().ordinal()) {
             active.put(effect, newCard);
         }
     }
 
     /**
-     * Полное обновление деки из коллекции regularCards
+     * Полное обновление боевой колоды на основе всей коллекции regularCards
+     * Вызывается после каждого добавления карт в коллекцию (при дропе, покупке и т.д.)
      */
     public void updateFromCollection(CardCollection collection) {
         active.clear();
@@ -46,15 +51,16 @@ public class CombatDeck {
 
             Card currentBest = bestByEffect.get(effect);
 
-            if (currentBest == null ||
-                    card.getRarity().ordinal() > currentBest.getRarity().ordinal()) {
+            if (currentBest == null || card.getRarity().ordinal() > currentBest.getRarity().ordinal()) {
                 bestByEffect.put(effect, card);
             }
         }
 
         active.putAll(bestByEffect);
+        System.out.println("CombatDeck обновлена: активных карт = " + active.size());
     }
-    // Вспомогательный метод: определяет эффект по id карты
+
+    // Вспомогательный метод: определяет эффект по id карты (можно улучшить по мере добавления новых карт)
     private TypeEffect getTypeEffectById(int id) {
         return switch (id / 100) {  // По диапазонам id
             case 10 -> TypeEffect.ATTACK_BUFF;    // 1001-1006
@@ -65,9 +71,11 @@ public class CombatDeck {
             case 15 -> TypeEffect.DESTRUCTION;    // 1500
             case 16 -> TypeEffect.METEOR_SHOWER;  // 1600
             case 17 -> TypeEffect.RESURRECTION;   // 1700
-            default -> null;                      // Неизвестный
+            default -> null;                      // Неизвестный эффект
         };
     }
+
+    // Геттеры и утилиты
     public Card getActiveByEffect(TypeEffect effect) {
         return active.get(effect);
     }
@@ -86,5 +94,9 @@ public class CombatDeck {
 
     public void clear() {
         active.clear();
+    }
+
+    public int size() {
+        return active.size();
     }
 }

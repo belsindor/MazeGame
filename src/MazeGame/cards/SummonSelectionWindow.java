@@ -11,14 +11,13 @@ public class SummonSelectionWindow extends JDialog {
 
     private SummonCard selected = null;
 
-    /**
-     * Конструктор с SummonDeck (рекомендуемый)
-     */
     public SummonSelectionWindow(SummonDeck deck) {
         super((Frame) null, "Выберите призываемое существо", true);
         setSize(800, 600);
         setLocationRelativeTo(null);
         setLayout(new BorderLayout(10, 10));
+
+        System.out.println("SummonSelectionWindow открыт");
 
         // Заголовок
         JLabel title = new JLabel("Выберите призыв для боя", SwingConstants.CENTER);
@@ -31,6 +30,7 @@ public class SummonSelectionWindow extends JDialog {
         cardsPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
 
         Collection<SummonCard> available = deck.getActiveSummons().values();
+        System.out.println("Доступно активных суммонов: " + available.size());
 
         if (available.isEmpty()) {
             JLabel empty = new JLabel("У вас нет доступных призывов");
@@ -38,55 +38,54 @@ public class SummonSelectionWindow extends JDialog {
             empty.setHorizontalAlignment(SwingConstants.CENTER);
             cardsPanel.add(empty);
         } else {
-            // Если только один суммон — сразу выбираем его автоматически
-            if (available.size() == 1) {
-                selected = available.iterator().next();
-            } else {
-                // Несколько — показываем выбор
-                for (SummonCard card : available) {
-                    CardPanel panel = new CardPanel(card);
+            System.out.println("Суммоны для отображения:");
+            for (SummonCard card : available) {
+                System.out.println(" - " +" (ID: " + card.getId() + ", Rarity: " + card.getRarity() + ")");
 
-                    // Клик по карточке → выбор + закрытие
-                    panel.setOnClick(() -> {
-                        selected = card;
-                        dispose();
-                    });
+                CardPanel panel = new CardPanel(card);
 
-                    // Красивая подсветка при наведении
-                    panel.addMouseListener(new java.awt.event.MouseAdapter() {
-                        @Override
-                        public void mouseEntered(java.awt.event.MouseEvent e) {
-                            panel.setBorder(BorderFactory.createLineBorder(new Color(255, 215, 0), 4));
-                        }
+                // Клик по карточке → выбор + закрытие
+                panel.setOnClick(() -> {
+                    selected = card;
+                    System.out.println("Выбран суммон: " );
+                    dispose();
+                });
 
-                        @Override
-                        public void mouseExited(java.awt.event.MouseEvent e) {
-                            panel.setBorder(null);
-                        }
-                    });
-
-                    // Выделяем уже выбранный суммон
-                    if (card == deck.getSelectedSummon()) {
-                        panel.setBorder(BorderFactory.createLineBorder(new Color(0, 180, 0), 5));
+                // Подсветка при наведении
+                panel.addMouseListener(new java.awt.event.MouseAdapter() {
+                    @Override
+                    public void mouseEntered(java.awt.event.MouseEvent e) {
+                        panel.setBorder(BorderFactory.createLineBorder(new Color(255, 215, 0), 4));
                     }
 
-                    cardsPanel.add(panel);
+                    @Override
+                    public void mouseExited(java.awt.event.MouseEvent e) {
+                        panel.setBorder(null);
+                    }
+                });
+
+                // Выделяем уже выбранный
+                if (card == deck.getSelectedSummon()) {
+                    panel.setBorder(BorderFactory.createLineBorder(new Color(0, 180, 0), 5));
                 }
+
+                cardsPanel.add(panel);
             }
         }
 
-        // Скролл, если карточек много
+        // Скролл (на всякий случай)
         JScrollPane scroll = new JScrollPane(cardsPanel);
         scroll.setBorder(null);
         scroll.getVerticalScrollBar().setUnitIncrement(16);
         add(scroll, BorderLayout.CENTER);
 
-        // Кнопка "Без призыва" (отмена)
+        // Кнопка "Без призыва"
         JButton noSummonBtn = new JButton("Без призыва");
         noSummonBtn.setFont(new Font("Arial", Font.BOLD, 16));
         noSummonBtn.setPreferredSize(new Dimension(180, 50));
         noSummonBtn.addActionListener(e -> {
             selected = null;
+            System.out.println("Выбор отменён (без призыва)");
             dispose();
         });
 
@@ -94,28 +93,23 @@ public class SummonSelectionWindow extends JDialog {
         bottom.add(noSummonBtn);
         add(bottom, BorderLayout.SOUTH);
 
-        // При закрытии окна крестиком — считаем как отмену
+        // Закрытие крестиком = отмена
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
                 selected = null;
+                System.out.println("Окно закрыто крестиком → отмена");
                 dispose();
             }
         });
     }
 
-    /**
-     * Показать окно и дождаться выбора (блокирующий метод)
-     */
     public Optional<SummonCard> showAndWait() {
         setVisible(true);
         return Optional.ofNullable(selected);
     }
 
-    /**
-     * Устаревший/альтернативный метод (для совместимости)
-     */
     public SummonCard getSelectedCard() {
         setVisible(true);
         return selected;

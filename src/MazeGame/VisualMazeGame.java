@@ -5,6 +5,7 @@ import MazeGame.cards.*;
 import MazeGame.item.Item;
 
 import javax.swing.*;
+import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
@@ -13,7 +14,6 @@ public class VisualMazeGame {
     private VisualLocation[][] map;
     private int[][] currentMaze;
     private boolean[][] visited;
-
 
     private int playerX;
     private int playerY;
@@ -31,16 +31,17 @@ public class VisualMazeGame {
     public VisualMazeGame(Player player) {
         this.player = player;
         loadMaze(MAZE_1, 4, 3, 27, 9);
+
+        // Добавляем стартового суммона
         SummonCard startingSummon = SummonFactory.ancestor_spirit();
         if (startingSummon != null) {
             player.getCardCollection().addCard(startingSummon);
-            // Можно сразу добавить в активные суммоны, если нужно
             player.getSummonDeck().addSummon(startingSummon);
-            System.out.println("Стартовый суммон ancestor_spirit добавлен в коллекцию!");
+            player.getSummonDeck().selectSummon(startingSummon);
+            System.out.println("Стартовый суммон 'Дух предка' добавлен в коллекцию и активные суммоны");
         } else {
-            System.out.println("Ошибка: ancestor_spirit() не найден в SummonFactory");
+            System.err.println("Ошибка: ancestor_spirit() не найден в SummonFactory");
         }
-
     }
 
     private void loadMaze(int[][] maze, int startX, int startY, int exitX, int exitY) {
@@ -139,8 +140,13 @@ public class VisualMazeGame {
 
     private void checkMonsterAppearance() {
         if (random.nextInt(100) < MONSTER_APPEARANCE_CHANCE) {
-            Monster enemy = MonsterFactory.createEnemyForPlayer(player.getLevel());
+            // Уровень монстра: от 1 до уровня игрока
+            int maxEnemyLevel = player.getLevel();
+            int enemyLevel = random.nextInt(maxEnemyLevel) + 1;
+
+            Monster enemy = MonsterFactory.createEnemyForLevel(enemyLevel);
             GameWindow.getPanel().showPendingMonster(enemy);
+            System.out.println("Появился монстр уровня " + enemyLevel + " (игрок: " + player.getLevel() + ")");
         }
     }
 
@@ -152,10 +158,7 @@ public class VisualMazeGame {
     }
 
     /**
-     * Запуск боя с передачей главного окна как owner (для модальности и центрирования)
-     */
-    /**
-     * Запуск боя — с подробной отладкой
+     * Запуск боя
      */
     public void startBattle(JFrame owner, Monster monster) {
         System.out.println("=== startBattle ЗАПУЩЕН для монстра: " + monster.getName() + " ===");
@@ -165,7 +168,7 @@ public class VisualMazeGame {
         GameWindow.showBattleScreen();
 
         System.out.println("Открываем окно выбора суммона...");
-        SummonDeck summonDeck = GameState.get().summons();
+        SummonDeck summonDeck = player.getSummonDeck();
         SummonSelectionWindow summonWindow = new SummonSelectionWindow(summonDeck);
         Optional<SummonCard> selectedOpt = summonWindow.showAndWait();
 
@@ -211,15 +214,41 @@ public class VisualMazeGame {
         }
 
         BattleResult result = battleWindow.getResult();
-        if (result != null && result.isPlayerWin() && result.getReward() != null) {
+        if (result != null && result.isPlayerWin()) {
             BattleReward reward = result.getReward();
             player.gainExperience(reward.experience());
             HUDMessageManager.showInfo("✨ Получено опыта: +" + reward.experience());
 
-            for (Item item : reward.items()) {
-                player.getInventory().addItem(item);
-                HUDMessageManager.showInfo("🎁 Найден предмет: " + item.getName());
+            // Генерируем и обрабатываем дроп
+            List<CardDropService.DropEntry> drops = new CardDropService().generateDrop(monster);
+            player.processDrop(drops);
+
+            // УДАЛЕНИЕ СТАРТОВОГО СУММОНА ПОСЛЕ ПЕРВОГО УСПЕШНОГО БОЯ
+            if (!player.hasUsedStartingSummon()) {
+                SummonCard startingSummon = SummonFactory.ancestor_spirit();
+                if (startingSummon != null) {
+                    // Удаляем из regularCards (по объекту карты)
+                    player.getCardCollection().removeCard(startingSummon);
+
+                    // Удаляем из активных суммонов по типу
+                    player.getSummonDeck().removeSummon(startingSummon.getUnitType());
+
+                    // Помечаем как использованный
+                    player.markStartingSummonUsed();
+
+                    HUDMessageManager.showInfo("Стартовый суммон 'Дух предка' израсходован после первого боя!");
+                    System.out.println("Стартовый суммон ancestor_spirit удалён из regularCards и active после первого боя");
+                }
             }
+
+            // Показываем дроп игроку
+            StringBuilder sb = new StringBuilder("Выпало:\n");
+            for (CardDropService.DropEntry d : drops) {
+                if (d.getSummonCard() != null) sb.append(" - ").append(d.getSummonCard().getName()).append("\n");
+                if (d.getCard() != null) sb.append(" - ").append(d.getCard().getId()).append("\n");
+                if (d.getItem() != null) sb.append(" - ").append(d.getItem().getName()).append("\n");
+            }
+            JOptionPane.showMessageDialog(owner, sb.toString(), "Награда за бой", JOptionPane.INFORMATION_MESSAGE);
         }
 
         summonDeck.resetSelection();

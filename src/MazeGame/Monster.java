@@ -3,6 +3,9 @@ package MazeGame;
 import MazeGame.battle.BattleUnit;
 import MazeGame.cards.SummonDeck;
 
+
+import java.util.List;
+
 //++
 public class Monster implements BattleUnit {
 
@@ -161,7 +164,7 @@ public class Monster implements BattleUnit {
         return name;
     }
 
-//    @Override
+    @Override
     public int getId() {
         return id;
     }
@@ -209,4 +212,7 @@ public class Monster implements BattleUnit {
     public boolean isImmortal() {
         return immortal;
     }
+
+
+
 }

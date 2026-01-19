@@ -10,10 +10,10 @@ public class Weapon extends Item {
     @Override
     public String getIconPath() {
         return switch (name) {
-            case "Палка" -> "images/items/stick.png";
-            case "Старый кинжал" -> "images/items/dagger.png";
-            case "Ржавый меч" -> "images/items/sword.png";
-            default -> "images/items/default.png";
+            case "Палка" -> "/images/items/stick.png";
+            case "Старый кинжал" -> "/images/items/dagger.png";
+            case "Ржавый меч" -> "/images/items/sword.png";
+            default -> "/images/items/default.png";
         };
     }
 

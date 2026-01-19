@@ -183,15 +183,6 @@ public final class CardLibrary {
         );
     }
 
-    // ===== STARTER DECK =====
-
-    public static List<Card> starterCombatDeck() {
-        return List.of(
-                ATTACK_BUFF_1_2()
-
-        );
-    }
-
     public static List<Card> getCardsByRarity(CardRarity rarity) {
         return ALL_CARDS.stream()
                 .filter(c -> c.getRarity() == rarity)

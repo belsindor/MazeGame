@@ -8,16 +8,19 @@ import java.util.Objects;
 //++
 public abstract class Card {
 
+    protected String name;
     protected final CardType type;
     protected final CardRarity rarity;
     protected final String imagePath;
     protected int copies = 1;
+    protected TypeEffect effect;
     protected int id;
 
     protected Card(int id, CardType type, CardRarity rarity, TypeEffect effect, String imagePath) {
         this.id = id;
         this.type = type;
         this.rarity = rarity;
+        this.effect = effect;
         this.imagePath = imagePath;
     }
 
@@ -57,5 +60,11 @@ public abstract class Card {
         this(id, type, rarity, effect,"");
     }
 
+    public TypeEffect getEffect() {
+        return effect;
+    }
 
+    public String getName() {
+        return name;
+    }
 }

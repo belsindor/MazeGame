@@ -14,16 +14,16 @@ public class Armor extends Item {
     public String getIconPath() {
         return switch (name) {
             // низ брони
-            case "Шорты с заплатками рудокопа" -> "images/items/pants0.png";
-            case "Штаны рудокопа" -> "images/items/pants1.png";
+            case "Шорты с заплатками рудокопа" -> "/images/items/pants0.png";
+            case "Штаны рудокопа" -> "/images/items/pants1.png";
             // верх брони
-            case "Дранянная рубаха рудокопа" -> "images/items/shirt0.png";
-            case "Меховая жилетка рудокопа" -> "images/items/shirt1.png";
+            case "Дранянная рубаха рудокопа" -> "/images/items/shirt0.png";
+            case "Меховая жилетка рудокопа" -> "/images/items/shirt1.png";
             // шиты
-            case "Кожаный щит" -> "images/items/shield_skin.png";
-            case "Деревянный щит" -> "images/items/shield_wood.png";
-            case "Железный щит" -> "images/items/shield_iron.png";
-            default -> "images/items/default.png";
+            case "Кожаный щит" -> "/images/items/shield_skin.png";
+            case "Деревянный щит" -> "/images/items/shield_wood.png";
+            case "Железный щит" -> "/images/items/shield_iron.png";
+            default -> "/images/items/default.png";
         };
     }
 

@@ -1,5 +1,7 @@
 package MazeGame.cards;
 
+import MazeGame.MonsterTemplate;
+
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
@@ -22,6 +24,43 @@ public class CardPanel extends JPanel {
         JLabel label = new JLabel(icon);
         label.setHorizontalAlignment(SwingConstants.CENTER);
         add(label, BorderLayout.CENTER);
+
+        // Добавляем tooltip при наведении
+        setToolTipText(buildTooltip(card));
+    }
+
+    /**
+     * Создаёт красивый HTML-tooltip для карточки
+     */
+    private String buildTooltip(Card card) {
+        if (card == null) {
+            return "<html><b>Нет карты</b></html>";
+        }
+
+        StringBuilder sb = new StringBuilder("<html>");
+        sb.append("<b>").append(card.getName() != null ? card.getName() : "Без названия").append("</b><br>");
+
+        // Тип и редкость
+        sb.append("<font color='gray'>")
+                .append(card.getType() != null ? card.getType().name() : "?")
+                .append(" • ")
+                .append(card.getRarity() != null ? card.getRarity().name() : "?")
+                .append("</font><br>");
+
+        // Дополнительная информация (зависит от типа карты)
+        if (card instanceof SummonCard summon) {
+            MonsterTemplate tmpl = summon.getMonsterTemplate();
+            sb.append("Уровень: ").append(tmpl.level()).append("<br>");
+            sb.append("Здоровье: ").append(tmpl.maxHealth()).append("<br>");
+            sb.append("Атака: ").append(tmpl.attack()).append(" • Защита: ").append(tmpl.defense()).append("<br>");
+            sb.append("Тип: ").append(tmpl.unitType().name()).append("<br>");
+        } else {
+            // Для обычных карт — можно добавить свои поля, если есть
+            sb.append("Эффект: ").append(card.getEffect() != null ? card.getEffect().name() : "—").append("<br>");
+        }
+
+        sb.append("</html>");
+        return sb.toString();
     }
 
     /**
@@ -38,14 +77,11 @@ public class CardPanel extends JPanel {
             return createPlaceholderIcon();
         }
 
-        // Загружаем оригинальную картинку
         ImageIcon original = new ImageIcon(url);
-
-        // Уменьшаем до нужного размера, сохраняя пропорции
         Image scaled = original.getImage().getScaledInstance(
                 DEFAULT_WIDTH,
                 DEFAULT_HEIGHT,
-                Image.SCALE_SMOOTH  // плавное масштабирование
+                Image.SCALE_SMOOTH
         );
 
         return new ImageIcon(scaled);
@@ -60,7 +96,6 @@ public class CardPanel extends JPanel {
         placeholder.setHorizontalAlignment(SwingConstants.CENTER);
         placeholder.setFont(new Font("Arial", Font.ITALIC, 12));
 
-        // Создаём маленькую картинку-заглушку
         BufferedImage img = new BufferedImage(DEFAULT_WIDTH, DEFAULT_HEIGHT, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
         g2.setColor(new Color(40, 40, 40));
@@ -72,53 +107,7 @@ public class CardPanel extends JPanel {
         return new ImageIcon(img);
     }
 
-
-    /**
-     * Безопасно получает иконку карты
-     * Возвращает null, если путь пустой или null
-     */
-    private ImageIcon safeGetImageIcon(Card card) {
-        if (card == null || card.getImagePath() == null || card.getImagePath().isEmpty()) {
-            return null;
-        }
-
-        var url = getClass().getResource(card.getImagePath());
-        if (url == null) {
-            System.err.println("Картинка карты не найдена: " + card.getImagePath());
-            return null;
-        }
-
-        return new ImageIcon(url);
-    }
-
-    /**
-     * Плейсхолдер, если иконки нет
-     */
-    private Icon createPlaceholder() {
-        JLabel placeholder = new JLabel("Нет изображения");
-        placeholder.setForeground(Color.GRAY);
-        placeholder.setHorizontalAlignment(SwingConstants.CENTER);
-        placeholder.setFont(new Font("Arial", Font.ITALIC, 14));
-        return new Icon() {
-            @Override
-            public void paintIcon(Component c, Graphics g, int x, int y) {
-                placeholder.setSize(getWidth(), getHeight());
-                placeholder.paint(g);
-            }
-
-            @Override
-            public int getIconWidth() {
-                return 100;
-            }
-
-            @Override
-            public int getIconHeight() {
-                return 150;
-            }
-        };
-    }
-
-    // Если нужно кликабельность — добавь метод
+    // Кликабельность (если нужно)
     public void setOnClick(Runnable action) {
         addMouseListener(new MouseAdapter() {
             @Override

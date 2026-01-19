@@ -7,9 +7,10 @@ import MazeGame.item.Weapon;
 import javax.swing.*;
 import javax.swing.border.LineBorder;
 import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.List;
 import java.util.Objects;
-//+
+
 public class InventoryPanel extends JPanel {
 
     private static final int COLS = 5;
@@ -28,14 +29,14 @@ public class InventoryPanel extends JPanel {
         add(createEquipmentPanel(), BorderLayout.EAST);
     }
 
-    // ================= СЕТКА =================
-
     private JPanel createGridPanel() {
         JPanel grid = new JPanel(new GridLayout(ROWS, COLS, 8, 8));
         grid.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));
         grid.setBackground(new Color(30, 30, 30));
 
         List<Item> items = inventory.getItems();
+
+        System.out.println("InventoryPanel: в инвентаре предметов: " + items.size());
 
         for (int i = 0; i < ROWS * COLS; i++) {
             if (i < items.size()) {
@@ -54,28 +55,70 @@ public class InventoryPanel extends JPanel {
         button.setBackground(new Color(50, 50, 50));
         button.setFocusPainted(false);
 
-        // иконка
-        ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource(item.getIconPath())));
-        Image img = icon.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
-        button.setIcon(new ImageIcon(img));
+        // Безопасная загрузка иконки
+        ImageIcon icon = safeLoadIcon(item);
+        button.setIcon(icon);
 
-        // tooltip
+        // Подсказка
         button.setToolTipText(buildTooltip(item));
 
-        // подсветка если надет
+        // Подсветка если надет
         if (isEquipped(item)) {
             button.setBorder(new LineBorder(Color.GREEN, 2));
         } else {
             button.setBorder(new LineBorder(Color.DARK_GRAY, 1));
         }
 
-        // клик
+        // Клик → экипировка
         button.addActionListener(e -> {
             inventory.equipItem(index);
             refresh();
         });
 
         return button;
+    }
+
+    /**
+     * Безопасно загружает иконку предмета
+     * Если путь null или картинка не найдена → возвращает плейсхолдер
+     */
+    private ImageIcon safeLoadIcon(Item item) {
+        String path = item.getIconPath();
+
+        if (path == null || path.isEmpty()) {
+            System.err.println("У предмета нет иконки: " + item.getName());
+            return createPlaceholderIcon();
+        }
+
+        var url = getClass().getResource(path);
+        if (url == null) {
+            System.err.println("Иконка не найдена по пути: " + path + " (предмет: " + item.getName() + ")");
+            return createPlaceholderIcon();
+        }
+
+        ImageIcon original = new ImageIcon(url);
+        Image scaled = original.getImage().getScaledInstance(48, 48, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaled);
+    }
+
+    /**
+     * Плейсхолдер для предметов без иконки
+     */
+    private ImageIcon createPlaceholderIcon() {
+        JLabel placeholder = new JLabel("?");
+        placeholder.setForeground(Color.LIGHT_GRAY);
+        placeholder.setHorizontalAlignment(SwingConstants.CENTER);
+        placeholder.setFont(new Font("Arial", Font.BOLD, 24));
+
+        BufferedImage img = new BufferedImage(48, 48, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g2 = img.createGraphics();
+        g2.setColor(new Color(60, 60, 60));
+        g2.fillRect(0, 0, 48, 48);
+        placeholder.setSize(48, 48);
+        placeholder.paint(g2);
+        g2.dispose();
+
+        return new ImageIcon(img);
     }
 
     private JButton createEmptySlot() {
@@ -86,8 +129,6 @@ public class InventoryPanel extends JPanel {
         empty.setBorder(new LineBorder(Color.DARK_GRAY, 1));
         return empty;
     }
-
-    // ================= ЭКИПИРОВКА =================
 
     private JPanel createEquipmentPanel() {
         JPanel panel = new JPanel();
@@ -123,7 +164,7 @@ public class InventoryPanel extends JPanel {
         button.setBackground(new Color(50, 50, 50));
 
         if (item != null) {
-            ImageIcon icon = new ImageIcon(Objects.requireNonNull(getClass().getResource(item.getIconPath())));
+            ImageIcon icon = safeLoadIcon(item);  // используем ту же безопасную функцию
             Image img = icon.getImage().getScaledInstance(32, 32, Image.SCALE_SMOOTH);
             button.setIcon(new ImageIcon(img));
             button.setToolTipText(buildTooltip(item));
@@ -140,36 +181,26 @@ public class InventoryPanel extends JPanel {
         return slot;
     }
 
-    // ================= ВСПОМОГАТЕЛЬНОЕ =================
-
     private boolean isEquipped(Item item) {
-        return item == inventory.getEquippedWeapon()
-                || item == inventory.getEquippedTop()
-                || item == inventory.getEquippedShield()
-                || item == inventory.getEquippedBottom();
+        return item == inventory.getEquippedWeapon() ||
+                item == inventory.getEquippedTop() ||
+                item == inventory.getEquippedBottom() ||
+                item == inventory.getEquippedShield();
     }
 
     private String buildTooltip(Item item) {
         StringBuilder sb = new StringBuilder("<html>");
         sb.append("<b>").append(item.getName()).append("</b><br>");
-        sb.append("Прочность: ")
-                .append(item.getCurrentStrength())
-                .append("/")
-                .append(item.getStrength())
-                .append("<br>");
+        sb.append("Прочность: ").append(item.getCurrentStrength()).append("/").append(item.getStrength()).append("<br>");
 
-        if (item instanceof Weapon w) {
-            sb.append("Атака: +").append(w.getAttack());
-        }
-        if (item instanceof Armor a) {
-            sb.append("Защита: +").append(a.getProtection());
-        }
+        if (item instanceof Weapon w) sb.append("Атака: +").append(w.getAttack());
+        if (item instanceof Armor a) sb.append("Защита: +").append(a.getProtection());
 
         sb.append("</html>");
         return sb.toString();
     }
 
-    private void refresh() {
+    public void refresh() {
         removeAll();
         add(createGridPanel(), BorderLayout.CENTER);
         add(createEquipmentPanel(), BorderLayout.EAST);

@@ -13,10 +13,6 @@ public class BattleResult {
     private boolean battleOver = false;
     private BattleOutcome outcome;
     private BattleReward reward;
-    private final List addDrop = new ArrayList<>();
-
-    private List<Item> items = new ArrayList<>();
-    private List<Card> cards = new ArrayList<>();
 
 
     public void addMessage(String msg) {
@@ -54,22 +50,6 @@ public class BattleResult {
 
     public BattleReward getReward() {
         return reward;
-    }
-
-    public void setDroppedItems(List<Item> items) {
-        this.items = items;
-    }
-
-    public void setDroppedCards(List<Card> cards) {
-        this.cards = cards;
-    }
-
-    public List<Item> getDroppedItems() {
-        return items;
-    }
-
-    public List<Card> getDroppedCards() {
-        return cards;
     }
 
 

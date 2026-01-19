@@ -2,70 +2,70 @@ package MazeGame.cards;
 
 import MazeGame.item.Item;
 import MazeGame.item.ItemFactory;
+import MazeGame.Monster;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
-//++
-public class CardDropService {
 
+public class CardDropService {
 
     private static final Random RANDOM = new Random();
 
-    // Шанс выпадения карты призыва (почти всегда)
-    private static final double SUMMON_CARD_DROP_CHANCE = 1.00; // 100%
+    // Шанс выпадения суммона — всегда 100%
+    private static final double SUMMON_CARD_DROP_CHANCE = 1.00;
 
-    // Шанс выпадения обычной карты (Buff/Curse/Poison/etc) или предмета
-    private static final double CARD_OR_ITEM_DROP_CHANCE = 0.65; // 65%
+    // Общий шанс выпадения дополнительного (карта или предмет) — 65%
+    private static final double ADDITIONAL_DROP_CHANCE = 0.65;
 
-    // Максимальное количество обычных карт/предметов за один дроп (кроме summon)
-    private static final int MAX_ADDITIONAL_DROPS = 3;
+    // Шансы по раритету (кумулятивно суммируются до 76%, остальное — "ничего" или ниже)
+    private static final double[] RARITY_CHANCES = {
+            0.25,  // GRAY
+            0.20,  // GREEN
+            0.15,  // BLUE
+            0.10,  // VIOLETTE
+            0.05,  // RED
+            0.01   // GOLD
+    };
 
     /**
      * Генерирует дроп после победы над монстром
      *
-     * @param monsterLevel уровень монстра (1..5)
-     * @return список выпавших карт и/или предметов
+     * @param monster монстр (для ID и уровня)
+     * @return список выпавших карт/предметов (1 суммон + макс. 1 доп.)
      */
-    public List<DropEntry> generateDrop(int monsterLevel) {
+    public List<DropEntry> generateDrop(Monster monster) {
         List<DropEntry> drops = new ArrayList<>();
 
+        int monsterLevel = monster.getLevel();
+        int monsterId = monster.getId();
         CardRarity maxRarity = getMaxRarityByMonsterLevel(monsterLevel);
 
-        // Всегда 1 призыв
-        SummonCard summon = pickRandomSummonCard(monsterLevel);
+        // Всегда 1 суммон по ID монстра
+        SummonCard summon = pickSummonByMonsterId(monster.getId());
         if (summon != null) {
             drops.add(new DropEntry(summon));
         }
 
-        // Почти всегда что-то ещё (85–95%)
-        if (RANDOM.nextDouble() < 0.90) {
+        // Дополнительный дроп (карта или предмет) — максимум один
+        if (RANDOM.nextDouble() < ADDITIONAL_DROP_CHANCE) {
             // 60% шанс на карту, 40% на предмет
             if (RANDOM.nextDouble() < 0.60) {
                 Card card = pickRandomNonSummonCard(maxRarity);
-                if (card != null) drops.add(new DropEntry(card));
+                if (card != null) {
+                    drops.add(new DropEntry(card));
+                }
             } else {
                 Item item = pickRandomItem(maxRarity);
-                if (item != null) drops.add(new DropEntry(item));
-            }
-        }
-
-        // Довольно часто — второй дополнительный дроп (45–55%)
-        if (RANDOM.nextDouble() < 0.50) {
-            if (RANDOM.nextDouble() < 0.55) {
-                Card card = pickRandomNonSummonCard(maxRarity);
-                if (card != null) drops.add(new DropEntry(card));
-            } else {
-                Item item = pickRandomItem(maxRarity);
-                if (item != null) drops.add(new DropEntry(item));
+                if (item != null) {
+                    drops.add(new DropEntry(item));
+                }
             }
         }
 
         return drops;
     }
 
-    // -------------------------------------------------------------------------
-    // Вспомогательные методы
     // -------------------------------------------------------------------------
 
     private CardRarity getMaxRarityByMonsterLevel(int level) {
@@ -79,11 +79,28 @@ public class CardDropService {
         };
     }
 
+    /**
+     * Выбирает суммон-карту по ID монстра (ID карты = ID монстра / 10)
+     * Если не найден — случайный суммон
+     */
+    private SummonCard pickSummonByMonsterId(int monsterId) {
+        int baseId = monsterId / 10;
+
+        // Ищем суммон по baseId
+        for (SummonCard card : SummonFactory.ALL_SUMMON_CARDS) {
+            if (card.getId() == baseId) {
+                return card;
+            }
+        }
+
+        // Если не нашли — случайный
+        return SummonFactory.ALL_SUMMON_CARDS.get(RANDOM.nextInt(SummonFactory.ALL_SUMMON_CARDS.size()));
+    }
+
     private SummonCard pickRandomSummonCard(int monsterLevel) {
         List<SummonCard> candidates = SummonFactory.ALL_SUMMON_CARDS.stream()
                 .filter(card -> {
                     int cardLevel = card.getMonsterTemplate().level();
-                    // ±1 уровень от монстра — основной диапазон
                     return cardLevel >= monsterLevel - 1 && cardLevel <= monsterLevel + 1;
                 })
                 .toList();
@@ -98,7 +115,6 @@ public class CardDropService {
     private Card pickRandomNonSummonCard(CardRarity maxRarity) {
         List<Card> candidates = CardLibrary.getAllCards().stream()
                 .filter(c -> c.getRarity().compareTo(maxRarity) <= 0)
-                // Золотые обычные карты не дропаются (только consumable могут быть золотыми)
                 .filter(c -> !(c.getRarity() == CardRarity.GOLD && !(c instanceof ConsumableCard)))
                 .toList();
 

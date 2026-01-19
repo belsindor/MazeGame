@@ -91,4 +91,18 @@ public class CardCollection {
     public boolean isEmpty() {
         return false;
     }
+
+    public void removeCard(Card card) {
+        if (card == null) return;
+
+        Integer count = regularCards.get(card);
+        if (count != null) {
+            if (count > 1) {
+                regularCards.put(card, count - 1);
+            } else {
+                regularCards.remove(card);
+            }
+            System.out.println("Удалена карта из коллекции: " + card.getId());
+        }
+    }
 }

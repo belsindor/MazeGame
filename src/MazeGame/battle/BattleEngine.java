@@ -13,9 +13,6 @@ public class BattleEngine {
     private final BattleSide enemySide;
     private final BattleContext context;
 
-    /**
-     * Конструктор без SummonFactory — суммон уже выбран и передан в context извне
-     */
     public BattleEngine(Player player, Monster monster) {
         this.playerSide = new BattleSide((BattleUnit) player);
         this.enemySide = new BattleSide(monster);
@@ -77,8 +74,12 @@ public class BattleEngine {
             BattleReward reward = createReward(enemySide.getUnit().getLevel());
             result.setReward(reward);
 
-            List<CardDropService.DropEntry> drops = new CardDropService().generateDrop(enemySide.getUnit().getLevel());
-            processDroppedCards((Player) playerSide.getUnit(), drops);
+            // Генерируем дроп
+            Monster enemyMonster = (Monster) enemySide.getUnit();
+            List<CardDropService.DropEntry> drops = new CardDropService().generateDrop(enemyMonster);
+
+            // Обрабатываем дроп с защитой от дублирования суммона
+            processDroppedCards((Player) playerSide.getUnit(), drops, result);
         } else if (!playerSide.isAlive()) {
             result.setPlayerLose();
             battleEnded = true;
@@ -91,7 +92,6 @@ public class BattleEngine {
                 summon.clearTemporaryEffects();
             }
 
-            // Сбрасываем выбор суммона после завершения боя
             playerSide.getUnit().getSummonDeck().resetSelection();
         }
 
@@ -100,29 +100,59 @@ public class BattleEngine {
         return result;
     }
 
-    private void processDroppedCards(Player player, List<CardDropService.DropEntry> drops) {
-        if (drops == null || drops.isEmpty()) return;
+    /**
+     * Обработка дропа — с защитой от двойного добавления суммона
+     */
+    private void processDroppedCards(Player player, List<CardDropService.DropEntry> drops, BattleResult result) {
+        if (drops == null || drops.isEmpty()) {
+            System.out.println("Дропа нет");
+            return;
+        }
 
         CardCollection cardCollection = player.getCardCollection();
         SummonDeck summonDeck = player.getSummonDeck();
+        CombatDeck combatDeck = player.getCombatDeck();
+
+        boolean summonAdded = false;  // ← ФЛАГ: добавили ли уже суммон
+
+        System.out.println("Обработка дропа: " + drops.size() + " элементов");
 
         for (CardDropService.DropEntry entry : drops) {
             if (entry.getSummonCard() != null) {
-                summonDeck.addSummon(entry.getSummonCard());
-            } else if (entry.getCard() != null) {
-                cardCollection.addCard(entry.getCard());
-            } else if (entry.getItem() != null) {
-                player.addItem(entry.getItem());
+                if (!summonAdded) {  // Добавляем ТОЛЬКО ПЕРВЫЙ суммон
+                    SummonCard summon = entry.getSummonCard();
+                    cardCollection.addCard(summon);
+                    summonDeck.addSummon(summon);
+                    System.out.println("Дроп суммона: " + summon.getName());
+                    summonAdded = true;  // Блокируем дальнейшее добавление
+                } else {
+                    System.out.println("Пропущен дублирующий суммон: " + entry.getSummonCard().getName());
+                }
+            }
+            else if (entry.getCard() != null) {
+                Card card = entry.getCard();
+                cardCollection.addCard(card);
+                combatDeck.addCard(card);
+                System.out.println("Дроп карты: " + card.getId());
+            }
+            else if (entry.getItem() != null) {
+                player.getInventory().addItem(entry.getItem());
+                System.out.println("Дроп предмета: " + entry.getItem().getName());
             }
         }
+
+        // Обновляем колоды после дропа
+        summonDeck.updateFromCollection(cardCollection);
+        combatDeck.updateFromCollection(cardCollection);
+
+        System.out.println("После дропа в инвентаре предметов: " + player.getInventory().getSize());
     }
 
     private BattleReward createReward(int monsterLevel) {
-        int exp = monsterLevel * 20 + (monsterLevel * 10); // можно усложнить формулу
-        return new BattleReward(exp, List.of()); // предметы пока не добавляем в базовую награду
+        int exp = monsterLevel * 20 + (monsterLevel * 10);
+        return new BattleReward(exp, List.of());
     }
 
-    // Полезный геттер для доступа к контексту (нужен в BattleWindow)
     public BattleContext getContext() {
         return context;
     }
