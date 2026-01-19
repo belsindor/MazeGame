@@ -5,5 +5,6 @@ public enum CardType {
     SUMMON,
     BUFF,
     CURSE,
-    CONSUMABLE
+    CONSUMABLE,
+    NONE
 }

@@ -231,6 +231,7 @@ public class VisualMazeGame {
                     player.getCardCollection().removeCard(startingSummon);
 
                     // Удаляем из активных суммонов по типу
+                    player.getCardCollection().removeCardById(10000);  // ID ancestor_spirit = 10000
                     player.getSummonDeck().removeSummon(startingSummon.getUnitType());
 
                     // Помечаем как использованный

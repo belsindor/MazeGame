@@ -3,13 +3,13 @@ package MazeGame.battle;
 import MazeGame.HUDMessageManager;
 import MazeGame.Monster;
 import MazeGame.Player;
-import MazeGame.cards.Card;
-import MazeGame.cards.CombatDeckPanel;
+import MazeGame.cards.*;
 
 import javax.swing.*;
 import java.awt.*;
+import java.util.Map;
 
-public class BattleWindow extends JDialog {
+public class BattleWindow extends JFrame {
 
     private final BattleEngine battleEngine;
     private final Player player;
@@ -20,160 +20,196 @@ public class BattleWindow extends JDialog {
     private BattleResult lastResult;
     private BattleOutcome outcome;
 
-    // UI-компоненты для динамического обновления
+    // HP-полоски
     private JProgressBar playerHpBar;
     private JProgressBar enemyHpBar;
     private JProgressBar summonHpBar;
 
-    /**
-     * Конструктор: owner — это главное окно игры (JFrame)
-     */
     public BattleWindow(JFrame owner, Player player, Monster enemy, Monster summon) {
-        super(owner, "Битва с " + enemy.getName(), ModalityType.APPLICATION_MODAL);
+        super("Битва с " + enemy.getName());
 
         this.player = player;
         this.enemy = enemy;
         this.summon = summon;
 
-        // Создаём движок боя
         this.battleEngine = new BattleEngine(player, enemy);
-
-        // Если суммон выбран — устанавливаем его в контекст
         if (summon != null) {
             battleEngine.getContext().setSummon(summon);
         }
 
-        setSize(1000, 700);
-        setLocationRelativeTo(owner);
+        setExtendedState(JFrame.MAXIMIZED_BOTH); // на весь экран
+        setUndecorated(true); // без рамки (опционально — можно убрать)
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
+        setLayout(new BorderLayout());
 
         initUI();
+
+        HUDMessageManager.show("⚔ БОЙ НАЧАЛСЯ!", new Color(220, 40, 40), 50);
     }
 
     private void initUI() {
-        setLayout(new BorderLayout(10, 10));
         getContentPane().setBackground(new Color(20, 20, 35));
 
-        // Верхняя панель
-        add(createTopInfoPanel(), BorderLayout.NORTH);
+        // Верх: монстр
+        add(createEnemyPanel(), BorderLayout.NORTH);
 
-        // Центральная часть — бойцы
-        add(createBattlefieldPanel(), BorderLayout.CENTER);
-
-        // Нижняя часть — карты + кнопка атаки
-        add(createActionPanel(), BorderLayout.SOUTH);
-
-        HUDMessageManager.show("⚔ БОЙ НАЧАЛСЯ!", new Color(220, 40, 40), 42);
-    }
-
-    private JPanel createTopInfoPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 15, 10, 15));
-        panel.setBackground(new Color(40, 40, 60));
-
-        JLabel title = new JLabel("Битва с " + enemy.getName() + " (Lv. " + enemy.getLevel() + ")", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 24));
-        title.setForeground(Color.WHITE);
-        panel.add(title, BorderLayout.CENTER);
-
-        return panel;
-    }
-
-    private JPanel createBattlefieldPanel() {
-        JPanel panel = new JPanel(new GridLayout(1, 3, 30, 0));
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 30, 20, 30));
-        panel.setOpaque(false);
-
-        // Игрок
-        panel.add(createUnitPanel((BattleUnit) player, "Вы", true, playerHpBar = new JProgressBar()));
-
-        // VS
-        JLabel vs = new JLabel("VS", SwingConstants.CENTER);
-        vs.setFont(new Font("Arial", Font.BOLD, 48));
-        vs.setForeground(new Color(220, 80, 80));
-        panel.add(vs);
-
-        // Враг
-        panel.add(createUnitPanel(enemy, enemy.getName(), false, enemyHpBar = new JProgressBar()));
-
-        // Суммон (если есть)
+        // Центр: суммон (если есть)
         if (summon != null) {
-            JPanel summonPanel = createUnitPanel(summon, summon.getName(), true, summonHpBar = new JProgressBar());
-            summonPanel.setBorder(BorderFactory.createLineBorder(new Color(100, 200, 255), 3));
-            panel.add(summonPanel);
+            add(createSummonPanel(), BorderLayout.CENTER);
+        } else {
+            add(new JPanel(), BorderLayout.CENTER); // пустое место, если суммона нет
         }
 
+        // Низ: боевые карты + кнопка хода
+        add(createBottomPanel(), BorderLayout.SOUTH);
+    }
+
+    private JPanel createEnemyPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
+
+        // Картинка монстра
+        JLabel enemyLabel = new JLabel();
+        ImageIcon enemyIcon = getMonsterIcon(enemy);
+        enemyLabel.setIcon(enemyIcon);
+        enemyLabel.setHorizontalAlignment(SwingConstants.CENTER);
+
+        // Tooltip с характеристиками
+        enemyLabel.setToolTipText(buildMonsterTooltip(enemy));
+
+        // HP-полоска под монстром
+        enemyHpBar = new JProgressBar(0, enemy.getMaxHealth());
+        enemyHpBar.setValue(enemy.getHealth());
+        enemyHpBar.setStringPainted(true);
+        enemyHpBar.setString(enemy.getHealth() + " / " + enemy.getMaxHealth());
+        enemyHpBar.setForeground(new Color(220, 60, 60));
+        enemyHpBar.setPreferredSize(new Dimension(400, 30));
+
+        panel.add(enemyLabel, BorderLayout.CENTER);
+        panel.add(enemyHpBar, BorderLayout.SOUTH);
+
         return panel;
     }
 
-    private JPanel createUnitPanel(BattleUnit unit, String title, boolean isPlayer, JProgressBar hpBar) {
-        JPanel panel = new JPanel(new BorderLayout(0, 10));
-        panel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createLineBorder(isPlayer ? new Color(60, 180, 80) : new Color(180, 60, 60), 2),
-                BorderFactory.createEmptyBorder(10, 10, 10, 10)
-        ));
-        panel.setBackground(new Color(35, 35, 55));
+    private JPanel createSummonPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
 
-        JLabel nameLabel = new JLabel(title + " (Lv. " + unit.getLevel() + ")", SwingConstants.CENTER);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
-        nameLabel.setForeground(Color.WHITE);
-        panel.add(nameLabel, BorderLayout.NORTH);
+        // Картинка суммона
+        JLabel summonLabel = new JLabel();
+        ImageIcon summonIcon = getMonsterIcon(summon);
+        summonLabel.setIcon(summonIcon);
+        summonLabel.setHorizontalAlignment(SwingConstants.CENTER);
 
-        // Полоска HP
-        hpBar.setMaximum(unit.getMaxHealth());
-        hpBar.setValue(unit.getHealth());
-        hpBar.setString(unit.getHealth() + " / " + unit.getMaxHealth());
-        hpBar.setStringPainted(true);
-        hpBar.setForeground(isPlayer ? new Color(80, 220, 100) : new Color(220, 60, 60));
-        panel.add(hpBar, BorderLayout.CENTER);
+        // Tooltip с характеристиками
+        summonLabel.setToolTipText(buildMonsterTooltip(summon));
+
+        // HP-полоска над суммоном
+        summonHpBar = new JProgressBar(0, summon.getMaxHealth());
+        summonHpBar.setValue(summon.getHealth());
+        summonHpBar.setStringPainted(true);
+        summonHpBar.setString(summon.getHealth() + " / " + summon.getMaxHealth());
+        summonHpBar.setForeground(new Color(100, 200, 255));
+        summonHpBar.setPreferredSize(new Dimension(400, 30));
+
+        panel.add(summonHpBar, BorderLayout.NORTH);
+        panel.add(summonLabel, BorderLayout.CENTER);
 
         return panel;
     }
 
-    private JPanel createActionPanel() {
-        JPanel panel = new JPanel(new BorderLayout(10, 10));
-        panel.setBorder(BorderFactory.createEmptyBorder(10, 20, 20, 20));
-        panel.setBackground(new Color(25, 25, 45));
+    private JPanel createBottomPanel() {
+        JPanel panel = new JPanel(new BorderLayout());
+        panel.setOpaque(false);
+        panel.setBorder(BorderFactory.createEmptyBorder(20, 50, 40, 50));
 
-        // Панель с картами
-        CombatDeckPanel deckPanel = new CombatDeckPanel(
-                player.getCombatDeck(),
-                card -> {
-                    selectedCard = card;
-                    performTurn();
-                }
-        );
-        JScrollPane scroll = new JScrollPane(deckPanel);
-        scroll.setPreferredSize(new Dimension(0, 200));
-        panel.add(scroll, BorderLayout.CENTER);
+        // Панель с 8 слотами для боевых карт
+        JPanel cardsPanel = new JPanel(new GridLayout(1, 8, 15, 0));
+        cardsPanel.setOpaque(false);
 
-        // Кнопка "Атаковать без карты"
-        JButton attackButton = new JButton("Атаковать без карты");
-        attackButton.setFont(new Font("Arial", Font.BOLD, 16));
-        attackButton.setBackground(new Color(180, 60, 60));
-        attackButton.setForeground(Color.WHITE);
-        attackButton.addActionListener(e -> {
-            selectedCard = null;
+        CombatDeck deck = player.getCombatDeck();
+        Map<TypeEffect, Card> activeCards = deck.getActiveCards();
+
+        for (int i = 0; i < 8; i++) {
+            Card card = null;
+            if (i < activeCards.size()) {
+                card = activeCards.values().stream().toList().get(i);
+            }
+
+            CardPanel cardPanel = new CardPanel(card != null ? card : createDummyCard());
+            cardPanel.setOnClick(() -> {
+//                selectedCard = card;
+                performTurn();
+            });
+
+            cardsPanel.add(cardPanel);
+        }
+
+        panel.add(cardsPanel, BorderLayout.CENTER);
+
+        // Кнопка "Сделать ход"
+        JButton turnButton = new JButton("Сделать ход");
+        turnButton.setFont(new Font("Arial", Font.BOLD, 20));
+        turnButton.setPreferredSize(new Dimension(200, 80));
+        turnButton.setBackground(new Color(80, 180, 80));
+        turnButton.setForeground(Color.WHITE);
+        turnButton.addActionListener(e -> {
+            selectedCard = null; // атака без карты
             performTurn();
         });
-        panel.add(attackButton, BorderLayout.EAST);
+
+        panel.add(turnButton, BorderLayout.EAST);
 
         return panel;
+    }
+
+    private ImageIcon getMonsterIcon(Monster monster) {
+        String path = monster.getImagePath();
+        var url = getClass().getResource(path);
+        if (url == null) {
+            return new ImageIcon(); // пустая иконка
+        }
+        ImageIcon original = new ImageIcon(url);
+        Image scaled = original.getImage().getScaledInstance(300, 450, Image.SCALE_SMOOTH);
+        return new ImageIcon(scaled);
+    }
+
+    private String buildMonsterTooltip(Monster monster) {
+        StringBuilder sb = new StringBuilder("<html>");
+        sb.append("<b>").append(monster.getName()).append("</b><br>");
+        sb.append("Уровень: ").append(monster.getLevel()).append("<br>");
+        sb.append("Здоровье: ").append(monster.getHealth()).append(" / ").append(monster.getMaxHealth()).append("<br>");
+        sb.append("Атака: ").append(monster.getTotalAttack()).append("<br>");
+        sb.append("Защита: ").append(monster.getTotalDefense()).append("<br>");
+        sb.append("</html>");
+        return sb.toString();
+    }
+
+    // Заглушка для пустых слотов карт
+    private Card createDummyCard() {
+        return new Card(0, CardType.NONE, CardRarity.GRAY, TypeEffect.NONE, "") {
+            @Override
+            public void play(BattleContext context, BattleResult result) { }
+
+            @Override
+            public String getName() {
+                return "";
+            }
+        };
     }
 
     private void performTurn() {
         PlayerTurn turn = new PlayerTurn(selectedCard);
         lastResult = battleEngine.resolveTurn(turn);
 
-        // Показываем сообщения
         for (String msg : lastResult.messages) {
             HUDMessageManager.show(msg, Color.WHITE, 24);
         }
 
-        // Обновляем HP-бары
         updateHpBars();
 
-        // Проверяем конец боя
         if (lastResult.isBattleOver()) {
             outcome = lastResult.getOutcome();
 
@@ -181,16 +217,13 @@ public class BattleWindow extends JDialog {
             Color color = (outcome == BattleOutcome.PLAYER_WIN) ? new Color(80, 220, 100) : new Color(220, 60, 60);
             HUDMessageManager.show(msg, color, 50);
 
-            dispose(); // закрываем окно боя
+            dispose();
         }
 
         selectedCard = null;
     }
 
     private void updateHpBars() {
-        playerHpBar.setValue(player.getHealth());
-        playerHpBar.setString(player.getHealth() + " / " + player.getMaxHealth());
-
         enemyHpBar.setValue(enemy.getHealth());
         enemyHpBar.setString(enemy.getHealth() + " / " + enemy.getMaxHealth());
 

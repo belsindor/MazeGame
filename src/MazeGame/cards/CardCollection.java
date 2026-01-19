@@ -105,4 +105,8 @@ public class CardCollection {
             System.out.println("Удалена карта из коллекции: " + card.getId());
         }
     }
+
+    public void removeCardById(int id) {
+        regularCards.keySet().removeIf(card -> card.getId() == id);
+    }
 }

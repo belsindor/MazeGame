@@ -29,6 +29,7 @@ public class Player implements BattleUnit {
     private final CardCollection cardCollection = new CardCollection();
     private final SummonDeck summonDeck = new SummonDeck();
     private boolean hasUsedStartingSummon = false;
+    private SummonCard startingSummon;
 
     // Текущая боевая колода (выбранные карты для боя, без суммонов)
     private CombatDeck combatDeck;

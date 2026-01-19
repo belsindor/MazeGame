@@ -10,7 +10,7 @@ import java.util.Map;
 public class CombatDeck {
 
     // Активные боевые карты по эффектам (одна на эффект — лучшая по раритету)
-    private final Map<TypeEffect, Card> active = new EnumMap<>(TypeEffect.class);
+    private final Map<TypeEffect, Card> cards = new EnumMap<>(TypeEffect.class);
 
     public CombatDeck() {
         // Можно добавить начальные карты, если нужно (по умолчанию пусто)
@@ -26,10 +26,10 @@ public class CombatDeck {
         TypeEffect effect = getTypeEffectById(newCard.getId());
         if (effect == null) return;  // Неизвестный эффект — игнорируем
 
-        Card current = active.get(effect);
+        Card current = cards.get(effect);
 
         if (current == null || newCard.getRarity().ordinal() > current.getRarity().ordinal()) {
-            active.put(effect, newCard);
+            cards.put(effect, newCard);
         }
     }
 
@@ -38,7 +38,7 @@ public class CombatDeck {
      * Вызывается после каждого добавления карт в коллекцию (при дропе, покупке и т.д.)
      */
     public void updateFromCollection(CardCollection collection) {
-        active.clear();
+        cards.clear();
 
         Map<TypeEffect, Card> bestByEffect = new EnumMap<>(TypeEffect.class);
 
@@ -56,8 +56,8 @@ public class CombatDeck {
             }
         }
 
-        active.putAll(bestByEffect);
-        System.out.println("CombatDeck обновлена: активных карт = " + active.size());
+        cards.putAll(bestByEffect);
+        System.out.println("CombatDeck обновлена: активных карт = " + cards.size());
     }
 
     // Вспомогательный метод: определяет эффект по id карты (можно улучшить по мере добавления новых карт)
@@ -77,26 +77,26 @@ public class CombatDeck {
 
     // Геттеры и утилиты
     public Card getActiveByEffect(TypeEffect effect) {
-        return active.get(effect);
+        return cards.get(effect);
     }
 
     public Map<TypeEffect, Card> getActiveCards() {
-        return new EnumMap<>(active);
+        return new EnumMap<>(cards);
     }
 
     public boolean hasCardForEffect(TypeEffect effect) {
-        return active.containsKey(effect);
+        return cards.containsKey(effect);
     }
 
     public void removeCard(TypeEffect effect) {
-        active.remove(effect);
+        cards.remove(effect);
     }
 
     public void clear() {
-        active.clear();
+        cards.clear();
     }
 
     public int size() {
-        return active.size();
+        return cards.size();
     }
 }

@@ -113,7 +113,7 @@ public class BattleEngine {
         SummonDeck summonDeck = player.getSummonDeck();
         CombatDeck combatDeck = player.getCombatDeck();
 
-        boolean summonAdded = false;  // ← ФЛАГ: добавили ли уже суммон
+        boolean summonAdded = false;  // добавили ли уже суммон
 
         System.out.println("Обработка дропа: " + drops.size() + " элементов");
 
