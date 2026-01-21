@@ -43,4 +43,5 @@ public interface BattleUnit {
     void setUnitType(UnitType type);
 
     SummonDeck getSummonDeck();
+
 }

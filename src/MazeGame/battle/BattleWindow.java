@@ -20,10 +20,14 @@ public class BattleWindow extends JFrame {
     private BattleResult lastResult;
     private BattleOutcome outcome;
 
-    // HP-полоски
-    private JProgressBar playerHpBar;
-    private JProgressBar enemyHpBar;
-    private JProgressBar summonHpBar;
+    // Панели юнитов (содержат картинку + красную HP-полоску)
+    private UnitPanel enemyPanel;
+    private UnitPanel summonPanel; // может быть null
+
+    // Анимация урона (если потом добавишь)
+    private Timer attackAnimationTimer;
+    private int animationStep = 0;
+    private JLabel damageLabel;
 
     public BattleWindow(JFrame owner, Player player, Monster enemy, Monster summon) {
         super("Битва с " + enemy.getName());
@@ -37,8 +41,8 @@ public class BattleWindow extends JFrame {
             battleEngine.getContext().setSummon(summon);
         }
 
-        setExtendedState(JFrame.MAXIMIZED_BOTH); // на весь экран
-        setUndecorated(true); // без рамки (опционально — можно убрать)
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
+        setUndecorated(true);
         setDefaultCloseOperation(DO_NOTHING_ON_CLOSE);
         setLayout(new BorderLayout());
 
@@ -48,76 +52,32 @@ public class BattleWindow extends JFrame {
     }
 
     private void initUI() {
-        getContentPane().setBackground(new Color(20, 20, 35));
+        // Фон battle.jpg на весь экран
+        JLabel background = new JLabel();
+        ImageIcon bgIcon = getBackgroundImage();
+        if (bgIcon != null) {
+            background.setIcon(bgIcon);
+        }
+        background.setLayout(new BorderLayout());
+        setContentPane(background);
 
-        // Верх: монстр
-        add(createEnemyPanel(), BorderLayout.NORTH);
+        // Верх: монстр + красная HP-полоска под ним
+        enemyPanel = new UnitPanel(enemy, enemy.getName(), new Color(180, 60, 60));
+        enemyPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
+        add(enemyPanel, BorderLayout.NORTH);
 
-        // Центр: суммон (если есть)
+        // Центр: суммон + красная HP-полоска под ним
         if (summon != null) {
-            add(createSummonPanel(), BorderLayout.CENTER);
+            summonPanel = new UnitPanel(summon, summon.getName(), new Color(100, 200, 255));
+            summonPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
+            add(summonPanel, BorderLayout.CENTER);
         } else {
-            add(new JPanel(), BorderLayout.CENTER); // пустое место, если суммона нет
+            // Если суммона нет — пустое пространство
+            add(new JPanel(), BorderLayout.CENTER);
         }
 
-        // Низ: боевые карты + кнопка хода
+        // Низ: панель карт + кнопка "Сделать ход"
         add(createBottomPanel(), BorderLayout.SOUTH);
-    }
-
-    private JPanel createEnemyPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-        panel.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
-
-        // Картинка монстра
-        JLabel enemyLabel = new JLabel();
-        ImageIcon enemyIcon = getMonsterIcon(enemy);
-        enemyLabel.setIcon(enemyIcon);
-        enemyLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        // Tooltip с характеристиками
-        enemyLabel.setToolTipText(buildMonsterTooltip(enemy));
-
-        // HP-полоска под монстром
-        enemyHpBar = new JProgressBar(0, enemy.getMaxHealth());
-        enemyHpBar.setValue(enemy.getHealth());
-        enemyHpBar.setStringPainted(true);
-        enemyHpBar.setString(enemy.getHealth() + " / " + enemy.getMaxHealth());
-        enemyHpBar.setForeground(new Color(220, 60, 60));
-        enemyHpBar.setPreferredSize(new Dimension(400, 30));
-
-        panel.add(enemyLabel, BorderLayout.CENTER);
-        panel.add(enemyHpBar, BorderLayout.SOUTH);
-
-        return panel;
-    }
-
-    private JPanel createSummonPanel() {
-        JPanel panel = new JPanel(new BorderLayout());
-        panel.setOpaque(false);
-        panel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
-
-        // Картинка суммона
-        JLabel summonLabel = new JLabel();
-        ImageIcon summonIcon = getMonsterIcon(summon);
-        summonLabel.setIcon(summonIcon);
-        summonLabel.setHorizontalAlignment(SwingConstants.CENTER);
-
-        // Tooltip с характеристиками
-        summonLabel.setToolTipText(buildMonsterTooltip(summon));
-
-        // HP-полоска над суммоном
-        summonHpBar = new JProgressBar(0, summon.getMaxHealth());
-        summonHpBar.setValue(summon.getHealth());
-        summonHpBar.setStringPainted(true);
-        summonHpBar.setString(summon.getHealth() + " / " + summon.getMaxHealth());
-        summonHpBar.setForeground(new Color(100, 200, 255));
-        summonHpBar.setPreferredSize(new Dimension(400, 30));
-
-        panel.add(summonHpBar, BorderLayout.NORTH);
-        panel.add(summonLabel, BorderLayout.CENTER);
-
-        return panel;
     }
 
     private JPanel createBottomPanel() {
@@ -125,7 +85,7 @@ public class BattleWindow extends JFrame {
         panel.setOpaque(false);
         panel.setBorder(BorderFactory.createEmptyBorder(20, 50, 40, 50));
 
-        // Панель с 8 слотами для боевых карт
+        // 8 слотов для карт
         JPanel cardsPanel = new JPanel(new GridLayout(1, 8, 15, 0));
         cardsPanel.setOpaque(false);
 
@@ -133,14 +93,11 @@ public class BattleWindow extends JFrame {
         Map<TypeEffect, Card> activeCards = deck.getActiveCards();
 
         for (int i = 0; i < 8; i++) {
-            Card card = null;
-            if (i < activeCards.size()) {
-                card = activeCards.values().stream().toList().get(i);
-            }
+            Card card = (i < activeCards.size()) ? activeCards.values().stream().toList().get(i) : null;
 
             CardPanel cardPanel = new CardPanel(card != null ? card : createDummyCard());
             cardPanel.setOnClick(() -> {
-//                selectedCard = card;
+                selectedCard = card;
                 performTurn();
             });
 
@@ -156,7 +113,7 @@ public class BattleWindow extends JFrame {
         turnButton.setBackground(new Color(80, 180, 80));
         turnButton.setForeground(Color.WHITE);
         turnButton.addActionListener(e -> {
-            selectedCard = null; // атака без карты
+            selectedCard = null;
             performTurn();
         });
 
@@ -165,38 +122,38 @@ public class BattleWindow extends JFrame {
         return panel;
     }
 
+    private ImageIcon getBackgroundImage() {
+        var url = getClass().getResource("/images/battle.jpg");
+        if (url == null) {
+            System.err.println("Фон battle.jpg не найден");
+            return null;
+        }
+        ImageIcon original = new ImageIcon(url);
+        Image scaled = original.getImage().getScaledInstance(
+                Toolkit.getDefaultToolkit().getScreenSize().width,
+                Toolkit.getDefaultToolkit().getScreenSize().height,
+                Image.SCALE_SMOOTH);
+        return new ImageIcon(scaled);
+    }
+
     private ImageIcon getMonsterIcon(Monster monster) {
         String path = monster.getImagePath();
         var url = getClass().getResource(path);
         if (url == null) {
-            return new ImageIcon(); // пустая иконка
+            System.err.println("Картинка монстра не найдена: " + path);
+            return new ImageIcon();
         }
         ImageIcon original = new ImageIcon(url);
         Image scaled = original.getImage().getScaledInstance(300, 450, Image.SCALE_SMOOTH);
         return new ImageIcon(scaled);
     }
 
-    private String buildMonsterTooltip(Monster monster) {
-        StringBuilder sb = new StringBuilder("<html>");
-        sb.append("<b>").append(monster.getName()).append("</b><br>");
-        sb.append("Уровень: ").append(monster.getLevel()).append("<br>");
-        sb.append("Здоровье: ").append(monster.getHealth()).append(" / ").append(monster.getMaxHealth()).append("<br>");
-        sb.append("Атака: ").append(monster.getTotalAttack()).append("<br>");
-        sb.append("Защита: ").append(monster.getTotalDefense()).append("<br>");
-        sb.append("</html>");
-        return sb.toString();
-    }
-
-    // Заглушка для пустых слотов карт
     private Card createDummyCard() {
         return new Card(0, CardType.NONE, CardRarity.GRAY, TypeEffect.NONE, "") {
             @Override
-            public void play(BattleContext context, BattleResult result) { }
-
+            public void play(BattleContext context, BattleResult result) {}
             @Override
-            public String getName() {
-                return "";
-            }
+            public String getName() { return ""; }
         };
     }
 
@@ -208,7 +165,11 @@ public class BattleWindow extends JFrame {
             HUDMessageManager.show(msg, Color.WHITE, 24);
         }
 
-        updateHpBars();
+        // Обновляем HP-бары
+        enemyPanel.update();
+        if (summonPanel != null) {
+            summonPanel.update();
+        }
 
         if (lastResult.isBattleOver()) {
             outcome = lastResult.getOutcome();
@@ -221,16 +182,6 @@ public class BattleWindow extends JFrame {
         }
 
         selectedCard = null;
-    }
-
-    private void updateHpBars() {
-        enemyHpBar.setValue(enemy.getHealth());
-        enemyHpBar.setString(enemy.getHealth() + " / " + enemy.getMaxHealth());
-
-        if (summonHpBar != null && summon != null) {
-            summonHpBar.setValue(summon.getHealth());
-            summonHpBar.setString(summon.getHealth() + " / " + summon.getMaxHealth());
-        }
     }
 
     public BattleResult getResult() {
