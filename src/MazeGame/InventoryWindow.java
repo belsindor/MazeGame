@@ -12,6 +12,8 @@ public class InventoryWindow extends JFrame {
 
         add(new InventoryPanel(player));
 
+        setUndecorated(true);
+
         setVisible(true);
     }
 }

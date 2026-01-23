@@ -63,6 +63,8 @@ public class DeckCollectionWindow extends JFrame {
         mainPanel.add(scroll, BorderLayout.CENTER);
 
         add(mainPanel);
+        setUndecorated(true);
+
         setVisible(true);
     }
 }

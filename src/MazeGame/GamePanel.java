@@ -21,6 +21,9 @@ public class GamePanel extends JPanel {
     private final Rectangle inventoryIconBounds = new Rectangle();
     private final Rectangle deckIconBounds = new Rectangle();
 
+    private InventoryWindow inventoryWindow;
+    private DeckCollectionWindow deckWindow;
+
     public GamePanel(Player player, VisualMazeGame game) {
         this.player = player;
         this.game = game;
@@ -67,9 +70,14 @@ public class GamePanel extends JPanel {
                 Rectangle deckBounds = new Rectangle(baseX - iconSize - spacing, baseY, iconSize, iconSize);
                 if (deckBounds.contains(p)) {
                     System.out.println("Клик по иконке колоды → открываем DeckCollectionWindow");
-                    CardCollection collection = player.getCardCollection();
                     // Всегда открываем окно, даже если коллекция null или пустая
-                    new DeckCollectionWindow(collection != null ? collection : new CardCollection());
+                    if (deckWindow == null || !deckWindow.isDisplayable()) {
+                        CardCollection collection = player.getCardCollection();
+                        deckWindow = new DeckCollectionWindow(collection);
+                    } else {
+                        deckWindow.dispose();
+                        deckWindow = null;
+                    }
                     return;
                 }
 
@@ -77,7 +85,13 @@ public class GamePanel extends JPanel {
                 Rectangle invBounds = new Rectangle(baseX, baseY, iconSize, iconSize);
                 if (invBounds.contains(p)) {
                     System.out.println("Клик по иконке инвентаря → открываем InventoryWindow");
-                    new InventoryWindow(player);
+                    if (inventoryWindow == null || !inventoryWindow.isDisplayable()) {
+                        inventoryWindow = new InventoryWindow(player);
+                    } else {
+                        inventoryWindow.dispose();
+                        inventoryWindow = null;
+                    }
+                    return;
                 }
             }
         });

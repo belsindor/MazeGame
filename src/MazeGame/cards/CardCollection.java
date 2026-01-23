@@ -62,7 +62,7 @@ public class CardCollection {
         checkAndUpgrade(next.getId());
     }
 
-    // ── Удаление при смерти суммона или других случаях ──────────────────────
+    // ── Удаление при смерти суммона или других случаях
 
     public void removeCard(Card card) {
         if (card == null) return;

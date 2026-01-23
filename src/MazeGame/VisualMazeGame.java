@@ -2,7 +2,7 @@ package MazeGame;
 
 import MazeGame.battle.*;
 import MazeGame.cards.*;
-import MazeGame.item.Item;
+
 
 import javax.swing.*;
 import java.util.List;

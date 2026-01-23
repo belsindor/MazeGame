@@ -3,6 +3,7 @@ package MazeGame.battle;
 import MazeGame.GameState;
 import MazeGame.Monster;
 import MazeGame.Player;
+import MazeGame.UnitType;
 import MazeGame.cards.*;
 import MazeGame.item.Item;
 
@@ -78,13 +79,20 @@ public class BattleEngine {
             Monster deadSummon = (Monster) summonSide.getUnit();
             result.addMessage("☠ " + deadSummon.getName() + " погиб!");
 
-            SummonDeck summonDeck = ((Player) playerSide.getUnit()).getSummonDeck();
+            Player player = (Player) playerSide.getUnit();
+            SummonDeck summonDeck = player.getSummonDeck();
+            CardCollection cardCollection = player.getCardCollection();
 
-            // Вариант А: удаляем по типу (самый простой, если один суммон на тип)
-            summonDeck.removeSummon(deadSummon.getUnitType());
+            // Удаляем из active и сразу получаем, какая карта была удалена
+            UnitType type = deadSummon.getUnitType();
+            SummonCard lostCard = summonDeck.getActiveByType(type);  // берём перед удалением
+            summonDeck.removeSummon(type);
 
-            // Вариант Б: если хочешь точнее — ищи по имени или другим полям (менее надёжно)
-            // summonDeck.removeFromActive(deadSummon);
+            // Удаляем из коллекции regularCards
+            if (lostCard != null) {
+                cardCollection.removeCard(lostCard);
+                result.addMessage("Карта суммона потеряна навсегда: " + lostCard.getName());
+            }
 
             summonSide = null;
             context.setSummon(null);
