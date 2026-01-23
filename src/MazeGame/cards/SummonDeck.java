@@ -1,5 +1,6 @@
 package MazeGame.cards;
 
+import MazeGame.Monster;
 import MazeGame.UnitType;
 
 import java.util.EnumMap;
@@ -12,15 +13,10 @@ public class SummonDeck {
     private SummonCard selectedSummon = null;
 
 
-    public void selectSummon(SummonCard summon) {
-        if (summon == null) {
-            selectedSummon = null;
-            return;
-        }
-
-        // Проверяем, что этот суммон действительно есть среди активных
-        if (active.containsValue(summon)) {
-            selectedSummon = summon;
+    // И метод selectSummon может выглядеть так:
+    public void selectSummon(SummonCard card) {
+        if (card != null) {
+            active.put(card.getUnitType(), card);
         }
     }
 
@@ -127,11 +123,67 @@ public class SummonDeck {
     /**
      * Удалить суммон по типу
      */
+
+    // Удаление по конкретной карте
     public void removeSummon(UnitType type) {
-        active.remove(type);
+        if (type != null) {
+            SummonCard removed = active.remove(type);
+            if (removed != null) {
+                System.out.println("Удалён из active по типу " + type + ": " + removed.getName());
+            }
+        }
     }
 
-    public void clear() {
-        active.clear();
+    /**
+     * Удалить суммон по экземпляру карты (вызывается при смерти в бою)
+     */
+    public void removeFromActive(SummonCard card) {
+        if (card == null) return;
+        UnitType type = card.getUnitType();
+        SummonCard current = active.get(type);
+        if (current != null && current.getId() == card.getId()) {
+            active.remove(type);
+            System.out.println("Удалён активный суммон: " + card.getName());
+        }
     }
+
+    /**
+     * Удалить суммон по Monster (экземпляру из боя)
+     */
+    public void removeFromActive(Monster monster) {
+        if (monster == null) return;
+
+        // Предполагаем, что у SummonCard есть метод getMonsterTemplate() или id совпадает
+        // Здесь лучше искать по id карты, которая соответствует этому монстру
+        for (SummonCard sc : active.values()) {
+            if (sc.getId() == monster.getId()) {  // или другой способ связи
+                UnitType type = sc.getUnitType();
+                active.remove(type);
+                System.out.println("Удалён суммон по монстру: " + monster.getName());
+                return;
+            }
+        }
+    }
+    /**
+     * После апгрейда/добавления карт — пересобрать active суммоны
+     * (вызывается из Player или BattleEngine после дропа/конвертации)
+     */
+    public void refreshActive(CardCollection collection) {
+        active.clear();
+
+        Map<UnitType, SummonCard> best = new EnumMap<>(UnitType.class);
+
+        collection.getSummons().forEach((summon, count) -> {
+            if (count <= 0) return;
+            UnitType type = summon.getUnitType();
+            SummonCard curr = best.get(type);
+            if (curr == null || summon.getRarity().ordinal() > curr.getRarity().ordinal()) {
+                best.put(type, summon);
+            }
+        });
+
+        active.putAll(best);
+    }
+
+
 }

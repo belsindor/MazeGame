@@ -19,7 +19,7 @@ public class SummonFactory {
     }
     // Уровень 0 ── Summon
     public static SummonCard ancestor_spirit() {
-        return summonCard(10000,"Дух предка",1,6,1,0,
+        return summonCard(10000,"Дух предка",1,4,1,0,
                 UnitType.FLYING,"/images/summons/ancestor_spirit.jpg", CardRarity.GRAY);
     }
 

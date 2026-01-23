@@ -54,6 +54,7 @@ public class SummonCard extends Card {   // предполагается нас�
     public void play(BattleContext context, BattleResult result) {
         //надо дописать
     }
+
 }
 
 

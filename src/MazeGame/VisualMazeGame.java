@@ -158,102 +158,126 @@ public class VisualMazeGame {
     }
 
     /**
-     * Запуск боя
+     * Запуск боя с монстром
+     *
+     * @param owner  родительское окно (для диалогов)
+     * @param monster монстр, с которым начинается бой
      */
     public void startBattle(JFrame owner, Monster monster) {
-        System.out.println("=== startBattle ЗАПУЩЕН для монстра: " + monster.getName() + " ===");
+        System.out.println("=== startBattle: " + monster.getName() + " (lvl " + monster.getLevel() + ") ===");
 
+        // Подготовка UI
         GameWindow.getPanel().clearPendingMonster();
         GameWindow.setBattleActive(true);
         GameWindow.showBattleScreen();
 
-        System.out.println("Открываем окно выбора суммона...");
+        // 1. Выбор суммона игроком
         SummonDeck summonDeck = player.getSummonDeck();
         SummonSelectionWindow summonWindow = new SummonSelectionWindow(summonDeck);
         Optional<SummonCard> selectedOpt = summonWindow.showAndWait();
 
-        System.out.println("Выбор суммона завершён. Результат: " + (selectedOpt.isPresent() ? "выбран" : "отменён/пусто"));
-
         Monster summonInstance = null;
+        SummonCard selectedSummonCard = null;
+
         if (selectedOpt.isPresent()) {
-            SummonCard selectedCard = selectedOpt.get();
-            summonInstance = new Monster(selectedCard.getMonsterTemplate());
-            summonDeck.selectSummon(selectedCard);
-            System.out.println("Суммон создан: " + summonInstance.getName());
+            selectedSummonCard = selectedOpt.get();
+            summonInstance = new Monster(selectedSummonCard.getMonsterTemplate());
+            summonDeck.selectSummon(selectedSummonCard);
+            System.out.println("Выбран суммон: " + summonInstance.getName() +
+                    " (" + selectedSummonCard.getUnitType() + ")");
         } else {
-            System.out.println("Суммон НЕ выбран (игрок отменил или закрыл окно)");
+            System.out.println("Суммон не выбран");
         }
 
-        System.out.println("Создаём контекст боя...");
-        BattleContext context = new BattleContext(player, monster);
-        if (summonInstance != null) {
-            context.setSummon(summonInstance);
-        }
-
-        System.out.println("Создаём BattleWindow...");
-        BattleWindow battleWindow = new BattleWindow(
-                owner,
-                player,
-                monster,
-                summonInstance
-        );
-
-        System.out.println("Устанавливаем BattleWindow visible...");
+        // 2. Запуск окна боя
+        BattleWindow battleWindow = new BattleWindow(owner, player, monster, summonInstance);
         battleWindow.setVisible(true);
-        System.out.println("BattleWindow открыт!");
+
+        // 3. Получаем результат после закрытия окна
+        BattleOutcome outcome = battleWindow.getOutcome();
+        BattleResult result = battleWindow.getResult();
 
         GameWindow.hideBattleScreen();
         GameWindow.setBattleActive(false);
 
-        BattleOutcome outcome = battleWindow.getOutcome();
-        System.out.println("Результат боя: " + outcome);
-
+        // 4. Поражение → конец игры
         if (outcome == BattleOutcome.PLAYER_LOSE) {
-            JOptionPane.showMessageDialog(owner, "Вы погибли...");
+            JOptionPane.showMessageDialog(owner,
+                    "Вы погибли в бою...",
+                    "Поражение",
+                    JOptionPane.ERROR_MESSAGE);
             System.exit(0);
+            return;
         }
 
-        BattleResult result = battleWindow.getResult();
-        if (result != null && result.isPlayerWin()) {
+        // 5. Победа → награды, дроп, обработка
+        if (outcome == BattleOutcome.PLAYER_WIN && result != null) {
+            // Опыт
             BattleReward reward = result.getReward();
-            player.gainExperience(reward.experience());
-            HUDMessageManager.showInfo("✨ Получено опыта: +" + reward.experience());
+            if (reward != null && reward.experience() > 0) {
+                player.gainExperience(reward.experience());
+                HUDMessageManager.showInfo("✨ + " + reward.experience() + " опыта");
+            }
 
-            // Генерируем и обрабатываем дроп
+            // Дроп
             List<CardDropService.DropEntry> drops = new CardDropService().generateDrop(monster);
             player.processDrop(drops);
 
-            // УДАЛЕНИЕ СТАРТОВОГО СУММОНА ПОСЛЕ ПЕРВОГО УСПЕШНОГО БОЯ
-            if (!player.hasUsedStartingSummon()) {
-                SummonCard startingSummon = SummonFactory.ancestor_spirit();
-                if (startingSummon != null) {
-                    // Удаляем из regularCards (по объекту карты)
-                    player.getCardCollection().removeCard(startingSummon);
+            // Показ выпавшего (в JOptionPane)
+            StringBuilder sb = new StringBuilder("Выпало:\n");
+            boolean hasDrop = false;
 
-                    // Удаляем из активных суммонов по типу
-                    player.getCardCollection().removeCardById(10000);  // ID ancestor_spirit = 10000
-                    player.getSummonDeck().removeSummon(startingSummon.getUnitType());
-
-                    // Помечаем как использованный
-                    player.markStartingSummonUsed();
-
-                    HUDMessageManager.showInfo("Стартовый суммон 'Дух предка' израсходован после первого боя!");
-                    System.out.println("Стартовый суммон ancestor_spirit удалён из regularCards и active после первого боя");
+            for (CardDropService.DropEntry drop : drops) {
+                if (drop.getSummonCard() != null) {
+                    sb.append("Суммон-карта: ").append(drop.getSummonCard().getName()).append("\n");
+                    hasDrop = true;
+                } else if (drop.getCard() != null) {
+                    sb.append("Карта: ").append(drop.getCard().getName()).append("\n");
+                    hasDrop = true;
+                } else if (drop.getItem() != null) {
+                    sb.append("Предмет: ").append(drop.getItem().getName()).append("\n");
+                    hasDrop = true;
                 }
             }
 
-            // Показываем дроп игроку
-            StringBuilder sb = new StringBuilder("Выпало:\n");
-            for (CardDropService.DropEntry d : drops) {
-                if (d.getSummonCard() != null) sb.append(" - ").append(d.getSummonCard().getName()).append("\n");
-                if (d.getCard() != null) sb.append(" - ").append(d.getCard().getId()).append("\n");
-                if (d.getItem() != null) sb.append(" - ").append(d.getItem().getName()).append("\n");
+            if (hasDrop) {
+                JOptionPane.showMessageDialog(owner, sb.toString(),
+                        "Награда за победу", JOptionPane.INFORMATION_MESSAGE);
+            } else {
+                HUDMessageManager.showInfo("В этот раз ничего не выпало...");
             }
-            JOptionPane.showMessageDialog(owner, sb.toString(), "Награда за бой", JOptionPane.INFORMATION_MESSAGE);
+
+            // ── Специальное поведение стартового суммона ───────────────────────
+            // Удаляем после первой победы (независимо от использования)
+            if (!player.hasUsedStartingSummon()) {
+                SummonCard starter = SummonFactory.ancestor_spirit();
+                if (starter != null) {
+                    player.getCardCollection().removeCard(starter);
+                    player.getSummonDeck().removeFromActive(starter);  // используем метод по карте
+                    player.markStartingSummonUsed();
+                    HUDMessageManager.showInfo("Стартовый суммон «Дух предка» израсходован после первого боя!");
+                    System.out.println("Стартовый суммон удалён из коллекции и active");
+                }
+            }
         }
 
-        summonDeck.resetSelection();
-        System.out.println("=== startBattle ЗАВЕРШЁН ===");
+        // 6. Проверка состояния суммона после боя (если он был выбран)
+        Monster currentSummon = battleWindow.getContext().getSummon();
+
+        if (summonInstance != null) {
+            if (currentSummon == null || !currentSummon.isAlive()) {
+                // Суммон погиб → удаляем из active и коллекции
+                summonDeck.removeFromActive(selectedSummonCard);
+                player.getCardCollection().removeCard(selectedSummonCard);
+
+                String name = selectedSummonCard.getName();
+                HUDMessageManager.show("☠ " + name + " погиб и был удалён из колоды");
+                System.out.println("Удалён погибший суммон: " + name + " (" + selectedSummonCard.getUnitType() + ")");
+            } else {
+                System.out.println("Суммон выжил: " + currentSummon.getName() +
+                        " (" + currentSummon.getHealth() + " HP осталось)");
+            }
+        }
     }
 
     // Геттеры

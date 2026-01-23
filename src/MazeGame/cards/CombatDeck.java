@@ -34,6 +34,29 @@ public class CombatDeck {
     }
 
     /**
+     * Пересобрать активные боевые карты после изменений в коллекции
+     */
+    public void refreshActive(CardCollection collection) {
+        cards.clear();
+
+        Map<TypeEffect, Card> best = new EnumMap<>(TypeEffect.class);
+
+        collection.getAllCards().forEach((card, count) -> {
+            if (count <= 0 || card instanceof SummonCard) return;
+
+            TypeEffect effect = getTypeEffectById(card.getId());
+            if (effect == null) return;
+
+            Card curr = best.get(effect);
+            if (curr == null || card.getRarity().ordinal() > curr.getRarity().ordinal()) {
+                best.put(effect, card);
+            }
+        });
+
+        cards.putAll(best);
+    }
+
+    /**
      * Полное обновление боевой колоды на основе всей коллекции regularCards
      * Вызывается после каждого добавления карт в коллекцию (при дропе, покупке и т.д.)
      */

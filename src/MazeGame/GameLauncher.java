@@ -1,7 +1,5 @@
 package MazeGame;
 
-import MazeGame.cards.SummonFactory;
-
 import javax.swing.*;
 
 public class GameLauncher {

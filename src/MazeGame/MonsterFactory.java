@@ -21,7 +21,7 @@ public final class MonsterFactory {
     public static final List<MonsterTemplate> ALL_TEMPLATES = List.of(
             new MonsterTemplate(100, "Паук-метатель",   1, 12, 2, 0, UnitType.ARCHER, "/images/monsters/spider.jpg"),
             new MonsterTemplate(120, "Летучая мышь",     1, 10, 3, 0, UnitType.FLYING, "/images/monsters/bat.jpg"),
-            new MonsterTemplate(140, "Дикий волк",       1, 15, 1, 1, UnitType.INFANTRY, "/images/monsters/wolf.jpg"),
+            new MonsterTemplate(140, "Дикий волк",       1, 15, 2, 1, UnitType.INFANTRY, "/images/monsters/wolf.jpg"),
 
             new MonsterTemplate(160, "Гоблин-воин",      2, 20, 4, 1, UnitType.INFANTRY, "/images/monsters/goblin_warrior.jpg"),
             new MonsterTemplate(180, "Скелет-лучник",    2, 18, 5, 2, UnitType.ARCHER, "/images/monsters/skeleton_archer.jpg"),

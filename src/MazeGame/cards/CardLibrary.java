@@ -4,6 +4,9 @@ import MazeGame.Monster;
 import MazeGame.battle.effects.*;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+
 //++
 public final class CardLibrary {
 
@@ -140,12 +143,12 @@ public final class CardLibrary {
     // ===== REGENERATION CARDS =====
     public static RegenerationCard REGENERATION_1_2() {
         return new RegenerationCard(1400,
-                p -> new RegenerationEffect(1, 2), CardRarity.GRAY,TypeEffect.REGENERATION,"/images/consumables/regeneration_1_2.jpg"
+                p -> new RegenerationEffect(1, 2), CardRarity.GRAY,TypeEffect.REGENERATION,"/images/buff/regeneration_1_2.jpg"
         );
     }
     public static RegenerationCard REGENERATION_2_3() {
         return new RegenerationCard(1401,
-                p -> new RegenerationEffect(2, 3), CardRarity.GREEN,TypeEffect.REGENERATION,"/images/consumables/regeneration_2_3.jpg"
+                p -> new RegenerationEffect(2, 3), CardRarity.GREEN,TypeEffect.REGENERATION,"/images/buff/regeneration_2_3.jpg"
         );
     }
 
@@ -181,12 +184,6 @@ public final class CardLibrary {
                 },
                 CardRarity.GOLD,TypeEffect.RESURRECTION,"/images/consumables/resurrection.jpg"
         );
-    }
-
-    public static List<Card> getCardsByRarity(CardRarity rarity) {
-        return ALL_CARDS.stream()
-                .filter(c -> c.getRarity() == rarity)
-                .toList();
     }
 
     private static final List<Card> ALL_CARDS = List.of(
@@ -231,8 +228,30 @@ public final class CardLibrary {
     );
 
 
+    // ===== Кэш для быстрого поиска по id =====
+    private static final Map<Integer, Card> CARD_BY_ID =
+            ALL_CARDS.stream()
+                    .collect(Collectors.toMap(Card::getId, c -> c, (c1, c2) -> c1));
+
+    // ===== Методы доступа =====
+
+    public static Card getCardById(int id) {
+        return CARD_BY_ID.get(id);
+    }
+
     public static List<Card> getAllCards() {
-        return ALL_CARDS;
+        return List.copyOf(ALL_CARDS);
+    }
+
+    public static List<Card> getCardsByRarity(CardRarity rarity) {
+        return ALL_CARDS.stream()
+                .filter(c -> c.getRarity() == rarity)
+                .toList();
+    }
+
+    // Опционально: метод для получения следующей карты по id (для апгрейда)
+    public static Card getNextLevelCard(int currentId) {
+        return getCardById(currentId + 1);
     }
 
 }
