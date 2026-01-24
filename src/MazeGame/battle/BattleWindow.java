@@ -117,10 +117,10 @@ public class BattleWindow extends JFrame {
         panel.add(cardsPanel, BorderLayout.CENTER);
 
         // Кнопка пропуска хода
-        JButton turnButton = new JButton("Пропустить ход");
+        JButton turnButton = new JButton("Сделать ход");
         turnButton.setFont(new Font("Arial", Font.BOLD, 20));
         turnButton.setPreferredSize(new Dimension(200, 80));
-        turnButton.setBackground(new Color(120, 120, 120));
+        turnButton.setBackground(new Color(0, 200, 0));
         turnButton.setForeground(Color.WHITE);
         turnButton.addActionListener(e -> {
             selectedCard = null;

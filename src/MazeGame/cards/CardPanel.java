@@ -7,11 +7,16 @@ import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CardPanel extends JPanel {
 
     private static final int DEFAULT_WIDTH = 120;   // ширина карточки
     private static final int DEFAULT_HEIGHT = 180;  // высота карточки
+
+    private static final Map<String, ImageIcon> IMAGE_CACHE = new HashMap<>();
+
 
     public CardPanel(Card card) {
         setLayout(new BorderLayout());
@@ -83,7 +88,7 @@ public class CardPanel extends JPanel {
                 DEFAULT_HEIGHT,
                 Image.SCALE_SMOOTH
         );
-
+        System.out.println("Загрузка изображения для карты: " + (card != null ? card.getName() + " (" + card.getImagePath() + ")" : "null"));
         return new ImageIcon(scaled);
     }
 

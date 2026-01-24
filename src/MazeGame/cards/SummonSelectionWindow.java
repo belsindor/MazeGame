@@ -106,6 +106,7 @@ public class SummonSelectionWindow extends JDialog {
     }
 
     public Optional<SummonCard> showAndWait() {
+        setUndecorated(true);
         setVisible(true);
         return Optional.ofNullable(selected);
     }
@@ -114,4 +115,5 @@ public class SummonSelectionWindow extends JDialog {
         setVisible(true);
         return selected;
     }
+
 }
