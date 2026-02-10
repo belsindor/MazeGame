@@ -15,12 +15,6 @@ public class PlayerTurn implements BattleTurn {
 
     @Override
     public void apply(BattleContext context, BattleResult result) {
-        if (card == null) return;
-
-        switch (target) {
-            case PLAYER -> card.playOnPlayer(context, result);
-            case SUMMON -> card.playOnSummon(context, result);
-            case ENEMY  -> card.playOnEnemy(context, result);
-        }
+    //ничего не делает, только атакует
     }
 }

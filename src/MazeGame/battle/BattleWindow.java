@@ -147,48 +147,35 @@ public class BattleWindow extends JFrame {
 
         this.selectedCard = card;
         this.selectedTarget = target;
-        performTurn();
+
     }
 
     private void performTurn() {
-        PlayerTurn turn = new PlayerTurn(selectedCard, selectedTarget);
-        lastResult = battleEngine.resolveTurn(turn);
+        lastResult = battleEngine.resolveTurn();
 
-        if (selectedCard != null) {
-            player.getCombatDeck().markUsed(selectedCard.getEffect());
-            refreshBottomPanel();
-        }
-
-        selectedCard = null;
-        selectedTarget = null;
-
-        // Показываем все сообщения хода
         for (String msg : lastResult.messages) {
             HUDMessageManager.show(msg, Color.WHITE, 24);
         }
 
-        // Обновляем UI
         enemyPanel.update();
-        if (activeAllyPanel != null) {
-            activeAllyPanel.update();
-        }
-        updateActiveAllyPanel();        // ← важно: меняем панель, если суммон умер
+        if (activeAllyPanel != null) activeAllyPanel.update();
+        updateActiveAllyPanel();
 
-        // Проверка конца боя
         if (lastResult.isBattleOver()) {
             outcome = lastResult.getOutcome();
 
-            String msg = (outcome == BattleOutcome.PLAYER_WIN) ? "ПОБЕДА!" : "ПОРАЖЕНИЕ...";
-            Color color = (outcome == BattleOutcome.PLAYER_WIN) ? new Color(80, 220, 100) : new Color(220, 60, 60);
-            HUDMessageManager.show(msg, color, 50);
+            String msg = (outcome == BattleOutcome.PLAYER_WIN)
+                    ? "ПОБЕДА!"
+                    : "ПОРАЖЕНИЕ...";
+            Color color = (outcome == BattleOutcome.PLAYER_WIN)
+                    ? new Color(80, 220, 100)
+                    : new Color(220, 60, 60);
 
-            // Здесь можно добавить небольшую задержку перед закрытием, если хочешь
-            // new Timer(2000, e -> dispose()).start();
+            HUDMessageManager.show(msg, color, 50);
             dispose();
         }
-
-        selectedCard = null;
     }
+
 
     private void refreshBottomPanel() {
         if (bottomPanel != null) {

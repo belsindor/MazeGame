@@ -3,6 +3,7 @@ package MazeGame.cards;
 import MazeGame.Player;
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
+import MazeGame.battle.BattleSide;
 import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
@@ -24,10 +25,19 @@ public class BuffCard extends Card {
 
     @Override
     public void play(BattleContext context, BattleResult result) {
-        BattleEffect effect = effectFactory.apply(context.getPlayer());
-        context.getPlayerSide().addEffect(effect, context);
-        result.addMessage("✨ Бафф применён");
+        BattleSide target = context.getCurrentTarget();
+
+        if (target == null) {
+            result.addMessage("❌ Нет цели для применения карты");
+            return;
+        }
+
+        BattleEffect effect = effectFactory.apply((Player) target.getUnit());
+        target.addEffect(effect, context);
+
+        result.addMessage("✨ Бафф применён на " + target.getName());
     }
+
 }
 
 

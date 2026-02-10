@@ -3,6 +3,7 @@ package MazeGame.cards;
 import MazeGame.Monster;
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
+import MazeGame.battle.BattleSide;
 import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
@@ -24,10 +25,20 @@ public class CurseCard extends Card {
 
     @Override
     public void play(BattleContext context, BattleResult result) {
-        BattleEffect effect = effectFactory.apply(context.getEnemy());
-        context.getEnemySide().addEffect(effect, context);
-        result.addMessage("☠ Проклятие наложено");
+        BattleSide target = context.getCurrentTarget();
+
+        if (target == null) {
+            result.addMessage("❌ Нет цели для проклятия");
+            return;
+        }
+
+        Monster monster = (Monster) target.getUnit();
+        BattleEffect effect = effectFactory.apply(monster);
+        target.addEffect(effect, context);
+
+        result.addMessage("☠ Проклятие наложено на " + target.getName());
     }
+
 }
 
 

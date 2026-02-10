@@ -34,102 +34,98 @@ public class BattleEngine {
         }
     }
 
-    public BattleResult resolveTurn(PlayerTurn turn) {
+    public BattleResult resolveTurn() {
         BattleResult result = new BattleResult();
 
-        // 1. Начало хода — эффекты на всех сторонах
+        // 1. Начало хода — эффекты
         playerSide.onTurnStart(context);
-        if (summonSide != null) {
-            summonSide.onTurnStart(context);
-        }
+        if (summonSide != null) summonSide.onTurnStart(context);
         enemySide.onTurnStart(context);
 
-        // 2. Применение карты (если выбрана) — всегда от лица игрока
-        if (playerSide.isAlive()) {
-            turn.apply(context, result);
-        }
-
-        // 3. Атака активного союзника (суммон или игрок) → враг
+        // 2. Атака союзника → враг
         BattleSide activeAllySide = getActiveAllySide();
         if (activeAllySide != null && activeAllySide.isAlive() && enemySide.isAlive()) {
             int damage = DamageCalculator.calculate(activeAllySide, enemySide);
             enemySide.takeDamage(damage);
-            result.addMessage("⚔ " + activeAllySide.getName() + " наносит " + damage + " урона врагу");
+            result.addMessage("⚔ " + activeAllySide.getName()
+                    + " наносит " + damage + " урона врагу");
         }
 
-        // 4. Атака врага → текущий активный союзник
+        // 3. Атака врага → союзник
         if (enemySide.isAlive()) {
             BattleSide target = getActiveAllySide();
             if (target != null && target.isAlive()) {
                 int damage = DamageCalculator.calculate(enemySide, target);
                 target.takeDamage(damage);
-                result.addMessage("🐲 " + enemySide.getName() + " наносит " + damage + " → " + target.getName());
+                result.addMessage("🐲 " + enemySide.getName()
+                        + " наносит " + damage + " → " + target.getName());
             }
         }
 
-        // 5. Конец хода — эффекты и удаление истёкших
+        // 4. Конец хода — эффекты
         playerSide.onTurnEnd(context);
-        if (summonSide != null) {
-            summonSide.onTurnEnd(context);
-        }
+        if (summonSide != null) summonSide.onTurnEnd(context);
         enemySide.onTurnEnd(context);
 
-        // 6. Проверка смерти суммона → удаление из колоды
-        if (summonSide != null && !summonSide.isAlive()) {
-            Monster deadSummon = (Monster) summonSide.getUnit();
-            result.addMessage("☠ " + deadSummon.getName() + " погиб!");
+        // 5. Проверка смерти суммона
+        handleSummonDeath(result);
 
-            Player player = (Player) playerSide.getUnit();
-            SummonDeck summonDeck = player.getSummonDeck();
-            CardCollection cardCollection = player.getCardCollection();
+        // 6. Проверка конца боя
+        handleBattleEnd(result);
 
-            // Удаляем из active и сразу получаем, какая карта была удалена
-            UnitType type = deadSummon.getUnitType();
-            SummonCard lostCard = summonDeck.getActiveByType(type);  // берём перед удалением
-            summonDeck.removeSummon(type);
+        return result;
+    }
 
-            // Удаляем из коллекции regularCards
-            if (lostCard != null) {
-                cardCollection.removeCard(lostCard);
-                result.addMessage("Карта суммона потеряна навсегда: " + lostCard.getName());
-            }
+    private void handleSummonDeath(BattleResult result) {
+        if (summonSide == null || summonSide.isAlive()) return;
 
-            summonSide = null;
-            context.setSummon(null);
-            context.setSummonSide(null);
+        Monster deadSummon = (Monster) summonSide.getUnit();
+        result.addMessage("☠ " + deadSummon.getName() + " погиб!");
+
+        Player player = (Player) playerSide.getUnit();
+        SummonDeck summonDeck = player.getSummonDeck();
+        CardCollection collection = player.getCardCollection();
+
+        UnitType type = deadSummon.getUnitType();
+        SummonCard lost = summonDeck.getActiveByType(type);
+        summonDeck.removeSummon(type);
+
+        if (lost != null) {
+            collection.removeCard(lost);
+            result.addMessage("Карта суммона потеряна навсегда: " + lost.getName());
         }
 
-        // 7. Проверка конца боя
+        summonSide = null;
+        context.setSummon(null);
+        context.setSummonSide(null);
+    }
+
+    private void handleBattleEnd(BattleResult result) {
         if (!enemySide.isAlive()) {
             result.setPlayerWin();
-
             BattleReward reward = createReward(enemySide.getUnit().getLevel());
             result.setReward(reward);
 
-            Monster enemyMonster = (Monster) enemySide.getUnit();
-            List<CardDropService.DropEntry> drops = new CardDropService().generateDrop(enemyMonster);
+            Monster enemy = (Monster) enemySide.getUnit();
+            var drops = new CardDropService().generateDrop(enemy);
             processDroppedCards((Player) playerSide.getUnit(), drops, result);
         }
         else if (!playerSide.isAlive()) {
-            // Поражение только если сам игрок мёртв
             result.setPlayerLose();
         }
 
-        // Финальная очистка только при окончании боя
         if (result.isBattleOver()) {
             playerSide.getUnit().clearTemporaryEffects();
-            if (summonSide != null) {
-                summonSide.getUnit().clearTemporaryEffects();
-            }
+            if (summonSide != null) summonSide.getUnit().clearTemporaryEffects();
+
             Player player = (Player) playerSide.getUnit();
             player.getSummonDeck().resetSelection();
             player.getCombatDeck().resetBattleUsage();
 
             GameState.get().combat().clear();
         }
-
-        return result;
     }
+
 
     private BattleSide getActiveAllySide() {
         if (summonSide != null && summonSide.isAlive()) {
@@ -142,6 +138,21 @@ public class BattleEngine {
         int exp = monsterLevel * 20 + (monsterLevel * 10);
         return new BattleReward(exp, List.of());
     }
+
+    public void playCard(Card card, CardTarget target, BattleResult result) {
+        if (!playerSide.isAlive()) return;
+
+        switch (target) {
+            case PLAYER -> card.playOnPlayer(context, result);
+            case SUMMON -> card.playOnSummon(context, result);
+            case ENEMY  -> card.playOnEnemy(context, result);
+        }
+
+        // помечаем карту неактивной
+        Player player = (Player) playerSide.getUnit();
+        player.getCombatDeck().markUsed(card.getEffect());
+    }
+
 
     private void processDroppedCards(Player player, List<CardDropService.DropEntry> drops, BattleResult result) {
         for (CardDropService.DropEntry drop : drops) {
