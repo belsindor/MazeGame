@@ -1,6 +1,9 @@
 package MazeGame.battle;
 
 import MazeGame.Monster;
+import MazeGame.cards.Card;
+import MazeGame.cards.CardTarget;
+import MazeGame.cards.CardTransferable;
 
 import javax.swing.*;
 import java.awt.*;
@@ -13,9 +16,38 @@ public class UnitPanel extends JPanel {
     private final JLabel nameLabel;
     private final JProgressBar hpBar;
     private final JLabel imageLabel;  // ← новая метка для картинки
+    private final CardTarget target;
 
-    public UnitPanel(BattleUnit unit, String title, Color borderColor) {
+    public UnitPanel(BattleUnit unit, String title, Color borderColor, CardTarget target) {
         this.unit = unit;
+        this.target = target;
+
+
+        setTransferHandler(new TransferHandler() {
+
+            @Override
+            public boolean canImport(TransferSupport support) {
+                return support.isDataFlavorSupported(CardTransferable.CARD_FLAVOR);
+            }
+
+            @Override
+            public boolean importData(TransferSupport support) {
+                try {
+                    Card card = (Card) support.getTransferable()
+                            .getTransferData(CardTransferable.CARD_FLAVOR);
+
+                    BattleWindow window =
+                            (BattleWindow) SwingUtilities.getWindowAncestor(UnitPanel.this);
+
+                    window.onCardDropped(card, target);
+                    return true;
+
+                } catch (Exception e) {
+                    e.printStackTrace();
+                    return false;
+                }
+            }
+        });
 
         setLayout(new BorderLayout());
         setOpaque(false);

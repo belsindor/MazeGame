@@ -4,75 +4,152 @@ import MazeGame.MonsterTemplate;
 
 import javax.swing.*;
 import java.awt.*;
+import java.awt.datatransfer.Transferable;
+import java.awt.event.InputEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.awt.image.BufferedImage;
-import java.util.HashMap;
-import java.util.Map;
 
+/**
+ * Универсальная панель карточки.
+ * Может быть:
+ *  - кликабельной
+ *  - перетаскиваемой (drag)
+ *  - отключённой (disabled)
+ */
 public class CardPanel extends JPanel {
 
-    private static final int DEFAULT_WIDTH = 120;   // ширина карточки
-    private static final int DEFAULT_HEIGHT = 180;  // высота карточки
+    private static final int DEFAULT_WIDTH = 120;
+    private static final int DEFAULT_HEIGHT = 180;
 
-    private static final Map<String, ImageIcon> IMAGE_CACHE = new HashMap<>();
+    private final Card card;
+    private final boolean disabled;
+    private final boolean draggable;
 
+    /* ---------- КОНСТРУКТОРЫ ---------- */
 
+    // Обычная карточка (клик, без drag)
     public CardPanel(Card card) {
+        this(card, false, false);
+    }
+
+    // Карточка для боя (может быть disabled, drag включён)
+    public CardPanel(Card card, boolean disabled) {
+        this(card, disabled, true);
+    }
+
+    // Полный конструктор
+    public CardPanel(Card card, boolean disabled, boolean draggable) {
+        this.card = card;
+        this.disabled = disabled;
+        this.draggable = draggable;
+
         setLayout(new BorderLayout());
-        setOpaque(false);
         setPreferredSize(new Dimension(DEFAULT_WIDTH, DEFAULT_HEIGHT));
-        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1)); // красивая рамка
+        setOpaque(false);
+        setBorder(BorderFactory.createLineBorder(Color.GRAY, 1));
 
-        // Безопасная загрузка иконки с уменьшением размера
-        ImageIcon icon = getScaledImageIcon(card);
-        JLabel label = new JLabel(icon);
-        label.setHorizontalAlignment(SwingConstants.CENTER);
-        add(label, BorderLayout.CENTER);
+        if (disabled) {
+            setEnabled(false);
+            setOpaque(true);
+            setBackground(new Color(0, 0, 0, 120));
+        }
 
-        // Добавляем tooltip при наведении
+        // ---------- Drag & Drop ----------
+        if (draggable) {
+            setTransferHandler(new TransferHandler() {
+
+                @Override
+                protected Transferable createTransferable(JComponent c) {
+                    return new CardTransferable(card);
+                }
+
+                @Override
+                public int getSourceActions(JComponent c) {
+                    return MOVE;
+                }
+
+                @Override
+                public void exportAsDrag(JComponent comp, InputEvent e, int action) {
+                    if (card == null) return;
+
+                    Image img = getScaledImageIcon(card).getImage();
+                    setDragImage(img);
+
+                    super.exportAsDrag(comp, e, action);
+                }
+            });
+
+            addMouseListener(new MouseAdapter() {
+                @Override
+                public void mousePressed(MouseEvent e) {
+                    if (disabled) return;
+                    if (card == null || card.getId() == 0) return;
+
+                    getTransferHandler().exportAsDrag(
+                            CardPanel.this, e, TransferHandler.MOVE
+                    );
+                }
+            });
+        }
+
+        // ---------- КАРТИНКА ----------
+        JLabel imageLabel = new JLabel(getScaledImageIcon(card));
+        imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
+        add(imageLabel, BorderLayout.CENTER);
+
+        // ---------- TOOLTIP ----------
         setToolTipText(buildTooltip(card));
     }
 
-    /**
-     * Создаёт красивый HTML-tooltip для карточки
-     */
+    /* ---------- PUBLIC API ---------- */
+
+    public void setOnClick(Runnable action) {
+        addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                if (disabled) return;
+                action.run();
+            }
+        });
+    }
+
+    public Card getCard() {
+        return card;
+    }
+
+    /* ---------- PRIVATE ---------- */
+
     private String buildTooltip(Card card) {
         if (card == null) {
             return "<html><b>Нет карты</b></html>";
         }
 
         StringBuilder sb = new StringBuilder("<html>");
-        sb.append("<b>").append(card.getName() != null ? card.getName() : "Без названия").append("</b><br>");
-
-        // Тип и редкость
+        sb.append("<b>").append(card.getName()).append("</b><br>");
         sb.append("<font color='gray'>")
-                .append(card.getType() != null ? card.getType().name() : "?")
-                .append(" • ")
-                .append(card.getRarity() != null ? card.getRarity().name() : "?")
+                .append(card.getType()).append(" • ")
+                .append(card.getRarity())
                 .append("</font><br>");
 
-        // Дополнительная информация (зависит от типа карты)
         if (card instanceof SummonCard summon) {
-            MonsterTemplate tmpl = summon.getMonsterTemplate();
-            sb.append("Уровень: ").append(tmpl.level()).append("<br>");
-            sb.append("Здоровье: ").append(tmpl.maxHealth()).append("<br>");
-            sb.append("Атака: ").append(tmpl.attack()).append(" • Защита: ").append(tmpl.defense()).append("<br>");
-            sb.append("Тип: ").append(tmpl.unitType().name()).append("<br>");
+            MonsterTemplate m = summon.getMonsterTemplate();
+            sb.append("Уровень: ").append(m.level()).append("<br>");
+            sb.append("HP: ").append(m.maxHealth()).append("<br>");
+            sb.append("ATK: ").append(m.attack())
+                    .append(" • DEF: ").append(m.defense()).append("<br>");
+            sb.append("Тип: ").append(m.unitType());
         } else {
-            // Для обычных карт — можно добавить свои поля, если есть
-            sb.append("Эффект: ").append(card.getEffect() != null ? card.getEffect().name() : "—").append("<br>");
+            sb.append("Эффект: ")
+                    .append(card.getEffect() != null ? card.getEffect().name() : "—");
         }
 
         sb.append("</html>");
         return sb.toString();
     }
 
-    /**
-     * Получает иконку карты и уменьшает её до нужного размера
-     */
     private ImageIcon getScaledImageIcon(Card card) {
-        if (card == null || card.getImagePath() == null || card.getImagePath().isEmpty()) {
+        if (card == null || card.getImagePath() == null) {
             return createPlaceholderIcon();
         }
 
@@ -88,37 +165,21 @@ public class CardPanel extends JPanel {
                 DEFAULT_HEIGHT,
                 Image.SCALE_SMOOTH
         );
-        System.out.println("Загрузка изображения для карты: " + (card != null ? card.getName() + " (" + card.getImagePath() + ")" : "null"));
         return new ImageIcon(scaled);
     }
 
-    /**
-     * Плейсхолдер, если картинки нет
-     */
     private ImageIcon createPlaceholderIcon() {
-        JLabel placeholder = new JLabel("Нет изображения");
-        placeholder.setForeground(Color.GRAY);
-        placeholder.setHorizontalAlignment(SwingConstants.CENTER);
-        placeholder.setFont(new Font("Arial", Font.ITALIC, 12));
+        BufferedImage img = new BufferedImage(
+                DEFAULT_WIDTH, DEFAULT_HEIGHT, BufferedImage.TYPE_INT_ARGB
+        );
 
-        BufferedImage img = new BufferedImage(DEFAULT_WIDTH, DEFAULT_HEIGHT, BufferedImage.TYPE_INT_ARGB);
-        Graphics2D g2 = img.createGraphics();
-        g2.setColor(new Color(40, 40, 40));
-        g2.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        placeholder.setSize(DEFAULT_WIDTH, DEFAULT_HEIGHT);
-        placeholder.paint(g2);
-        g2.dispose();
+        Graphics2D g = img.createGraphics();
+        g.setColor(new Color(40, 40, 40));
+        g.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
+        g.setColor(Color.GRAY);
+        g.drawRect(5, 5, DEFAULT_WIDTH - 10, DEFAULT_HEIGHT - 10);
+        g.dispose();
 
         return new ImageIcon(img);
-    }
-
-    // Кликабельность (если нужно)
-    public void setOnClick(Runnable action) {
-        addMouseListener(new MouseAdapter() {
-            @Override
-            public void mouseClicked(MouseEvent e) {
-                action.run();
-            }
-        });
     }
 }

@@ -30,6 +30,63 @@ public abstract class Card {
         this.imagePath = "";
     }
 
+    /**
+     * Карта применяется к игроку
+     */
+    public void playOnPlayer(BattleContext context, BattleResult result) {
+        if (!canTargetPlayer()) {
+            result.addMessage("❌ Карту нельзя применить к игроку");
+            return;
+        }
+
+        context.setCurrentTarget(context.getPlayerSide());
+        play(context, result);
+    }
+
+    /**
+     * Карта применяется к суммону
+     */
+    public void playOnSummon(BattleContext context, BattleResult result) {
+        if (context.getSummonSide() == null) {
+            result.addMessage("❌ Нет активного суммона");
+            return;
+        }
+        if (!canTargetSummon()) {
+            result.addMessage("❌ Карту нельзя применить к суммону");
+            return;
+        }
+
+        context.setCurrentTarget(context.getSummonSide());
+        play(context, result);
+    }
+
+    /**
+     * Карта применяется к врагу
+     */
+    public void playOnEnemy(BattleContext context, BattleResult result) {
+        if (!canTargetEnemy()) {
+            result.addMessage("❌ Карту нельзя применить к врагу");
+            return;
+        }
+
+        context.setCurrentTarget(context.getEnemySide());
+        play(context, result);
+    }
+
+    // === Ограничения (переопределяются при необходимости) ===
+
+    protected boolean canTargetPlayer() {
+        return true;
+    }
+
+    protected boolean canTargetSummon() {
+        return true;
+    }
+
+    protected boolean canTargetEnemy() {
+        return true;
+    }
+
     public CardRarity getRarity() {
         return rarity;
     }

@@ -121,7 +121,10 @@ public class BattleEngine {
             if (summonSide != null) {
                 summonSide.getUnit().clearTemporaryEffects();
             }
-            ((Player) playerSide.getUnit()).getSummonDeck().resetSelection();
+            Player player = (Player) playerSide.getUnit();
+            player.getSummonDeck().resetSelection();
+            player.getCombatDeck().resetBattleUsage();
+
             GameState.get().combat().clear();
         }
 

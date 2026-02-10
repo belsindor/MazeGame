@@ -1,7 +1,9 @@
 package MazeGame.cards;
 
 import java.util.EnumMap;
+import java.util.EnumSet;
 import java.util.Map;
+import java.util.Set;
 
 /**
  * Боевая колода — содержит активные карты по эффектам (одна лучшая на каждый TypeEffect).
@@ -11,6 +13,7 @@ public class CombatDeck {
 
     // Активные боевые карты по эффектам (одна на эффект — лучшая по раритету)
     private final Map<TypeEffect, Card> cards = new EnumMap<>(TypeEffect.class);
+    private final Set<TypeEffect> usedThisBattle = EnumSet.noneOf(TypeEffect.class);
 
     public CombatDeck() {
         // Можно добавить начальные карты, если нужно (по умолчанию пусто)
@@ -97,6 +100,19 @@ public class CombatDeck {
             default -> null;                      // Неизвестный эффект
         };
     }
+
+    public boolean isUsed(TypeEffect effect) {
+        return usedThisBattle.contains(effect);
+    }
+
+    public void markUsed(TypeEffect effect) {
+        usedThisBattle.add(effect);
+    }
+
+    public void resetBattleUsage() {
+        usedThisBattle.clear();
+    }
+
 
     // Геттеры и утилиты
     public Card getActiveByEffect(TypeEffect effect) {

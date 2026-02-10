@@ -23,6 +23,11 @@ public class BattleWindow extends JFrame {
     private UnitPanel enemyPanel;
     private UnitPanel activeAllyPanel;
 
+    private CardTarget selectedTarget;
+
+    private JPanel bottomPanel;
+
+
     private JPanel centerPanel; // контейнер для динамической замены суммон ↔ игрок
 
     public BattleWindow(JFrame owner, Player player, Monster enemy, Monster summon) {
@@ -56,7 +61,7 @@ public class BattleWindow extends JFrame {
         setContentPane(background);
 
         // Враг сверху
-        enemyPanel = new UnitPanel(enemy, enemy.getName(), new Color(180, 60, 60));
+        enemyPanel = new UnitPanel(enemy, enemy.getName(), new Color(180, 60, 60), CardTarget.ENEMY);
         enemyPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
         add(enemyPanel, BorderLayout.NORTH);
 
@@ -69,7 +74,8 @@ public class BattleWindow extends JFrame {
         updateActiveAllyPanel();
 
         // Нижняя панель с картами
-        add(createBottomPanel(), BorderLayout.SOUTH);
+        bottomPanel = createBottomPanel();
+        add(bottomPanel, BorderLayout.SOUTH);
     }
 
     private void updateActiveAllyPanel() {
@@ -78,9 +84,9 @@ public class BattleWindow extends JFrame {
         Monster currentSummon = battleEngine.getContext().getSummon();
 
         if (currentSummon != null && currentSummon.isAlive()) {
-            activeAllyPanel = new UnitPanel(currentSummon, currentSummon.getName(), new Color(100, 200, 255));
+            activeAllyPanel = new UnitPanel(currentSummon, currentSummon.getName(), new Color(100, 200, 255), CardTarget.SUMMON);
         } else {
-            activeAllyPanel = new UnitPanel(player, player.getName(), new Color(100, 200, 255));
+            activeAllyPanel = new UnitPanel(player, player.getName(), new Color(100, 200, 255), CardTarget.PLAYER);
         }
 
         activeAllyPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
@@ -104,13 +110,13 @@ public class BattleWindow extends JFrame {
 
         for (int i = 0; i < 8; i++) {
             Card card = (i < activeCards.size()) ? activeCards.values().stream().toList().get(i) : null;
-            CardPanel cardPanel = new CardPanel(card != null ? card : createDummyCard());
 
-            cardPanel.setOnClick(() -> {
-                selectedCard = card;
-                performTurn();
-            });
-
+            if (card == null) {
+                cardsPanel.add(new CardPanel(createDummyCard(), true));
+                continue;
+            }
+            boolean used = deck.isUsed(card.getEffect());
+            CardPanel cardPanel = new CardPanel(card, used);
             cardsPanel.add(cardPanel);
         }
 
@@ -131,10 +137,30 @@ public class BattleWindow extends JFrame {
 
         return panel;
     }
+    public void onCardDropped(Card card, CardTarget target) {
+        CombatDeck deck = player.getCombatDeck();
+
+        if (deck.isUsed(card.getEffect())) {
+            HUDMessageManager.show("Карта уже использована в этом бою", Color.GRAY, 22);
+            return;
+        }
+
+        this.selectedCard = card;
+        this.selectedTarget = target;
+        performTurn();
+    }
 
     private void performTurn() {
-        PlayerTurn turn = new PlayerTurn(selectedCard);
+        PlayerTurn turn = new PlayerTurn(selectedCard, selectedTarget);
         lastResult = battleEngine.resolveTurn(turn);
+
+        if (selectedCard != null) {
+            player.getCombatDeck().markUsed(selectedCard.getEffect());
+            refreshBottomPanel();
+        }
+
+        selectedCard = null;
+        selectedTarget = null;
 
         // Показываем все сообщения хода
         for (String msg : lastResult.messages) {
@@ -163,6 +189,18 @@ public class BattleWindow extends JFrame {
 
         selectedCard = null;
     }
+
+    private void refreshBottomPanel() {
+        if (bottomPanel != null) {
+            getContentPane().remove(bottomPanel);
+        }
+        bottomPanel = createBottomPanel();
+        add(bottomPanel, BorderLayout.SOUTH);
+        revalidate();
+        repaint();
+    }
+
+
 
     private ImageIcon getBackgroundImage() {
         var url = getClass().getResource("/images/battle.jpg");

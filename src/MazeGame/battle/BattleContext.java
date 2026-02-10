@@ -11,6 +11,8 @@ public class BattleContext {
     private Monster summon;
     private BattleSide summonSide;
 
+    private BattleSide currentTarget;
+
     // Убрали поле result — он создаётся в каждом resolveTurn
 
 
@@ -52,6 +54,14 @@ public class BattleContext {
     public BattleUnit getActiveAlly() {
         BattleSide side = getActiveAllySide();
         return side != null ? side.getUnit() : null;
+    }
+
+    public void setCurrentTarget(BattleSide side) {
+        this.currentTarget = side;
+    }
+
+    public BattleSide getCurrentTarget() {
+        return currentTarget;
     }
 
     // Сеттеры для суммона
