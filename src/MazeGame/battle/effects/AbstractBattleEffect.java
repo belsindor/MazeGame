@@ -59,10 +59,6 @@ public abstract class AbstractBattleEffect implements BattleEffect {
     public void onTurnEnd(BattleContext context) {
         decreaseDuration();
 
-        if (isExpired()) {
-            onExpire(context);
-            context.addMessage("Эффект закончился: " + getName());
-        }
     }
     protected void tickDuration() {
         if (remainingTurns > 0) {

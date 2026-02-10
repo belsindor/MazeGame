@@ -1,6 +1,8 @@
 package MazeGame.battle.effects;
 
 import MazeGame.battle.BattleContext;
+import MazeGame.battle.BattleUnit;
+
 //+
 public class AttackBuffEffect extends AbstractBattleEffect {
 
@@ -12,17 +14,22 @@ public class AttackBuffEffect extends AbstractBattleEffect {
     }
 
     @Override
+    public int modifyAttack(BattleUnit unit, int baseAttack) {
+        return baseAttack + bonus;
+    }
+
+    @Override
     public void onApply(BattleContext context) {
-        target.addTemporaryAttack(bonus);
+        context.addMessage("🗡 Атака +" + bonus);
     }
 
     @Override
     public void onExpire(BattleContext context) {
-        target.addTemporaryAttack(-bonus);
+        context.addMessage("🗡 Бафф атаки закончился");
     }
 
     @Override
     public String getName() {
-        return "Атака +" + bonus + " (" + getRemainingTurns() + ")";
+        return "Атака +" + bonus;
     }
 }
