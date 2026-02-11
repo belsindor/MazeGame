@@ -145,12 +145,22 @@ public class BattleWindow extends JFrame {
             return;
         }
 
-        this.selectedCard = card;
-        this.selectedTarget = target;
+        BattleResult result = new BattleResult();
 
+        // 🔥 сразу играем карту
+        battleEngine.playCard(card, target, result);
+
+        // сообщения
+        for (String msg : result.messages) {
+            HUDMessageManager.show(msg, Color.WHITE, 24);
+        }
+
+        refreshBottomPanel(); // карта станет серой / неактивной
     }
 
+
     private void performTurn() {
+
         lastResult = battleEngine.resolveTurn();
 
         for (String msg : lastResult.messages) {

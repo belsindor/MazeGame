@@ -12,24 +12,23 @@ public class RegenerationEffect extends AbstractBattleEffect {
     }
 
     @Override
-    public String getName() {
-        return "Регенерация (+" + healPerTurn + "/ход)";
-    }
-
-    @Override
     public void onTurnStart(BattleContext context) {
         target.heal(healPerTurn);
-        context.addMessage("✨ " + target.getName() +
-                " восстанавливает " + healPerTurn + " HP");
+        context.addMessage("✨ " + target.getName()
+                + " восстанавливает " + healPerTurn + " HP");
     }
 
     @Override
     public void onApply(BattleContext context) {
-        context.addMessage("✨ На " + target.getName() + " наложена регенерация");
+        context.addMessage("✨ Наложена регенерация");
     }
 
     @Override
-    public void onExpire(BattleContext context) {
-        context.addMessage("✨ Регенерация закончилась");
+    public void onExpire(BattleContext context) {}
+
+    @Override
+    public String getName() {
+        return "Регенерация +" + healPerTurn;
     }
 }
+

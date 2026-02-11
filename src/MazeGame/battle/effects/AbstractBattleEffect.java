@@ -2,19 +2,25 @@ package MazeGame.battle.effects;
 
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleUnit;
-//+
+
 public abstract class AbstractBattleEffect implements BattleEffect {
 
     protected BattleUnit target;
     protected int remainingTurns;
 
+    protected AbstractBattleEffect(int duration) {
+        this.remainingTurns = Math.max(1, duration);
+    }
 
+    @Override
     public void setTarget(BattleUnit target) {
         this.target = target;
     }
+
     protected BattleUnit getTarget() {
         return target;
     }
+
     @Override
     public void onApply(BattleContext context) {}
 
@@ -22,21 +28,13 @@ public abstract class AbstractBattleEffect implements BattleEffect {
     public void onTurnStart(BattleContext context) {}
 
     @Override
-    public int modifyAttack(BattleUnit unit, int baseAttack) {
-        return baseAttack;
-    }
+    public void onTurnEnd(BattleContext context) {
+        remainingTurns--;
 
-    public abstract String getName();
-
-    @Override
-    public int modifyDefense(BattleUnit unit, int baseDefense) {
-        return baseDefense;
-    }
-
-    public abstract void onExpire(BattleContext context);
-
-    protected AbstractBattleEffect(int duration) {
-        this.remainingTurns = Math.max(1, duration); // минимум 1 ход
+        if (isExpired()) {
+            onExpire(context);
+            context.addMessage("Эффект закончился: " + getName());
+        }
     }
 
     @Override
@@ -49,21 +47,16 @@ public abstract class AbstractBattleEffect implements BattleEffect {
         return Math.max(0, remainingTurns);
     }
 
-    protected void decreaseDuration() {
-        if (remainingTurns > 0) {
-            remainingTurns--;
-        }
+    @Override
+    public int modifyAttack(BattleUnit unit, int baseAttack) {
+        return baseAttack;
     }
 
     @Override
-    public void onTurnEnd(BattleContext context) {
-        decreaseDuration();
-
-    }
-    protected void tickDuration() {
-        if (remainingTurns > 0) {
-            remainingTurns--;
-        }
+    public int modifyDefense(BattleUnit unit, int baseDefense) {
+        return baseDefense;
     }
 
+    public abstract void onExpire(BattleContext context);
+    public abstract String getName();
 }

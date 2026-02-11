@@ -5,6 +5,8 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+import static MazeGame.cards.CardLibrary.*;
+
 /**
  * Боевая колода — содержит активные карты по эффектам (одна лучшая на каждый TypeEffect).
  * Обновляется автоматически из общей коллекции regularCards.
@@ -16,7 +18,15 @@ public class CombatDeck {
     private final Set<TypeEffect> usedThisBattle = EnumSet.noneOf(TypeEffect.class);
 
     public CombatDeck() {
-        // Можно добавить начальные карты, если нужно (по умолчанию пусто)
+        cards.put(TypeEffect.CURSE, CURSE_1_2());
+        cards.put(TypeEffect.ATTACK_BUFF, ATTACK_BUFF_1_2());
+        cards.put(TypeEffect.DEFENSE_BUFF, DEFENSE_BUFF_1_2());
+        cards.put(TypeEffect.POISON, POISON_1_2());
+        cards.put(TypeEffect.REGENERATION, REGENERATION_1_2());
+        cards.put(TypeEffect.METEOR_SHOWER, METEOR_SHOWER());
+        cards.put(TypeEffect.RESURRECTION, RESURRECTION());
+
+       // Можно добавить начальные карты, если нужно (по умолчанию пусто)
     }
 
     /**

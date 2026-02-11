@@ -106,6 +106,11 @@ public class BattleEngine {
             BattleReward reward = createReward(enemySide.getUnit().getLevel());
             result.setReward(reward);
 
+            Player player = (Player) playerSide.getUnit();
+            player.gainExperience(reward.experience());
+
+            result.addMessage("⭐ Получено опыта: " + reward.experience());
+
             Monster enemy = (Monster) enemySide.getUnit();
             var drops = new CardDropService().generateDrop(enemy);
             processDroppedCards((Player) playerSide.getUnit(), drops, result);

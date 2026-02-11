@@ -2,7 +2,7 @@ package MazeGame.battle.effects;
 
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleUnit;
-//+
+
 public class DefenseBuffEffect extends AbstractBattleEffect {
 
     private final int bonus;
@@ -11,10 +11,6 @@ public class DefenseBuffEffect extends AbstractBattleEffect {
         super(duration);
         this.bonus = bonus;
     }
-    @Override
-    public String getName() {
-        return "Бафф защиты +" + bonus;
-    }
 
     @Override
     public int modifyDefense(BattleUnit unit, int baseDefense) {
@@ -22,7 +18,16 @@ public class DefenseBuffEffect extends AbstractBattleEffect {
     }
 
     @Override
-    public void onExpire(BattleContext context) {
-        // Ничего не делаем — бафф просто исчезает
+    public void onApply(BattleContext context) {
+        context.addMessage("🛡 Защита +" + bonus + " у " + target.getName());
+    }
+
+    @Override
+    public void onExpire(BattleContext context) {}
+
+    @Override
+    public String getName() {
+        return "Бафф защиты +" + bonus;
     }
 }
+

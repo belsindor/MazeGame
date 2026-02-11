@@ -4,6 +4,7 @@ import MazeGame.Player;
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
 import MazeGame.battle.BattleSide;
+import MazeGame.battle.BattleUnit;
 import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
@@ -11,9 +12,13 @@ import java.util.function.Function;
 //++
 public class BuffCard extends Card {
 
-    private final Function<Player, BattleEffect> effectFactory;
+    private final Function<BattleUnit, BattleEffect> effectFactory;
 
-    public BuffCard(int id, Function effectFactory, CardRarity rarity, TypeEffect effect, String imagePath) {
+    public BuffCard(int id,
+                    Function<BattleUnit, BattleEffect> effectFactory,
+                    CardRarity rarity,
+                    TypeEffect effect,
+                    String imagePath) {
         super(id, CardType.BUFF, rarity, effect, imagePath);
         this.effectFactory = effectFactory;
     }
@@ -32,12 +37,14 @@ public class BuffCard extends Card {
             return;
         }
 
-        BattleEffect effect = effectFactory.apply((Player) target.getUnit());
+        BattleUnit unit = target.getUnit();
+
+        BattleEffect effect = effectFactory.apply(unit);
         target.addEffect(effect, context);
 
         result.addMessage("✨ Бафф применён на " + target.getName());
     }
-
 }
+
 
 

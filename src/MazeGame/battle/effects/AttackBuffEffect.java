@@ -20,16 +20,15 @@ public class AttackBuffEffect extends AbstractBattleEffect {
 
     @Override
     public void onApply(BattleContext context) {
-        context.addMessage("🗡 Атака +" + bonus);
+        context.addMessage("⚔ Атака +" + bonus + " у " + target.getName());
     }
 
     @Override
-    public void onExpire(BattleContext context) {
-        context.addMessage("🗡 Бафф атаки закончился");
-    }
+    public void onExpire(BattleContext context) {}
 
     @Override
     public String getName() {
         return "Атака +" + bonus;
     }
 }
+
