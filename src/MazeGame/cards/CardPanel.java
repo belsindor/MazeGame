@@ -126,11 +126,8 @@ public class CardPanel extends JPanel {
         }
 
         StringBuilder sb = new StringBuilder("<html>");
+
         sb.append("<b>").append(card.getName()).append("</b><br>");
-        sb.append("<font color='gray'>")
-                .append(card.getType()).append(" • ")
-                .append(card.getRarity())
-                .append("</font><br>");
 
         if (card instanceof SummonCard summon) {
             MonsterTemplate m = summon.getMonsterTemplate();
@@ -139,9 +136,7 @@ public class CardPanel extends JPanel {
             sb.append("ATK: ").append(m.attack())
                     .append(" • DEF: ").append(m.defense()).append("<br>");
             sb.append("Тип: ").append(m.unitType());
-        } else {
-            sb.append("Эффект: ")
-                    .append(card.getEffect() != null ? card.getEffect().name() : "—");
+
         }
 
         sb.append("</html>");
@@ -177,7 +172,7 @@ public class CardPanel extends JPanel {
         g.setColor(new Color(40, 40, 40));
         g.fillRect(0, 0, DEFAULT_WIDTH, DEFAULT_HEIGHT);
         g.setColor(Color.GRAY);
-        g.drawRect(5, 5, DEFAULT_WIDTH - 10, DEFAULT_HEIGHT - 10);
+        g.drawRect(5, 5, DEFAULT_WIDTH - 20, DEFAULT_HEIGHT - 10);
         g.dispose();
 
         return new ImageIcon(img);

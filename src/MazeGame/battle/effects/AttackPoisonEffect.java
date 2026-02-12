@@ -27,4 +27,8 @@ public class AttackPoisonEffect extends AbstractBattleEffect {
     public String getName() {
         return "Отравление (" + damagePerTurn + ")";
     }
+
+    public int getDamagePerTurn() {
+        return damagePerTurn;
+    }
 }

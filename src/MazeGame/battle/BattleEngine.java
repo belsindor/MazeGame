@@ -195,10 +195,4 @@ public class BattleEngine {
         return summonSide;
     }
 
-
-
-    // Если хочешь, можно добавить и другие полезные геттеры
-
-
-
 }

@@ -10,8 +10,9 @@ public class ConsumableCard extends Card {
 
     private final Consumer<BattleContext> action;
 
-    public ConsumableCard(int id, Consumer<BattleContext> action, CardRarity rarity, TypeEffect effect, String imagePath) {
+    public ConsumableCard(String name, int id, Consumer<BattleContext> action, CardRarity rarity, TypeEffect effect, String imagePath) {
         super(id, CardType.CONSUMABLE, rarity, effect, imagePath);
+        this.name = name;
         this.action = action;
     }
 

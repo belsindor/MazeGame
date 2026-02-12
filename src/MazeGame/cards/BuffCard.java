@@ -14,12 +14,13 @@ public class BuffCard extends Card {
 
     private final Function<BattleUnit, BattleEffect> effectFactory;
 
-    public BuffCard(int id,
+    public BuffCard(String name, int id,
                     Function<BattleUnit, BattleEffect> effectFactory,
                     CardRarity rarity,
                     TypeEffect effect,
                     String imagePath) {
         super(id, CardType.BUFF, rarity, effect, imagePath);
+        this.name = name;
         this.effectFactory = effectFactory;
     }
 

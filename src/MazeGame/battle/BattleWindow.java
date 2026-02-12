@@ -122,7 +122,7 @@ public class BattleWindow extends JFrame {
 
         panel.add(cardsPanel, BorderLayout.CENTER);
 
-        // Кнопка пропуска хода
+        // Кнопка хода
         JButton turnButton = new JButton("Сделать ход");
         turnButton.setFont(new Font("Arial", Font.BOLD, 20));
         turnButton.setPreferredSize(new Dimension(200, 80));

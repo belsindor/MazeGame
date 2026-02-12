@@ -8,15 +8,18 @@ import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
 
-//+
+
 public class CurseCard extends Card {
 
     private final Function<Monster, BattleEffect> effectFactory;
 
-    public CurseCard(int id, Function<Monster, BattleEffect> effectFactory, CardRarity rarity, TypeEffect effect, String imagePath) {
+    public CurseCard(String name, int id, Function<Monster, BattleEffect> effectFactory, CardRarity rarity, TypeEffect effect, String imagePath) {
         super(id, CardType.CURSE, rarity, effect, imagePath);
         this.effectFactory = effectFactory;
+        this.name = name;
     }
+
+
 
     @Override
     public CardType getType() {
@@ -28,7 +31,7 @@ public class CurseCard extends Card {
         BattleSide target = context.getCurrentTarget();
 
         if (target == null) {
-            result.addMessage("❌ Нет цели для проклятия");
+//            result.addMessage("❌ Нет цели для проклятия");
             return;
         }
 
@@ -36,7 +39,7 @@ public class CurseCard extends Card {
         BattleEffect effect = effectFactory.apply(monster);
         target.addEffect(effect, context);
 
-        result.addMessage("☠ Проклятие наложено на " + target.getName());
+//        result.addMessage("☠ Проклятие наложено на " + target.getName());
     }
 
 }

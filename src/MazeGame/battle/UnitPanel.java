@@ -52,7 +52,7 @@ public class UnitPanel extends JPanel {
         setLayout(new BorderLayout());
         setOpaque(false);
         setBorder(BorderFactory.createLineBorder(borderColor, 2));
-        setPreferredSize(new Dimension(300, 500));
+        setPreferredSize(new Dimension(300, 400));
 
         // Верх: имя и уровень
         nameLabel = new JLabel(title + " (Lv. " + unit.getLevel() + ")", SwingConstants.CENTER);
@@ -100,7 +100,7 @@ public class UnitPanel extends JPanel {
             var url = getClass().getResource(path);
             if (url != null) {
                 ImageIcon original = new ImageIcon(url);
-                Image scaled = original.getImage().getScaledInstance(280, 420, Image.SCALE_SMOOTH);
+                Image scaled = original.getImage().getScaledInstance(200, 300, Image.SCALE_SMOOTH);
                 imageLabel.setIcon(new ImageIcon(scaled));
             } else {
                 System.err.println("Картинка не найдена: " + path);

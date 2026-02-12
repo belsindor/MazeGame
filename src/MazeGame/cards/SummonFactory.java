@@ -25,7 +25,7 @@ public class SummonFactory {
 
     // Уровень 1 ── Summon
     public static SummonCard SPIDER_THROWER_GRAY() {
-        return summonCard(10, "Паук-метатель", 1, 12, 2, 0,
+        return summonCard(10, "Паук-метатель", 1, 6, 2, 0,
                 UnitType.ARCHER, "/images/summons/spider_gray.jpg", CardRarity.GRAY);
     }
 
@@ -35,7 +35,7 @@ public class SummonFactory {
     }
 
     public static SummonCard BAT_GRAY() {
-        return summonCard(12, "Летучая мышь", 1, 10, 3, 0,
+        return summonCard(12, "Летучая мышь", 1, 5, 3, 0,
                 UnitType.FLYING, "/images/summons/bat_gray.jpg", CardRarity.GRAY);
     }
 
@@ -45,7 +45,7 @@ public class SummonFactory {
     }
 
     public static SummonCard WILD_WOLF_GRAY() {
-        return summonCard(14, "Дикий волк", 1, 15, 1, 1,
+        return summonCard(14, "Дикий волк", 1, 8, 1, 1,
                 UnitType.INFANTRY, "/images/summons/wolf_gray.jpg", CardRarity.GRAY);
     }
 
@@ -56,7 +56,7 @@ public class SummonFactory {
     // Уровень 2
 
     public static SummonCard GOBLIN_WARRIOR_GREEN() {
-        return summonCard(16, "Гоблин-воин", 2, 20, 4, 1,
+        return summonCard(16, "Гоблин-воин", 2, 10, 4, 1,
                 UnitType.INFANTRY, "/images/summons/goblin_green.jpg", CardRarity.GREEN);
     }
 
@@ -66,7 +66,7 @@ public class SummonFactory {
     }
 
     public static SummonCard SKELETON_ARCHER_GREEN() {
-        return summonCard(18, "Скелет-лучник", 2, 18, 5, 2,
+        return summonCard(18, "Скелет-лучник", 2, 9, 5, 2,
                 UnitType.ARCHER, "/images/summons/skeleton_archer_green.jpg", CardRarity.GREEN);
     }
 
@@ -76,7 +76,7 @@ public class SummonFactory {
     }
 
     public static SummonCard IMP_GREEN() {
-        return summonCard(20, "Имп", 2, 22, 4, 1,
+        return summonCard(20, "Имп", 2, 11, 4, 1,
                 UnitType.FLYING, "/images/summons/imp_green.jpg", CardRarity.GREEN);
     }
 
@@ -88,7 +88,7 @@ public class SummonFactory {
     // Уровень 3
 
     public static SummonCard ORC_BLUE() {
-        return summonCard(22, "Орк", 3, 35, 7, 2,
+        return summonCard(22, "Орк", 3, 18, 7, 2,
                 UnitType.INFANTRY, "/images/summons/orc_blue.jpg", CardRarity.BLUE);
     }
 
@@ -98,7 +98,7 @@ public class SummonFactory {
     }
 
     public static SummonCard ZOMBIE_HEAD_BLUE() {
-        return summonCard(24, "Голова зомби", 3, 40, 5, 3,
+        return summonCard(24, "Голова зомби", 3, 20, 5, 3,
                 UnitType.FLYING, "/images/summons/zombie_head_blue.jpg", CardRarity.BLUE);
     }
 
@@ -108,7 +108,7 @@ public class SummonFactory {
     }
 
     public static SummonCard WEREWOLF_BLUE() {
-        return summonCard(26, "Оборотень", 3, 38, 8, 2,
+        return summonCard(26, "Оборотень", 3, 19, 8, 2,
                 UnitType.ARCHER, "/images/summons/werewolf_blue.jpg", CardRarity.BLUE);
     }
 
@@ -120,7 +120,7 @@ public class SummonFactory {
     // Уровень 4
 
     public static SummonCard VAMPIRE_VIOLETTE() {
-        return summonCard(28, "Вампир", 4, 55, 9, 3,
+        return summonCard(28, "Вампир", 4, 27, 9, 3,
                 UnitType.FLYING, "/images/summons/vampire_violette.jpg", CardRarity.VIOLETTE);
     }
 
@@ -130,7 +130,7 @@ public class SummonFactory {
     }
 
     public static SummonCard CYCLOPS_VIOLETTE() {
-        return summonCard(30, "Циклоп", 4, 60, 8, 5,
+        return summonCard(30, "Циклоп", 4, 30, 8, 5,
                 UnitType.ARCHER, "/images/summons/cyclops_violette.jpg", CardRarity.VIOLETTE);
     }
 
@@ -140,7 +140,7 @@ public class SummonFactory {
     }
 
     public static SummonCard DEATH_KNIGHT_VIOLETTE() {
-        return summonCard(32, "Рыцарь смерти", 4, 65, 7, 6,
+        return summonCard(32, "Рыцарь смерти", 4, 33, 7, 6,
                 UnitType.INFANTRY, "/images/summons/knight_violette.jpg", CardRarity.VIOLETTE);
     }
 
@@ -152,7 +152,7 @@ public class SummonFactory {
     // Уровень 5
 
     public static SummonCard DRAGONLING_RED() {
-        return summonCard(34, "Дракончик", 5, 80, 12, 5,
+        return summonCard(34, "Дракончик", 5, 40, 12, 5,
                 UnitType.FLYING, "/images/summons/dragon_red.jpg", CardRarity.RED);
     }
 
@@ -162,7 +162,7 @@ public class SummonFactory {
     }
 
     public static SummonCard DEMON_LORD_RED() {
-        return summonCard(36, "Владыка демонов", 5, 75, 13, 4,
+        return summonCard(36, "Владыка демонов", 5, 38, 13, 4,
                 UnitType.ARCHER, "/images/summons/demon_lord_red.jpg", CardRarity.RED);
     }
 
@@ -172,7 +172,7 @@ public class SummonFactory {
     }
 
     public static SummonCard MINOTAUR_KING_RED() {
-        return summonCard(38, "Король минотавров", 5, 85, 10, 7,
+        return summonCard(38, "Король минотавров", 5, 43, 10, 7,
                 UnitType.INFANTRY, "/images/summons/minotaur_king_red.jpg", CardRarity.RED);
     }
 

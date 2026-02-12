@@ -201,7 +201,11 @@ public class GamePanel extends JPanel {
         g.drawString(name, nameX, y + 40);
 
         g.setFont(new Font("Arial", Font.BOLD, 18));
-        g.drawString("Lv. " + monster.getLevel(), x + 30, y + 80);
+        g.drawString("Lv. " + monster.getLevel(), x + 140, y + 300);
+        g.drawString("Type: " + monster.getUnitType(), x + 90, y + 330);
+        g.drawString("Atk: " + monster.getAttack(), x + 100, y + 360);
+        g.drawString("Def: " + monster.getDefense(), x + 180, y + 360);
+        g.drawString("HP: " + monster.getHealth(), x + 130, y + 390);
     }
 
     private Image loadImage(String path) {
