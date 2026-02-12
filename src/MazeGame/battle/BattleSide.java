@@ -79,4 +79,8 @@ public class BattleSide {
         return unit.getLevel();
     }
 
+    public List<BattleEffect> getEffects() {
+        return effects;
+    }
+
 }

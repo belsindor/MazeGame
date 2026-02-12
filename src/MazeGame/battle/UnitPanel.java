@@ -1,6 +1,8 @@
 package MazeGame.battle;
 
 import MazeGame.Monster;
+import MazeGame.battle.effects.AbstractBattleEffect;
+import MazeGame.battle.effects.BattleEffect;
 import MazeGame.cards.Card;
 import MazeGame.cards.CardTarget;
 import MazeGame.cards.CardTransferable;
@@ -13,13 +15,17 @@ import java.awt.event.ActionListener;
 public class UnitPanel extends JPanel {
 
     private final BattleUnit unit;
+    private final BattleSide side;
     private final JLabel nameLabel;
     private final JProgressBar hpBar;
     private final JLabel imageLabel;  // ← новая метка для картинки
     private final CardTarget target;
+    private final JPanel effectsPanel;
 
-    public UnitPanel(BattleUnit unit, String title, Color borderColor, CardTarget target) {
-        this.unit = unit;
+
+    public UnitPanel(BattleSide side, String title, Color borderColor, CardTarget target) {
+        this.side = side;
+        this.unit = side.getUnit();
         this.target = target;
 
 
@@ -61,9 +67,29 @@ public class UnitPanel extends JPanel {
         add(nameLabel, BorderLayout.NORTH);
 
         // Центр: картинка юнита
+        // Центр: контейнер с наложением
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new OverlayLayout(centerPanel));
+        centerPanel.setOpaque(false);
+        add(centerPanel, BorderLayout.CENTER);
+
+        // Панель эффектов поверх картинки
+        effectsPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 4, 4));
+        effectsPanel.setOpaque(false);
+        effectsPanel.setAlignmentX(100.0f);  // слева
+        effectsPanel.setAlignmentY(100.0f);  // сверху
+        centerPanel.add(effectsPanel);
+
+        // Картинка юнита
         imageLabel = new JLabel();
         imageLabel.setHorizontalAlignment(SwingConstants.CENTER);
-        add(imageLabel, BorderLayout.CENTER);
+        imageLabel.setAlignmentX(0.5f);
+        imageLabel.setAlignmentY(0.5f);
+        centerPanel.add(imageLabel);
+
+
+
+
 
         // Низ: красная полоска HP
         hpBar = new JProgressBar(0, unit.getMaxHealth());
@@ -82,6 +108,37 @@ public class UnitPanel extends JPanel {
         loadUnitImage();
     }
 
+
+    public void updateEffects() {
+        effectsPanel.removeAll();
+
+        for (BattleEffect effect : side.getEffects()) {
+            JLabel icon = new JLabel();
+            if (effect instanceof AbstractBattleEffect abe &&
+                    abe.getIconPath() != null) {
+
+                var url = getClass().getResource(abe.getIconPath());
+
+                if (url != null) {
+                    ImageIcon original = new ImageIcon(url);
+                    Image scaled = original.getImage()
+                            .getScaledInstance(32, 48, Image.SCALE_SMOOTH);
+
+                    icon.setIcon(new ImageIcon(scaled));
+                }
+            } else {
+                icon.setText("🟣");
+            }
+
+            icon.setToolTipText(effect.getName()
+                    + " (" + effect.getRemainingTurns() + " ход.)");
+
+            effectsPanel.add(icon);
+        }
+
+        effectsPanel.revalidate();
+        effectsPanel.repaint();
+    }
 
 
     /**

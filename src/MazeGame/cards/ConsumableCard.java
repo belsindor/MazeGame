@@ -24,6 +24,7 @@ public class ConsumableCard extends Card {
     @Override
     public void play(BattleContext context, BattleResult result) {
         action.accept(context);
+
         result.addMessage("🧪 Предмет использован");
     }
 }

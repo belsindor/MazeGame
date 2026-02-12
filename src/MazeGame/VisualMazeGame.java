@@ -23,10 +23,11 @@ public class VisualMazeGame {
     private final Player player;
     private final Random random = new Random();
 
-    private static final int MONSTER_APPEARANCE_CHANCE = 100;
+    private static final int MONSTER_APPEARANCE_CHANCE = 25;
     private static final int HEAL_PER_STEP = 1;
 
     private boolean secondMazeLoaded = false;
+    private boolean thirdMazeLoaded = false;
 
     public VisualMazeGame(Player player) {
         this.player = player;
@@ -128,6 +129,10 @@ public class VisualMazeGame {
                 HUDMessageManager.showInfo("🚪 Второй лабиринт открыт!");
                 loadMaze(MAZE_2, 1, 1, 28, 6);
                 secondMazeLoaded = true;
+            } else if (!thirdMazeLoaded) {
+                HUDMessageManager.showInfo("🚪 Третий лабиринт открыт!");
+                loadMaze(MAZE_3, 0, 11, 39, 11);
+                thirdMazeLoaded = true;
             } else {
                 HUDMessageManager.showInfo("🏁 Поздравляем! Вы нашли выход!");
             }
@@ -146,7 +151,7 @@ public class VisualMazeGame {
 
             Monster enemy = MonsterFactory.createEnemyForLevel(enemyLevel);
             GameWindow.getPanel().showPendingMonster(enemy);
-            System.out.println("Появился монстр уровня " + enemyLevel + " (игрок: " + player.getLevel() + ")");
+//            System.out.println("Появился монстр уровня " + enemyLevel + " (игрок: " + player.getLevel() + ")");
         }
     }
 
@@ -255,8 +260,8 @@ public class VisualMazeGame {
                     player.getCardCollection().removeCard(starter);
                     player.getSummonDeck().removeFromActive(starter);  // используем метод по карте
                     player.markStartingSummonUsed();
-                    HUDMessageManager.showInfo("Стартовый суммон «Дух предка» израсходован после первого боя!");
-                    System.out.println("Стартовый суммон удалён из коллекции и active");
+//                    HUDMessageManager.showInfo("Стартовый суммон «Дух предка» израсходован после первого боя!");
+//                    System.out.println("Стартовый суммон удалён из коллекции и active");
                 }
             }
         }
@@ -270,12 +275,12 @@ public class VisualMazeGame {
                 summonDeck.removeFromActive(selectedSummonCard);
                 player.getCardCollection().removeCard(selectedSummonCard);
 
-                String name = selectedSummonCard.getName();
-                HUDMessageManager.show("☠ " + name + " погиб и был удалён из колоды");
-                System.out.println("Удалён погибший суммон: " + name + " (" + selectedSummonCard.getUnitType() + ")");
-            } else {
-                System.out.println("Суммон выжил: " + currentSummon.getName() +
-                        " (" + currentSummon.getHealth() + " HP осталось)");
+//                String name = selectedSummonCard.getName();
+//                HUDMessageManager.show("☠ " + name + " погиб и был удалён из колоды");
+//                System.out.println("Удалён погибший суммон: " + name + " (" + selectedSummonCard.getUnitType() + ")");
+//            } else {
+//                System.out.println("Суммон выжил: " + currentSummon.getName() +
+//                        " (" + currentSummon.getHealth() + " HP осталось)");
             }
         }
     }
@@ -323,19 +328,62 @@ public class VisualMazeGame {
             {0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 0},
     };
 
+    private static final int[][] MAZE_3 = {
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,0,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,1,1,1,1,1,1,0,1,0,1,0,0,0,1,0,1,1,1,0,1,1,1,1,1,0,1,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,1,0,1,1,1,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,1,0,1,0,1,1,1,0,0,0,1,1,1,0,1,0,1,0,1,0,0,1,0,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,1,1,0,1,1,1,1,0,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},
+            {1,1,1,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,1,1,1,1,1},
+            {0,0,0,1,1,1,1,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0},
+            {0,0,0,1,0,0,0,0,0,1,0,1,0,1,0,0,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0},
+            {0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,0,0},
+            {0,0,0,1,0,1,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,1,0,1,1,1,1,0,0,1,0,1,0,0,0},
+            {0,0,0,1,0,1,0,0,1,1,1,1,0,1,1,1,1,1,1,1,0,1,0,1,0,1,0,1,0,0,1,0,0,1,0,1,0,1,0},
+            {0,0,0,1,0,1,0,0,1,0,1,0,0,0,0,0,0,0,0,1,0,1,0,1,1,1,0,1,0,1,1,1,0,1,0,1,1,1,0},
+            {0,0,0,1,0,1,0,0,1,0,0,0,0,1,1,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,0,1,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,0,0,0,1,0,1,0,1,0,1,0,0,0,1,0,1,1,1,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,1,1,1,1,1,0,1,0,1,0,1,1,1,1,1,0,1,0,0,0,0,0,0,0},
+            {0,0,0,1,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,1,0,1,0,0,0,1,0,1,0,0,0,0,0,0,0},
+            {0,0,0,1,1,1,0,0,0,0,0,0,0,1,1,1,1,1,1,1,1,1,0,1,1,1,1,1,1,1,1,1,0,0,0,0,0,0,0},
+            {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0}
+    };
+
     public void loadFromSave(GameSaveData data) {
         this.playerX = data.playerX;
         this.playerY = data.playerY;
         this.secondMazeLoaded = data.secondMazeLoaded;
+        this.thirdMazeLoaded = data.thirdMazeLoaded; // ДОБАВИТЬ
 
-        loadMaze(
-                secondMazeLoaded ? MAZE_2 : MAZE_1,
-                data.playerX,
-                data.playerY,
-                secondMazeLoaded ? 28 : 27,
-                secondMazeLoaded ? 6 : 9
-        );
+        int[][] maze;
+        int startX, startY, exitX, exitY;
 
+        if (thirdMazeLoaded) {
+            maze = MAZE_3;
+            startX = data.playerX;
+            startY = data.playerY;
+            exitX = 39;
+            exitY = 11;
+        } else if (secondMazeLoaded) {
+            maze = MAZE_2;
+            startX = data.playerX;
+            startY = data.playerY;
+            exitX = 28;
+            exitY = 6;
+        } else {
+            maze = MAZE_1;
+            startX = data.playerX;
+            startY = data.playerY;
+            exitX = 27;
+            exitY = 9;
+        }
+
+        loadMaze(maze, startX, startY, exitX, exitY);
         this.visited = data.visited;
     }
 }

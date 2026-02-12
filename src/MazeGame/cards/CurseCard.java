@@ -4,6 +4,7 @@ import MazeGame.Monster;
 import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
 import MazeGame.battle.BattleSide;
+import MazeGame.battle.effects.AbstractBattleEffect;
 import MazeGame.battle.effects.BattleEffect;
 
 import java.util.function.Function;
@@ -38,8 +39,9 @@ public class CurseCard extends Card {
         Monster monster = (Monster) target.getUnit();
         BattleEffect effect = effectFactory.apply(monster);
         target.addEffect(effect, context);
-
-//        result.addMessage("☠ Проклятие наложено на " + target.getName());
+        if (effect instanceof AbstractBattleEffect abe) {
+            abe.setIconPath(this.getImagePath());
+        }
     }
 
 }

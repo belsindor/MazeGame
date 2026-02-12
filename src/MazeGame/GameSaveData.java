@@ -26,5 +26,6 @@ public class GameSaveData implements Serializable {
     public boolean[][] visited;
     public boolean[][] fogOfWar;
     public int currentMazeId;
+    public boolean thirdMazeLoaded;
     // добавить сохранение колоды
 }

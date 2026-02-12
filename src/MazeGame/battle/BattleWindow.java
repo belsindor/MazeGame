@@ -61,7 +61,13 @@ public class BattleWindow extends JFrame {
         setContentPane(background);
 
         // Враг сверху
-        enemyPanel = new UnitPanel(enemy, enemy.getName(), new Color(180, 60, 60), CardTarget.ENEMY);
+        enemyPanel = new UnitPanel(
+                battleEngine.getEnemySide(),
+                enemy.getName(),
+                new Color(180, 60, 60),
+                CardTarget.ENEMY
+        );
+
         enemyPanel.setBorder(BorderFactory.createEmptyBorder(40, 0, 20, 0));
         add(enemyPanel, BorderLayout.NORTH);
 
@@ -84,9 +90,19 @@ public class BattleWindow extends JFrame {
         Monster currentSummon = battleEngine.getContext().getSummon();
 
         if (currentSummon != null && currentSummon.isAlive()) {
-            activeAllyPanel = new UnitPanel(currentSummon, currentSummon.getName(), new Color(100, 200, 255), CardTarget.SUMMON);
+            activeAllyPanel = new UnitPanel(
+                    battleEngine.getSummonSide(),
+                    currentSummon.getName(),
+                    new Color(100, 200, 255),
+                    CardTarget.SUMMON
+            );
         } else {
-            activeAllyPanel = new UnitPanel(player, player.getName(), new Color(100, 200, 255), CardTarget.PLAYER);
+            activeAllyPanel = new UnitPanel(
+                    battleEngine.getPlayerSide(),
+                    player.getName(),
+                    new Color(100, 200, 255),
+                    CardTarget.PLAYER
+            );
         }
 
         activeAllyPanel.setBorder(BorderFactory.createEmptyBorder(20, 0, 40, 0));
@@ -141,7 +157,7 @@ public class BattleWindow extends JFrame {
         CombatDeck deck = player.getCombatDeck();
 
         if (deck.isUsed(card.getEffect())) {
-            HUDMessageManager.show("Карта уже использована в этом бою", Color.GRAY, 22);
+//            HUDMessageManager.show("Карта уже использована в этом бою", Color.GRAY, 22);
             return;
         }
 
@@ -149,6 +165,10 @@ public class BattleWindow extends JFrame {
 
         // 🔥 сразу играем карту
         battleEngine.playCard(card, target, result);
+
+        enemyPanel.updateEffects();
+        if (activeAllyPanel != null) activeAllyPanel.updateEffects();
+
 
         // сообщения
         for (String msg : result.messages) {
@@ -170,6 +190,9 @@ public class BattleWindow extends JFrame {
         enemyPanel.update();
         if (activeAllyPanel != null) activeAllyPanel.update();
         updateActiveAllyPanel();
+        enemyPanel.updateEffects();
+        if (activeAllyPanel != null) activeAllyPanel.updateEffects();
+
 
         if (lastResult.isBattleOver()) {
             outcome = lastResult.getOutcome();

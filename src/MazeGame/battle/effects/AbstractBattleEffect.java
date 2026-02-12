@@ -7,6 +7,7 @@ public abstract class AbstractBattleEffect implements BattleEffect {
 
     protected BattleUnit target;
     protected int remainingTurns;
+    private String iconPath;
 
     protected AbstractBattleEffect(int duration) {
         this.remainingTurns = Math.max(1, duration);
@@ -59,4 +60,13 @@ public abstract class AbstractBattleEffect implements BattleEffect {
 
     public abstract void onExpire(BattleContext context);
     public abstract String getName();
+
+    public void setIconPath(String path) {
+        this.iconPath = path;
+    }
+
+    public String getIconPath() {
+        return iconPath;
+    }
+
 }

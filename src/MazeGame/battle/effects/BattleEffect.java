@@ -12,15 +12,6 @@ public interface BattleEffect {
 
     default void onExpire(BattleContext context) {}
 
-    default int modifyAttack(int base, BattleContext ctx) {
-        return base;
-    }
-
-    default int modifyDefense(int base, BattleContext ctx) {
-        return base;
-    }
-
-
 
     boolean isExpired();
     int getRemainingTurns();
@@ -28,4 +19,6 @@ public interface BattleEffect {
     int modifyAttack(BattleUnit unit, int baseAttack);
 
     int modifyDefense(BattleUnit unit, int baseDefense);
+
+    String getName();
 }

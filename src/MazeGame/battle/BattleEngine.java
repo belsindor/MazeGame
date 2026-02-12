@@ -47,8 +47,8 @@ public class BattleEngine {
         if (activeAllySide != null && activeAllySide.isAlive() && enemySide.isAlive()) {
             int damage = DamageCalculator.calculate(activeAllySide, enemySide);
             enemySide.takeDamage(damage);
-            result.addMessage("⚔ " + activeAllySide.getName()
-                    + " наносит " + damage + " урона врагу");
+//            result.addMessage("⚔ " + activeAllySide.getName()
+//                    + " наносит " + damage + " урона врагу");
         }
 
         // 3. Атака врага → союзник
@@ -57,8 +57,8 @@ public class BattleEngine {
             if (target != null && target.isAlive()) {
                 int damage = DamageCalculator.calculate(enemySide, target);
                 target.takeDamage(damage);
-                result.addMessage("🐲 " + enemySide.getName()
-                        + " наносит " + damage + " → " + target.getName());
+//                result.addMessage("🐲 " + enemySide.getName()
+//                        + " наносит " + damage + " → " + target.getName());
             }
         }
 
