@@ -1,9 +1,10 @@
 package MazeGame.cards;
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardCollection {
+public class CardCollection implements Serializable {
 
     private final Map<Card, Integer> regularCards = new HashMap<>();
 
@@ -115,4 +116,18 @@ public class CardCollection {
     public void clear() {
         regularCards.clear();
     }
+
+    public void restoreCard(Card card, int amount) {
+        if (card == null || amount <= 0) return;
+        regularCards.put(card, amount);
+    }
+
+    public Map<Integer, Integer> getAllCardIds() {
+        Map<Integer, Integer> result = new HashMap<>();
+        regularCards.forEach((card, count) -> {
+            result.put(card.getId(), count);
+        });
+        return result;
+    }
+
 }

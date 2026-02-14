@@ -4,9 +4,10 @@ import MazeGame.battle.BattleContext;
 import MazeGame.battle.BattleResult;
 
 import javax.swing.*;
+import java.io.Serializable;
 import java.util.Objects;
 //++
-public abstract class Card {
+public abstract class Card implements Serializable {
 
     protected String name;
     protected final CardType type;

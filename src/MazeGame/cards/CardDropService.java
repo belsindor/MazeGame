@@ -4,11 +4,12 @@ import MazeGame.item.Item;
 import MazeGame.item.ItemFactory;
 import MazeGame.Monster;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 
-public class CardDropService {
+public class CardDropService implements Serializable {
 
     private static final Random RANDOM = new Random();
 

@@ -5,13 +5,14 @@ import MazeGame.MonsterTemplate;
 import MazeGame.UnitType;
 
 
+import java.io.Serializable;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 
 //+
-public class SummonFactory {
+public class SummonFactory implements Serializable {
 
     private static final Map<Integer, SummonEntry> SUMMONS = new HashMap<>();
 

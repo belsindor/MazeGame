@@ -1,6 +1,7 @@
 package MazeGame;
 
 import MazeGame.item.EquippedItemsData;
+import MazeGame.cards.*;
 
 import java.io.*;
 
@@ -32,9 +33,15 @@ public class GameSaveManager {
             data.playerX = game.getPlayerX();
             data.playerY = game.getPlayerY();
             data.secondMazeLoaded = game.isSecondMazeLoaded();
+            data.thirdMazeLoaded = game.isThirdMazeLoaded();
 
             // ===== туман войны =====
             data.visited = game.getVisited();
+
+            // ===== колоды карт =====
+            data.regularCards = p.getCardCollection().getAllCardIds();
+
+
 
             out.writeObject(data);
 

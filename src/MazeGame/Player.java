@@ -7,10 +7,11 @@ import MazeGame.battle.BattleReward;
 import MazeGame.cards.*;
 import MazeGame.item.Item;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Player implements BattleUnit {
+public class Player implements BattleUnit, Serializable {
 
     private final String name;
     private int health;

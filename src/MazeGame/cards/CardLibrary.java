@@ -3,12 +3,13 @@ package MazeGame.cards;
 import MazeGame.Monster;
 import MazeGame.battle.effects.*;
 
+import java.io.Serializable;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
 //++
-public final class CardLibrary {
+public final class CardLibrary implements Serializable {
 
     private CardLibrary() {}
 

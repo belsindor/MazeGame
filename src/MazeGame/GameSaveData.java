@@ -1,10 +1,14 @@
 package MazeGame;
 
+import MazeGame.cards.Card;
+import MazeGame.cards.SummonCard;
+import MazeGame.cards.TypeEffect;
 import MazeGame.item.EquippedItemsData;
 import MazeGame.item.Item;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.Map;
 
 public class GameSaveData implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -23,9 +27,13 @@ public class GameSaveData implements Serializable {
     public int playerX;
     public int playerY;
     public boolean secondMazeLoaded;
+    public boolean thirdMazeLoaded;
     public boolean[][] visited;
     public boolean[][] fogOfWar;
     public int currentMazeId;
-    public boolean thirdMazeLoaded;
-    // добавить сохранение колоды
+
+    // ===== КОЛОДА =====
+    public Map<Integer, Integer> regularCards;
+
+
 }

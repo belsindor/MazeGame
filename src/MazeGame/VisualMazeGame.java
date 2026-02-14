@@ -5,11 +5,12 @@ import MazeGame.cards.*;
 
 
 import javax.swing.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Optional;
 import java.util.Random;
 
-public class VisualMazeGame {
+public class VisualMazeGame implements Serializable {
 
     private VisualLocation[][] map;
     private int[][] currentMaze;
@@ -292,6 +293,7 @@ public class VisualMazeGame {
     public int getPlayerY() { return playerY; }
     public int[][] getCurrentMaze() { return currentMaze; }
     public boolean isSecondMazeLoaded() { return secondMazeLoaded; }
+    public boolean isThirdMazeLoaded() { return thirdMazeLoaded; }
 
     public void showHelp() {
         JOptionPane.showMessageDialog(null,
@@ -385,5 +387,36 @@ public class VisualMazeGame {
 
         loadMaze(maze, startX, startY, exitX, exitY);
         this.visited = data.visited;
+
+        restoreDecks(data);
+
+
+
     }
+
+    public void restoreDecks(GameSaveData data) {
+
+        player.getCardCollection().clear();
+
+        if (data.regularCards != null) {
+            for (var entry : data.regularCards.entrySet()) {
+
+                int cardId = entry.getKey();
+                int amount = entry.getValue();
+
+                Card card = CardLibrary.getCardById(cardId);
+
+                if (card != null) {
+                    player.getCardCollection().restoreCard(card, amount);
+                }
+            }
+        }
+
+        // пересобираем активные колоды
+        player.getSummonDeck().updateFromCollection(player.getCardCollection());
+        player.getCombatDeck().updateFromCollection(player.getCardCollection());
+    }
+
+
+
 }

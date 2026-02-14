@@ -7,9 +7,10 @@ import MazeGame.UnitType;
 import MazeGame.cards.*;
 import MazeGame.item.Item;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class BattleEngine {
+public class BattleEngine implements Serializable {
 
     private final BattleSide playerSide;
     private final BattleSide enemySide;

@@ -4,7 +4,9 @@ import MazeGame.cards.CardCollection;
 import MazeGame.cards.CombatDeck;
 import MazeGame.cards.SummonDeck;
 
-public class GameState {
+import java.io.Serializable;
+
+public class GameState implements Serializable {
 
     private static final GameState INSTANCE = new GameState();
 

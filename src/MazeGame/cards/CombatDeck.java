@@ -1,16 +1,18 @@
 package MazeGame.cards;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
+import static MazeGame.cards.CardLibrary.*;
 
 /**
  * Боевая колода — содержит активные карты по эффектам (одна лучшая на каждый TypeEffect).
  * Обновляется автоматически из общей коллекции regularCards.
  */
-public class CombatDeck {
+public class CombatDeck implements Serializable {
 
     // Активные боевые карты по эффектам (одна на эффект — лучшая по раритету)
     private final Map<TypeEffect, Card> cards = new EnumMap<>(TypeEffect.class);

@@ -3,10 +3,11 @@ package MazeGame.cards;
 import MazeGame.Monster;
 import MazeGame.UnitType;
 
+import java.io.Serializable;
 import java.util.EnumMap;
 import java.util.Map;
 //+
-public class SummonDeck {
+public class SummonDeck implements Serializable {
 
     // Активные суммоны по типам (один на тип, лучший по раритету)
     private final Map<UnitType, SummonCard> active = new EnumMap<>(UnitType.class);
@@ -133,6 +134,11 @@ public class SummonDeck {
             }
         }
     }
+
+    public void clearActive() {
+        active.clear();
+    }
+
 
     /**
      * Удалить суммон по экземпляру карты (вызывается при смерти в бою)
