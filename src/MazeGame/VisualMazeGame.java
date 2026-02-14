@@ -38,8 +38,10 @@ public class VisualMazeGame implements Serializable {
         SummonCard startingSummon = SummonFactory.ancestor_spirit();
         if (startingSummon != null) {
             player.getCardCollection().addCard(startingSummon);
-            player.getSummonDeck().addSummon(startingSummon);
-            player.getSummonDeck().selectSummon(startingSummon);
+//            player.getSummonDeck().addSummon(startingSummon);
+//            player.getSummonDeck().selectSummon(startingSummon);
+            player.getSummonDeck().refreshActive(player.getCardCollection());
+
             System.out.println("Стартовый суммон 'Дух предка' добавлен в коллекцию и активные суммоны");
         } else {
             System.err.println("Ошибка: ancestor_spirit() не найден в SummonFactory");
@@ -405,6 +407,12 @@ public class VisualMazeGame implements Serializable {
                 int amount = entry.getValue();
 
                 Card card = CardLibrary.getCardById(cardId);
+                if (card == null) {
+                    card = SummonFactory.ALL_SUMMON_CARDS.stream()
+                            .filter(s -> s.getId() == cardId)
+                            .findFirst()
+                            .orElse(null);
+                }
 
                 if (card != null) {
                     player.getCardCollection().restoreCard(card, amount);

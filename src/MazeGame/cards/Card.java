@@ -25,11 +25,11 @@ public abstract class Card implements Serializable {
         this.imagePath = imagePath;
     }
 
-    protected Card(CardRarity rarity, TypeEffect effect) {
-        this.type = null; // или нужен дефолтный тип
-        this.rarity = rarity;
-        this.imagePath = "";
-    }
+//    protected Card(CardRarity rarity, TypeEffect effect) {
+//        this.type = null; // или нужен дефолтный тип
+//        this.rarity = rarity;
+//        this.imagePath = "";
+//    }
 
     /**
      * Карта применяется к игроку
