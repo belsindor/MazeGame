@@ -108,7 +108,7 @@ public class InventoryPanel extends JPanel {
         JLabel placeholder = new JLabel("?");
         placeholder.setForeground(Color.LIGHT_GRAY);
         placeholder.setHorizontalAlignment(SwingConstants.CENTER);
-        placeholder.setFont(new Font("Arial", Font.BOLD, 24));
+        placeholder.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 24));
 
         BufferedImage img = new BufferedImage(48, 48, BufferedImage.TYPE_INT_ARGB);
         Graphics2D g2 = img.createGraphics();
@@ -155,7 +155,7 @@ public class InventoryPanel extends JPanel {
                 new LineBorder(Color.GRAY),
                 title,
                 0, 0,
-                new Font("Arial", Font.BOLD, 12),
+                new Font(Font.SANS_SERIF, Font.BOLD, 12),
                 Color.WHITE
         ));
 

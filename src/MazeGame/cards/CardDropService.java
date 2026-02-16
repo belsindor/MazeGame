@@ -193,7 +193,7 @@ public class CardDropService implements Serializable {
         @Override
         public String toString() {
             if (summonCard != null) return "Summon: " + summonCard.getName() + " (" + summonCard.getRarity() + ")";
-            if (card != null)       return "Card: " + card.getName() + " (" + card.getRarity() + ")";
+            if (card != null)       return "Card: " + card.getImageIcon() + " (" + card.getRarity() + ")";
             if (item != null)       return "Item: " + item.getName() + " (" + item.getRarity() + ")";
             return "—";
         }

@@ -6,7 +6,7 @@ import java.util.EnumSet;
 import java.util.Map;
 import java.util.Set;
 
-import static MazeGame.cards.CardLibrary.*;
+//import static MazeGame.cards.CardLibrary.*;
 
 /**
  * Боевая колода — содержит активные карты по эффектам (одна лучшая на каждый TypeEffect).
@@ -52,7 +52,7 @@ public class CombatDeck implements Serializable {
      */
     public void refreshActive(CardCollection collection) {
         cards.clear();
-
+        usedThisBattle.clear();
         Map<TypeEffect, Card> best = new EnumMap<>(TypeEffect.class);
 
         collection.getAllCards().forEach((card, count) -> {
@@ -76,6 +76,7 @@ public class CombatDeck implements Serializable {
      */
     public void updateFromCollection(CardCollection collection) {
         cards.clear();
+        usedThisBattle.clear();
 
         Map<TypeEffect, Card> bestByEffect = new EnumMap<>(TypeEffect.class);
 

@@ -194,13 +194,13 @@ public class GamePanel extends JPanel {
         }
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 28));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 28));
         FontMetrics fm = g.getFontMetrics();
         String name = monster.getName();
         int nameX = x + (cardWidth - fm.stringWidth(name)) / 2;
         g.drawString(name, nameX, y + 40);
 
-        g.setFont(new Font("Arial", Font.BOLD, 18));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         g.drawString("Lv. " + monster.getLevel(), x + 140, y + 300);
         g.drawString("Type: " + monster.getUnitType(), x + 90, y + 330);
         g.drawString("Atk: " + monster.getAttack(), x + 100, y + 360);
@@ -248,7 +248,7 @@ public class GamePanel extends JPanel {
         g.fillRoundRect(20, 20, 260, 110, 15, 15);
 
         g.setColor(Color.WHITE);
-        g.setFont(new Font("Arial", Font.BOLD, 14));
+        g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 14));
 
         g.drawString(player.getName(), 35, 45);
         g.drawString("Уровень: " + player.getLevel(), 35, 65);
@@ -301,7 +301,7 @@ public class GamePanel extends JPanel {
         int startY = getHeight() / 2 - messages.size() * 20;
 
         for (HUDMessage msg : messages) {
-            g.setFont(new Font("Arial", Font.BOLD, msg.fontSize()));
+            g.setFont(new Font(Font.SANS_SERIF, Font.BOLD, msg.fontSize()));
             FontMetrics fm = g.getFontMetrics();
 
             int textWidth = fm.stringWidth(msg.text());

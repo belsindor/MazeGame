@@ -19,7 +19,7 @@ public class SummonSelectionWindow extends JDialog {
 
         // ---------- Заголовок ----------
         JLabel title = new JLabel("Выберите призыв для боя", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 26));
+        title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 26));
         title.setBorder(BorderFactory.createEmptyBorder(20, 0, 10, 0));
         add(title, BorderLayout.NORTH);
 
@@ -31,7 +31,7 @@ public class SummonSelectionWindow extends JDialog {
 
         if (summons.isEmpty()) {
             JLabel empty = new JLabel("У вас нет доступных призывов");
-            empty.setFont(new Font("Arial", Font.PLAIN, 22));
+            empty.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 22));
             cardsPanel.add(empty);
         } else {
             for (SummonCard card : summons) {
@@ -71,7 +71,7 @@ public class SummonSelectionWindow extends JDialog {
 
         // ---------- Кнопка "Без призыва" ----------
         JButton noSummon = new JButton("Без призыва");
-        noSummon.setFont(new Font("Arial", Font.BOLD, 16));
+        noSummon.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 16));
         noSummon.setPreferredSize(new Dimension(200, 50));
         noSummon.addActionListener(e -> {
             selected = null;

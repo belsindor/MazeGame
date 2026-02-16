@@ -62,7 +62,7 @@ public class UnitPanel extends JPanel {
 
         // Верх: имя и уровень
         nameLabel = new JLabel(title + " (Lv. " + unit.getLevel() + ")", SwingConstants.CENTER);
-        nameLabel.setFont(new Font("Arial", Font.BOLD, 18));
+        nameLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 18));
         nameLabel.setForeground(Color.WHITE);
         add(nameLabel, BorderLayout.NORTH);
 

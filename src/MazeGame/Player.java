@@ -40,7 +40,7 @@ public class Player implements BattleUnit, Serializable {
     public Player(String name) {
         this.name = name;
         this.level = 1;
-        this.maxHealth = 20;
+        this.maxHealth = 10;
         this.health = maxHealth;
         this.baseAttack = 3;
         this.baseDefense = 1;

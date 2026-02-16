@@ -8,11 +8,11 @@ import java.util.function.Function;
 //+
 public class PoisonCard extends CurseCard {
     public PoisonCard(
-            String name, int id, Function<Monster, BattleEffect> effectFactory,
+            String title, String name, int id, Function<Monster, BattleEffect> effectFactory,
             CardRarity rarity,
             TypeEffect effect,
             String imagePath
     ) {
-        super(name, id, effectFactory, rarity, effect, imagePath);
+        super(title, name, id, effectFactory, rarity, effect, imagePath);
     }
 }

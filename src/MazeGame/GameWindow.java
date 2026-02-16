@@ -13,7 +13,7 @@ public class GameWindow extends JFrame {
 
     public GameWindow(VisualMazeGame gameInstance) {
         game = gameInstance;
-
+        setUndecorated(true);
         setTitle("Maze Game");
         setExtendedState(JFrame.MAXIMIZED_BOTH);
         setLayout(new BorderLayout());

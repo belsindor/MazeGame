@@ -14,9 +14,10 @@ public class CurseCard extends Card {
 
     private final Function<Monster, BattleEffect> effectFactory;
 
-    public CurseCard(String name, int id, Function<Monster, BattleEffect> effectFactory, CardRarity rarity, TypeEffect effect, String imagePath) {
+    public CurseCard(String title, String name, int id, Function<Monster, BattleEffect> effectFactory, CardRarity rarity, TypeEffect effect, String imagePath) {
         super(id, CardType.CURSE, rarity, effect, imagePath);
         this.effectFactory = effectFactory;
+        this.title = title;
         this.name = name;
     }
 

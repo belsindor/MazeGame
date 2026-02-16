@@ -7,6 +7,7 @@ import MazeGame.UnitType;
 import MazeGame.cards.*;
 import MazeGame.item.Item;
 
+import javax.swing.*;
 import java.io.Serializable;
 import java.util.List;
 
@@ -16,6 +17,9 @@ public class BattleEngine implements Serializable {
     private final BattleSide enemySide;
     private BattleSide summonSide;          // null если суммон не выбран или погиб
     private final BattleContext context;
+    private boolean battleFinished = false;
+
+
 
     public BattleEngine(Player player, Monster enemy) {
         this.playerSide = new BattleSide(player);
@@ -36,6 +40,9 @@ public class BattleEngine implements Serializable {
     }
 
     public BattleResult resolveTurn() {
+        if (battleFinished) return new BattleResult();
+
+
         BattleResult result = new BattleResult();
 
         // 1. Начало хода — эффекты
@@ -81,7 +88,7 @@ public class BattleEngine implements Serializable {
         if (summonSide == null || summonSide.isAlive()) return;
 
         Monster deadSummon = (Monster) summonSide.getUnit();
-        result.addMessage("☠ " + deadSummon.getName() + " погиб!");
+//        result.addMessage("☠ " + deadSummon.getName() + " погиб!");
 
         Player player = (Player) playerSide.getUnit();
         SummonDeck summonDeck = player.getSummonDeck();
@@ -93,7 +100,7 @@ public class BattleEngine implements Serializable {
 
         if (lost != null) {
             collection.removeCard(lost);
-            result.addMessage("Карта суммона потеряна навсегда: " + lost.getName());
+//            result.addMessage("Карта суммона потеряна навсегда: " + lost.getName());
         }
 
         summonSide = null;
@@ -121,12 +128,13 @@ public class BattleEngine implements Serializable {
         }
 
         if (result.isBattleOver()) {
+            battleFinished = true;
             playerSide.getUnit().clearTemporaryEffects();
+
             if (summonSide != null) summonSide.getUnit().clearTemporaryEffects();
 
             Player player = (Player) playerSide.getUnit();
             player.getSummonDeck().resetSelection();
-            player.getCombatDeck().resetBattleUsage();
 
             GameState.get().combat().clear();
         }
@@ -141,7 +149,7 @@ public class BattleEngine implements Serializable {
     }
 
     private BattleReward createReward(int monsterLevel) {
-        int exp = monsterLevel * 20 + (monsterLevel * 10);
+        int exp = monsterLevel * 10;
         return new BattleReward(exp, List.of());
     }
 
@@ -157,6 +165,8 @@ public class BattleEngine implements Serializable {
         // помечаем карту неактивной
         Player player = (Player) playerSide.getUnit();
         player.getCombatDeck().markUsed(card.getEffect());
+
+        handleBattleEnd(result);
     }
 
 
@@ -165,15 +175,20 @@ public class BattleEngine implements Serializable {
             if (drop.getSummonCard() != null) {
                 SummonCard sc = drop.getSummonCard();
                 player.getCardCollection().addCard(sc);
-                result.addMessage("Получена суммон-карта: " + sc.getName());
+                result.addMessage("Захвачена душа: " + sc.getName());
+
+
             } else if (drop.getCard() != null) {
                 Card c = drop.getCard();
                 player.getCardCollection().addCard(c);
-                result.addMessage("Получена карта: " + c.getName());
+                result.addMessage("Получена карта: " + c.getTitle());
+
+
             } else if (drop.getItem() != null) {
                 Item it = drop.getItem();
                 player.getInventory().addItem(it);
                 result.addMessage("Получен предмет: " + it.getName());
+
             }
         }
         player.getSummonDeck().refreshActive(player.getCardCollection());

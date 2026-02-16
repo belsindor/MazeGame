@@ -27,6 +27,11 @@ public class BattleWindow extends JFrame {
 
     private JPanel bottomPanel;
 
+    private boolean isProcessingTurn = false;
+    private boolean instantMessages = false;
+
+
+
 
     private JPanel centerPanel; // контейнер для динамической замены суммон ↔ игрок
 
@@ -112,6 +117,20 @@ public class BattleWindow extends JFrame {
         centerPanel.repaint();
     }
 
+    private void showMessagesSequentially(java.util.List<String> messages, Runnable onFinish) {
+        if (messages == null || messages.isEmpty()) {
+            if (onFinish != null) onFinish.run();
+            return;
+        }
+
+        for (String msg : messages) {
+            HUDMessageManager.show(msg, Color.WHITE, 24);
+        }
+
+        if (onFinish != null) onFinish.run();
+    }
+
+
     private JPanel createBottomPanel() {
         JPanel panel = new JPanel(new BorderLayout());
         panel.setOpaque(false);
@@ -140,7 +159,7 @@ public class BattleWindow extends JFrame {
 
         // Кнопка хода
         JButton turnButton = new JButton("Сделать ход");
-        turnButton.setFont(new Font("Arial", Font.BOLD, 20));
+        turnButton.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
         turnButton.setPreferredSize(new Dimension(200, 80));
         turnButton.setBackground(new Color(0, 200, 0));
         turnButton.setForeground(Color.WHITE);
@@ -154,60 +173,85 @@ public class BattleWindow extends JFrame {
         return panel;
     }
     public void onCardDropped(Card card, CardTarget target) {
+
         CombatDeck deck = player.getCombatDeck();
 
         if (deck.isUsed(card.getEffect())) {
-//            HUDMessageManager.show("Карта уже использована в этом бою", Color.GRAY, 22);
             return;
         }
 
         BattleResult result = new BattleResult();
 
-        // 🔥 сразу играем карту
+        // Играем карту
         battleEngine.playCard(card, target, result);
 
         enemyPanel.updateEffects();
-        if (activeAllyPanel != null) activeAllyPanel.updateEffects();
+        if (activeAllyPanel != null)
+            activeAllyPanel.updateEffects();
 
+        // Показываем сообщения и проверяем конец боя
+        showMessagesSequentially(result.messages, () -> {
 
-        // сообщения
-        for (String msg : result.messages) {
-            HUDMessageManager.show(msg, Color.WHITE, 24);
-        }
+            if (result.isBattleOver()) {
 
-        refreshBottomPanel(); // карта станет серой / неактивной
+                outcome = result.getOutcome();
+
+                String msg = (outcome == BattleOutcome.PLAYER_WIN)
+                        ? "ПОБЕДА!"
+                        : "ПОРАЖЕНИЕ...";
+
+                Color color = (outcome == BattleOutcome.PLAYER_WIN)
+                        ? new Color(80, 220, 100)
+                        : new Color(220, 60, 60);
+
+                HUDMessageManager.show(msg, color, 50);
+
+                dispose();   // 🔥 теперь окно гарантированно закроется
+            }
+        });
+
+        refreshBottomPanel();
     }
+
 
 
     private void performTurn() {
 
+        if (isProcessingTurn) return;
+        isProcessingTurn = true;
+
         lastResult = battleEngine.resolveTurn();
 
-        for (String msg : lastResult.messages) {
-            HUDMessageManager.show(msg, Color.WHITE, 24);
-        }
+        showMessagesSequentially(lastResult.messages, () -> {
+
+            if (lastResult.isBattleOver()) {
+
+                outcome = lastResult.getOutcome();
+
+//                String msg = (outcome == BattleOutcome.PLAYER_WIN)
+//                        ? "ПОБЕДА!"
+//                        : "ПОРАЖЕНИЕ...";
+
+                Color color = (outcome == BattleOutcome.PLAYER_WIN)
+                        ? new Color(80, 220, 100)
+                        : new Color(220, 60, 60);
+
+//                HUDMessageManager.show(msg, color, 50);
+
+                dispose();
+            }
+
+
+            isProcessingTurn = false;
+        });
 
         enemyPanel.update();
         if (activeAllyPanel != null) activeAllyPanel.update();
         updateActiveAllyPanel();
         enemyPanel.updateEffects();
         if (activeAllyPanel != null) activeAllyPanel.updateEffects();
-
-
-        if (lastResult.isBattleOver()) {
-            outcome = lastResult.getOutcome();
-
-            String msg = (outcome == BattleOutcome.PLAYER_WIN)
-                    ? "ПОБЕДА!"
-                    : "ПОРАЖЕНИЕ...";
-            Color color = (outcome == BattleOutcome.PLAYER_WIN)
-                    ? new Color(80, 220, 100)
-                    : new Color(220, 60, 60);
-
-            HUDMessageManager.show(msg, color, 50);
-            dispose();
-        }
     }
+
 
 
     private void refreshBottomPanel() {

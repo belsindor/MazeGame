@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 //++
-public final class CardLibrary implements Serializable {
+public final class CardLibrary {
 
     private CardLibrary() {}
 
@@ -18,124 +18,124 @@ public final class CardLibrary implements Serializable {
     // ===== BUFF CARDS =====
 
     public static BuffCard ATTACK_BUFF_1_2() {
-        return new BuffCard("<html>Усиление атаки:<br>сила 1<br>длительность 2</html>",1000,
+        return new BuffCard("Усиление атаки: сила 1 длительность 2","<html>Усиление атаки:<br>сила 1<br>длительность 2</html>",1000,
                 p -> new AttackBuffEffect(1, 2), CardRarity.GRAY, TypeEffect.ATTACK_BUFF,"/images/buff/attack_1_2.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_2_3() {
-        return new BuffCard("<html>Усиление атаки:<br>сила 2<br>длительность 3</html>",1001,
+        return new BuffCard("Усиление атаки: сила 2 длительность 3","<html>Усиление атаки:<br>сила 2<br>длительность 3</html>",1001,
                 p -> new AttackBuffEffect(2, 3), CardRarity.GREEN,TypeEffect.ATTACK_BUFF,"/images/buff/attack_2_3.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_3_4() {
-        return new BuffCard("<html>Усиление атаки:<br>сила 3<br>длительность 4</html>",1002,
+        return new BuffCard("Усиление атаки: сила 3 длительность 4","<html>Усиление атаки:<br>сила 3<br>длительность 4</html>",1002,
                 p -> new AttackBuffEffect(3, 4), CardRarity.BLUE,TypeEffect.ATTACK_BUFF,"/images/buff/attack_3_4.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_4_4() {
-        return new BuffCard("<html>Усиление атаки:<br>сила 4<br>длительность 4</html>",1003,
+        return new BuffCard("Усиление атаки: сила 4 длительность 4","<html>Усиление атаки:<br>сила 4<br>длительность 4</html>",1003,
                 p -> new AttackBuffEffect(4, 4), CardRarity.VIOLETTE,TypeEffect.ATTACK_BUFF,"/images/buff/attack_4_4.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_5_5() {
-        return new BuffCard("<html>Усиление атаки:<br>сила 5<br>длительность 5</html>",1004,
+        return new BuffCard("Усиление атаки: сила 5 длительность 5","<html>Усиление атаки:<br>сила 5<br>длительность 5</html>",1004,
                 p -> new AttackBuffEffect(5, 5), CardRarity.RED,TypeEffect.ATTACK_BUFF,"/images/buff/attack_5_5.jpg"
         );
     }
     public static BuffCard ATTACK_BUFF_6_6() {
-        return new BuffCard("<html>Усиление атаки:<br>сила 6<br>длительность 6</html>",1005,
+        return new BuffCard("Усиление атаки: сила 6 длительность 6","<html>Усиление атаки:<br>сила 6<br>длительность 6</html>",1005,
                 p -> new AttackBuffEffect(6, 6), CardRarity.GOLD,TypeEffect.ATTACK_BUFF,"/images/buff/attack_6_6.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_1_2() {
-        return new BuffCard("<html>Усиление защиты:<br>сила 1<br>длительность 2</html>",1100,
+        return new BuffCard("Усиление защиты: сила 1 длительность 2","<html>Усиление защиты:<br>сила 1<br>длительность 2</html>",1100,
                 p -> new DefenseBuffEffect(1, 2), CardRarity.GRAY,TypeEffect.DEFENSE_BUFF,"/images/buff/defense_1_2.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_2_2() {
-        return new BuffCard("<html>Усиление защиты:<br>сила 2<br>длительность 2</html>",1101,
+        return new BuffCard("Усиление защиты: сила 2 длительность 2","<html>Усиление защиты:<br>сила 2<br>длительность 2</html>",1101,
                 p -> new DefenseBuffEffect(2, 2), CardRarity.GREEN,TypeEffect.DEFENSE_BUFF,"/images/buff/defense_2_2.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_3_3() {
-        return new BuffCard("<html>Усиление защиты:<br>сила 3<br>длительность 3</html>",1102,
+        return new BuffCard("Усиление защиты: сила 3 длительность 3","<html>Усиление защиты:<br>сила 3<br>длительность 3</html>",1102,
                 p -> new DefenseBuffEffect(3, 3), CardRarity.BLUE,TypeEffect.DEFENSE_BUFF,"/images/buff/defense_3_3.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_4_4() {
-        return new BuffCard("<html>Усиление защиты:<br>сила 4<br>длительность 4</html>",1103,
+        return new BuffCard("Усиление защиты: сила 4 длительность 4","<html>Усиление защиты:<br>сила 4<br>длительность 4</html>",1103,
                 p -> new DefenseBuffEffect(4, 4), CardRarity.VIOLETTE,TypeEffect.DEFENSE_BUFF,"/images/buff/defense_4_4.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_5_5() {
-        return new BuffCard("<html>Усиление защиты:<br>сила 5<br>длительность 5</html>",1104,
+        return new BuffCard("Усиление защиты: сила 5 длительность 5","<html>Усиление защиты:<br>сила 5<br>длительность 5</html>",1104,
                 p -> new DefenseBuffEffect(5, 5), CardRarity.RED,TypeEffect.DEFENSE_BUFF,"/images/buff/defense_5_5.jpg"
         );
     }
     public static BuffCard DEFENSE_BUFF_6_6() {
-        return new BuffCard("<html>Усиление защиты:<br>сила 6<br>длительность 6</html>",1105,
+        return new BuffCard("Усиление защиты: сила 6 длительность 6","<html>Усиление защиты:<br>сила 6<br>длительность 6</html>",1105,
                 p -> new DefenseBuffEffect(6, 6), CardRarity.GOLD,TypeEffect.DEFENSE_BUFF,"/images/buff/defense_6_6.jpg"
         );
     }
     // ===== CURSE CARDS =====
     public static CurseCard CURSE_1_2() {
-        return new CurseCard("<html>Ослабление:<br>сила 1<br>длительность 2</html>",1200,
+        return new CurseCard("Ослабление: сила 1 длительность 2","<html>Ослабление:<br>сила 1<br>длительность 2</html>",1200,
                 monster -> new AttackDebuffEffect(1, 2), CardRarity.GRAY,TypeEffect.CURSE,"/images/curses/curse_1_2.jpg"
         );
     }
     public static CurseCard CURSE_2_3() {
-        return new CurseCard("<html>Ослабление:<br>сила 2<br>длительность 3</html>",1201,
+        return new CurseCard("Ослабление: сила 2 длительность 3","<html>Ослабление:<br>сила 2<br>длительность 3</html>",1201,
                 monster -> new AttackDebuffEffect(2, 3), CardRarity.GREEN,TypeEffect.CURSE,"/images/curses/curse_2_3.jpg"
         );
     }
     public static CurseCard CURSE_3_3() {
-        return new CurseCard("<html>Ослабление:<br>сила 3<br>длительность 3</html>",1202,
+        return new CurseCard("Ослабление: сила 3 длительность 3","<html>Ослабление:<br>сила 3<br>длительность 3</html>",1202,
                 monster -> new AttackDebuffEffect(3, 3), CardRarity.BLUE,TypeEffect.CURSE,"/images/curses/curse_3_3.jpg"
         );
     }
     public static CurseCard CURSE_4_4() {
-        return new CurseCard("<html>Ослабление:<br>сила 4<br>длительность 4</html>",1203,
+        return new CurseCard("Ослабление: сила 4 длительность 4","<html>Ослабление:<br>сила 4<br>длительность 4</html>",1203,
                 monster -> new AttackDebuffEffect(4, 4), CardRarity.VIOLETTE,TypeEffect.CURSE,"/images/curses/curse_4_4.jpg"
         );
     }
     public static CurseCard CURSE_5_5() {
-        return new CurseCard("<html>Ослабление:<br>сила 5<br>длительность 5</html>",1204,
+        return new CurseCard("Ослабление: сила 5 длительность 5","<html>Ослабление:<br>сила 5<br>длительность 5</html>",1204,
                 monster -> new AttackDebuffEffect(5, 5), CardRarity.RED,TypeEffect.CURSE,"/images/curses/curse_5_5.jpg"
         );
     }
     public static CurseCard CURSE_6_6() {
-        return new CurseCard("<html>Ослабление:<br>сила 6<br>длительность 6</html>",1205,
+        return new CurseCard("Ослабление: сила 6 длительность 6","<html>Ослабление:<br>сила 6<br>длительность 6</html>",1205,
                 monster -> new AttackDebuffEffect(6, 6), CardRarity.GOLD,TypeEffect.CURSE,"/images/curses/curse_6_6.jpg"
         );
     }
     // ===== POISON CARDS =====
     public static PoisonCard POISON_1_2() {
-        return new PoisonCard("<html>Отравление:<br>сила 1<br>длительность 2</html>",1300,
+        return new PoisonCard("Отравление: сила 1 длительность 2","<html>Отравление:<br>сила 1<br>длительность 2</html>",1300,
                 monster -> new AttackPoisonEffect(1, 2), CardRarity.GRAY,TypeEffect.POISON,"/images/poison/poison_1_2.jpg"
         );
     }
     public static PoisonCard POISON_2_3() {
-        return new PoisonCard("<html>Отравление:<br>сила 2<br>длительность 3</html>",1301,
+        return new PoisonCard("Отравление: сила 2 длительность 3","<html>Отравление:<br>сила 2<br>длительность 3</html>",1301,
                 monster -> new AttackPoisonEffect(2, 3), CardRarity.GREEN,TypeEffect.POISON,"/images/poison/poison_2_3.jpg"
         );
     }
     public static PoisonCard POISON_3_3() {
-        return new PoisonCard("<html>Отравление:<br>сила 3<br>длительность 3</html>",1302,
+        return new PoisonCard("Отравление: сила 3 длительность 3","<html>Отравление:<br>сила 3<br>длительность 3</html>",1302,
                 monster -> new AttackPoisonEffect(3, 3), CardRarity.BLUE,TypeEffect.POISON,"/images/poison/poison_3_3.jpg"
         );
     }
     public static PoisonCard POISON_4_4() {
-        return new PoisonCard("<html>Отравление:<br>сила 4<br>длительность 4</html>",1303,
+        return new PoisonCard("Отравление: сила 4 длительность 4","<html>Отравление:<br>сила 4<br>длительность 4</html>",1303,
                 monster -> new AttackPoisonEffect(4, 4), CardRarity.VIOLETTE,TypeEffect.POISON,"/images/poison/poison_4_4.jpg"
         );
     }
     public static PoisonCard POISON_5_5() {
-        return new PoisonCard("<html>Отравление:<br>сила 5<br>длительность 5</html>",1304,
+        return new PoisonCard("Отравление: сила 5 длительность 5","<html>Отравление:<br>сила 5<br>длительность 5</html>",1304,
                 monster -> new AttackPoisonEffect(5, 5), CardRarity.RED,TypeEffect.POISON,"/images/poison/poison_5_5.jpg"
         );
     }
     public static PoisonCard POISON_6_6() {
-        return new PoisonCard("<html>Отравление:<br>сила 6<br>длительность 6</html>",1305,
+        return new PoisonCard("Отравление: сила 6 длительность 6","<html>Отравление:<br>сила 6<br>длительность 6</html>",1305,
                 monster -> new AttackPoisonEffect(6, 6), CardRarity.GOLD,TypeEffect.POISON,"/images/poison/poison_6_6.jpg"
         );
     }
@@ -143,19 +143,19 @@ public final class CardLibrary implements Serializable {
 
     // ===== REGENERATION CARDS =====
     public static RegenerationCard REGENERATION_1_2() {
-        return new RegenerationCard("<html>Регенарация:<br>сила 1<br>длительность 2</html>",1400,
+        return new RegenerationCard("Регенарация: сила 1 длительность 2","<html>Регенарация:<br>сила 1<br>длительность 2</html>",1400,
                 p -> new RegenerationEffect(1, 2), CardRarity.GRAY,TypeEffect.REGENERATION,"/images/buff/regeneration_1_2.jpg"
         );
     }
     public static RegenerationCard REGENERATION_2_3() {
-        return new RegenerationCard("<html>Регенарация:<br>сила 2<br>длительность 3</html>",1401,
+        return new RegenerationCard("Регенарация: сила 2 длительность 3","<html>Регенарация:<br>сила 2<br>длительность 3</html>",1401,
                 p -> new RegenerationEffect(2, 3), CardRarity.GREEN,TypeEffect.REGENERATION,"/images/buff/regeneration_2_3.jpg"
         );
     }
 
     // ===== CONSUMABLE CARDS =====
     public static ConsumableCard DESTRUCTION_UNIT_TYPE() {
-        return new ConsumableCard("<html>Уронить противника:<br>длительность 5</html>",1500,
+        return new ConsumableCard("Уронить противника: длительность 5","<html>Уронить противника:<br>длительность 5</html>",1500,
                 ctx -> {
                     ctx.getEnemySide().addEffect(
                             new DisableUnitTypeEffect(5),
@@ -168,13 +168,13 @@ public final class CardLibrary implements Serializable {
     }
 
     public static ConsumableCard METEOR_SHOWER() {
-        return new ConsumableCard("<html>Метеоритный дождь:<br>атака 50</html>",1600,
+        return new ConsumableCard("Метеоритный дождь: атака 50","<html>Метеоритный дождь:<br>атака 50</html>",1600,
                 ctx -> ctx.getEnemy().takeDamage(50), CardRarity.GOLD,
                 TypeEffect.METEOR_SHOWER,"/images/consumables/meteor_shower.jpg"
         );
     }
     public static ConsumableCard RESURRECTION() {
-        return new ConsumableCard("Воскрешение",1700,
+        return new ConsumableCard("Воскрешение","Воскрешение",1700,
                 ctx -> {
                     Monster summon = ctx.getSummon();
 

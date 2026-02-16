@@ -7,8 +7,9 @@ import javax.swing.*;
 import java.io.Serializable;
 import java.util.Objects;
 //++
-public abstract class Card implements Serializable {
+public abstract class Card {
 
+    protected String title;
     protected String name;
     protected final CardType type;
     protected final CardRarity rarity;
@@ -125,4 +126,6 @@ public abstract class Card implements Serializable {
     public String getName() {
         return name;
     }
+
+    public String getTitle() {return title; }
 }

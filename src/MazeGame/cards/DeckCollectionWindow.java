@@ -26,7 +26,7 @@ public class DeckCollectionWindow extends JFrame {
 
         // Заголовок
         JLabel title = new JLabel("Коллекция карт", SwingConstants.CENTER);
-        title.setFont(new Font("Arial", Font.BOLD, 32));
+        title.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 32));
         title.setForeground(new Color(220, 220, 255));
         title.setBorder(BorderFactory.createEmptyBorder(0, 0, 20, 0));
         mainPanel.add(title, BorderLayout.NORTH);
@@ -37,7 +37,7 @@ public class DeckCollectionWindow extends JFrame {
 
         if (collection == null || collection.getAllCards().isEmpty()) {
             JLabel emptyLabel = new JLabel("У вас пока нет карт", SwingConstants.CENTER);
-            emptyLabel.setFont(new Font("Arial", Font.PLAIN, 28));
+            emptyLabel.setFont(new Font(Font.SANS_SERIF, Font.PLAIN, 28));
             emptyLabel.setForeground(new Color(120, 120, 140));
             grid.add(emptyLabel);
         } else {
@@ -55,7 +55,7 @@ public class DeckCollectionWindow extends JFrame {
                         // Если count > 1 — накладываем счётчик поверх картинки
                         if (count > 1) {
                             JLabel countLabel = new JLabel("×" + count);
-                            countLabel.setFont(new Font("Arial", Font.BOLD, 20));
+                            countLabel.setFont(new Font(Font.SANS_SERIF, Font.BOLD, 20));
                             countLabel.setForeground(Color.WHITE);
                             countLabel.setOpaque(true);
                             countLabel.setBackground(new Color(0, 0, 0, 200));

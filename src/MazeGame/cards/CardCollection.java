@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CardCollection implements Serializable {
+public class CardCollection {
 
     private final Map<Card, Integer> regularCards = new HashMap<>();
 
